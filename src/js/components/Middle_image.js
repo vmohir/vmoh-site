@@ -12,10 +12,10 @@ export default class Middle_image extends React.Component {
 		};
 	}
 	render() {
-		const { fullname, bio } = this.props;
+		const { fullname, bio, className } = this.props;
 		return (
-			<div id="middle-img-comp" class="center-block" onMouseOver={this.handleHoverMiddleImgContainer}>
-				<img id="main-avatar" src="/images/avatar.jpg" alt="{fullname}" class="center-block img-responsive img-circle" />
+			<div id="middle-img-comp" class={"center-block "+className} onMouseOver={this.handleHoverMiddleImgContainer}>
+				<img id="main-avatar" src="/images/avatar.jpg" alt={fullname} class="center-block img-responsive img-circle" />
 				<h1>{fullname}</h1>
 				<p>{bio}</p>
 			</div>
@@ -30,14 +30,10 @@ export default class Middle_image extends React.Component {
 		const _self = e.currentTarget;
 		const animation = anime({
 			targets: _self,
-			scale: 0.7,
-			opacity: 0.9,
 			update: (anim) => {
-				if (anim.progress > 20)
+				if (anim.progress > 75)
 					$(_self).find("h1").slideUp(120, () => { $(_self).find("p").slideUp(120); });
-			},
-			complete: (anim) => {
-				this.props.handleMouseOver(e);
+				this.props.handleMouseOver(_self);
 
 				// do not re run this function
 				this.setState({ allowHoverMiddleImgContainer: false }); // this should be last line
