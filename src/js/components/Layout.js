@@ -6,6 +6,7 @@ import Portfolio from "../pages/Portfolio";
 import SectionRevealButton from "./SectionRevealButton";
 import anime from 'animejs';
 import $ from 'jquery';
+import delay from "../functions";
 
 // main layout (the app)
 
@@ -18,7 +19,6 @@ export default class Layout extends React.Component {
 			allowSection: null,
 			sections: null,
 			allowSectionButtons: false,
-			flipper_scale_amount: 1.7,
 		};
 
 		// attributes
@@ -35,22 +35,23 @@ export default class Layout extends React.Component {
 
 		for (let section in sections) {
 			sections[section].jsx.props.id = section.toLowerCase();
+			sections[section].sectionContainerClass = `section-container-${section.toLowerCase()}`;
 		}
 	}
 
 	render() {
 		const { fullname, bio } = this.state;
 		return (
-			<div id="react-root" class="full-height">
-				
+			<div id="react-root" class="full-height">	
 				<section id="middle-img-container" class="text-center">
 					<ul id="section-buttons">
 						{this.showSectionButtons() /* list of li */}
 					</ul>
-					<div id="middle-img" className="flip-container full-height center-block">
+					<div id="middle-img" className="flip-container center-block">
 						<div className="flipper">
 							<Middle_image fullname={fullname} bio={bio} handleMouseOver={this.handleHoverMiddleImage} className="flip-card flip-card-front" />
 							<div id="section-container" className="flip-card flip-card-back">
+								<button id="close-section-button" className="close-button" onClick={this.handleClickOnCloseSectionButton}><span class="glyphicon glyphicon-remove center-block text-center" aria-hidden="true"></span></button>
 								{this.showSection()}
 							</div>
 						</div>
@@ -61,17 +62,13 @@ export default class Layout extends React.Component {
 	}
 
 	showSection = () => {
-		let { allowSection, sections } = this.state;
-		if (typeof allowSection == "string")
-			allowSection = [allowSection];
+		const { allowSection, sections } = this.state;
 		let result = null;
 		if (allowSection) {
-			result = [];
-			allowSection.forEach((section)=>{
-				if (sections.hasOwnProperty(section)) {
-					result.push(sections[section].jsx);
-				}
-			});
+			if (sections.hasOwnProperty(allowSection)) {
+				result = sections[allowSection].jsx;
+				$('#section-container').addClass(sections[allowSection].sectionContainerClass);
+			}
 		}
 		return result;
 	}
@@ -87,25 +84,50 @@ export default class Layout extends React.Component {
 		return result;
 	}
 
-	handleHoverMiddleImage = (e) => {
+	handleHoverMiddleImage = (elm) => {
 		if (this.state.allowSectionButtons)
 			return;
 		this.setState({ allowSectionButtons: true });
 
-		// Animations: section buttons rotate and scaleUp
-		let $buttons = $('#section-buttons');
-		$buttons.css({
+		this.animationsOnHoverMiddleImage(elm);
+	}
+
+
+	/**
+	 * Animations:
+	 * 1. "MiddleImg" scaleDown
+	 * 2. section buttons rotate and scaleUp
+	 */
+	animationsOnHoverMiddleImage = (elm) => {
+		const $sectionButtons = $('#section-buttons');
+
+		// first state
+		$sectionButtons.css({
 			transform: 'scale(0) rotate(-30deg) translateX(-50%) translateY(-50%)',
 			opacity: 0.3,
 		});
-		anime({
-			targets: $buttons.toArray(),
-			opacity: 1,
-			translateX: '-50%',
-			translateY: '-50%',
-			scale: 1,
-			rotate: 0,
-			duration: 2000,
+		// second state
+		anime({ // scaleDown middle img
+			targets: $(elm).closest('#middle-img').toArray(),
+			scale: 0.7,
+			opacity: 0.9,
+			complete: (anim) => {
+				anime({ // scaleUp and rotate section buttons
+					targets: $sectionButtons.toArray(),
+					opacity: 1,
+					translateX: '-50%',
+					translateY: '-50%',
+					scale: 1,
+					rotate: 0,
+					duration: 2000,
+					elasticity: 600,
+					complete: (anim) => {
+						anime({
+							// targets:
+						});
+					}
+				});
+			}
 		});
 	}
 
@@ -114,28 +136,19 @@ export default class Layout extends React.Component {
 		// show the section
 		const _self = e.currentTarget;
 		const section_name = $(_self).html();
-		this.setState({allowSection: section_name});
+		this.setState({ allowSection: section_name });
+		
 
-		// scaleUp Middle img
+		// scaleUp and rotate the Middle img
 		const $middleImg = $("#middle-img-comp");
 
-		const { flipper_scale_amount: scale_amount } = this.state;
-		anime({
-			targets: $middleImg.toArray(),
-			scale: scale_amount - 0.1,
-			duration: 2000,
-			elasticity: 0,
-			update: (anim) => {
-				$(".flip-container").addClass('active-flip');
-				const width_percent = scale_amount * 100;
-				const margin_percent = (width_percent - 100)/2;
-				$("#section-container").css({
-					width: width_percent+'%',
-					height: width_percent+'%',
-					left: '-'+margin_percent+'%',
-					top: '-'+margin_percent+'%',
-				});
-			}
+		$(".flip-container").addClass('active-flip');
+		// hide middleImg completely
+	}
+	handleClickOnCloseSectionButton = () => {
+		$(".flip-container").removeClass('active-flip');
+		delay(800).then(() => {
+			this.setState({ allowSection: null });
 		});
 	}
 }
