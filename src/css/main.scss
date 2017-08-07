@@ -25,10 +25,10 @@ $middle_img_z: 10;
 		display: flex;
 		align-items: center;
 		#middle-img-comp {
-			cursor: pointer;
 			width: $middle_img_contianer_width;
 			height: $middle_img_contianer_width;
 			z-index: $middle_img_z;
+			position: relative;
 			#main-avatar {
 				border: 5px solid #eee;
 			}
@@ -40,14 +40,21 @@ $middle_img_z: 10;
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translateX(-50%) translateY(-50%);
-	@include put_items_on_circle($number_of_sections, $middle_img_contianer_width +65px, 150px);
+	opacity: 0.3;
+	@include put_items_on_circle($number_of_sections, $middle_img_contianer_width +95px, 150px);
 }
 
 #section-container {
 	background: #fff;
 	box-shadow: inset 0 0 0 14px #eee, 0 0 24px #aaa;
 	border-radius: 100%;
+	border: 3px solid #aaa;
 	padding: 35px;
 }
+#close-section-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
 
+@import "theme.scss";
