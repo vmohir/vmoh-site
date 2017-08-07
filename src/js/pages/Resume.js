@@ -31,7 +31,7 @@ export default class Resume extends React.Component {
 		const jobsComp = jobs.map((item, index) => <Job {...item} key={index} />);
 
 		return (
-			<section id="Resume">
+			<div>
 				<div id="Skills">
 					<h1>Skills</h1>
 					<ul>
@@ -50,7 +50,7 @@ export default class Resume extends React.Component {
 						{jobsComp}
 					</ul>
 				</div>
-			</section>
+			</div>
 		);
 	}
 }

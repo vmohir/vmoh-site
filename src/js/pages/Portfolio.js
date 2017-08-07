@@ -19,9 +19,7 @@ export default class Portfolio extends React.Component {
 			return <PortfolioMedia {...media} key={index} />
 		})
 		return (
-			<section id="portfolio">
-				{galleryComp}
-			</section>
+			<div>{galleryComp}</div>
 		);
 	}
 }

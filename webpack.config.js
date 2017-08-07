@@ -34,8 +34,7 @@ module.exports = {
     path: __dirname + "/src/",
     filename: "client.min.js"
   },
-  plugins: debug ? [
-  ] : [
+  plugins: debug ? [] : [
     new ExtractTextPlugin('style.min.css'),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(),
@@ -44,6 +43,7 @@ module.exports = {
   externals: {
     "jquery": "jQuery",
     "react": "React",
-    "react-dom": "ReactDOM"
+    "react-dom": "ReactDOM",
+    "animejs": "anime"
   }
 };

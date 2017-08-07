@@ -1,7 +1,142 @@
-@charset "UTF-8";
+@charset"UTF-8";
+// variables
+// counts
+$number_of_sections: 3;
+// lines
+$middle_img_contianer_width: 370px;
+// z-indexes
+$middle_img_z: 10;
+// mixins
+@mixin put_items_on_circle($item-count, $circle-size, $item-size) {
+	width: $circle-size;
+	height: $circle-size;
+	padding: 0;
+	border-radius: 100%;
+	list-style: none;
+	transform: translateX(-50%) translateY(-50%) scale(0) rotate(-50deg);
+	>li {
+		display: block;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: $item-size;
+		height: $item-size;
+		line-height: $item-size;
+		background: #eee;
+		margin: -($item-size / 2);
+		border-radius: 100%;
+		cursor: pointer;
+		$angle: (360 / $item-count);
+		$rot: 0;
+		@for $i from 1 through $item-count {
+			&:nth-of-type(#{$i}) {
+				transform: rotate($rot * 1deg) translate($circle-size / 2) rotate($rot * -1deg);
+			}
+			$rot: $rot+$angle;
+		}
+	}
+}
+
+// styles 
+html, body, .full-height {
+	height: 101%;
+}
+
 body {
 	background: #f9f9f9;
 }
-#main-avatar {
-	border: 5px solid #eee;
+ul {
+	padding: 0;
+	list-style: none;
+	list-style-type: none;
+}
+
+#app {}
+
+#react-root {
+	position: relative;
+}
+
+#middle-img-container {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+	#middle-img {
+		display: flex;
+		align-items: center;
+		#middle-img-comp {
+			cursor: pointer;
+			width: $middle_img_contianer_width;
+			height: $middle_img_contianer_width;
+			z-index: $middle_img_z;
+			#main-avatar {
+				border: 5px solid #eee;
+			}
+		}
+	}
+}
+
+#section-buttons {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	@include put_items_on_circle($number_of_sections, $middle_img_contianer_width +65px, 150px);
+}
+
+#section-container {
+	background: #fff;
+	box-shadow: inset 0 0 0 14px #eee, 0 0 24px #aaa;
+	border-radius: 100%;
+	padding: 35px;
+}
+
+
+.flip-container {
+	perspective: 1000px;
+}
+
+
+/* flip the pane when active-flip */
+
+.flip-container.active-flip .flipper {
+	transform: rotateY(180deg);
+}
+
+
+/* flip speed goes here */
+
+.flipper {
+	transition: 0.6s;
+	transform-style: preserve-3d;
+	position: relative;
+}
+
+
+/* hide back of pane during swap */
+
+.flip-card {
+	backface-visibility: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+
+/* front pane, placed above back */
+
+.flip-card-front {
+	z-index: 2;
+	/* for firefox 31 */
+	transform: rotateY(0deg);
+}
+
+
+/* back, initially hidden pane */
+
+.flip-card-back {
+	transform: rotateY(180deg);
 }
