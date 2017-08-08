@@ -7,7 +7,7 @@ export default class PortfolioMedia extends React.Component {
 		const { title, img, desc } = this.props;
 		return (
 			<div>
-				<img src="{img}" alt="{title}"/>
+				<img src={img} alt={title} />
 				<h1>{title}</h1>
 				<p>{desc}</p>
 			</div>
