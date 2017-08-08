@@ -41,7 +41,7 @@ $middle_img_z: 10;
 	top: 50%;
 	left: 50%;
 	opacity: 0.3;
-	@include put_items_on_circle($number_of_sections, $middle_img_contianer_width +95px, 150px);
+	@include put_items_on_circle($number_of_sections, $middle_img_contianer_width +95px, 125px);
 }
 
 #section-container {

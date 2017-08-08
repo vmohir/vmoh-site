@@ -142,13 +142,36 @@ export default class Layout extends React.Component {
 		// scaleUp and rotate the Middle img
 		const $middleImg = $("#middle-img-comp");
 
-		$(".flip-container").addClass('active-flip');
+		const $flipContianer = $(".flip-container");
+
+		const $closeButton = $flipContianer.find('#close-section-button');
+		const $closeButton_top = $closeButton.css('top').replace("px", "");
+		$closeButton.css({
+			top: ($closeButton_top * 3).toString() + 'px',
+			right: ($closeButton_top * 3).toString() + 'px',
+		    transform: 'scale(0)',
+		    opacity: 0,
+		});
+
+		$flipContianer.addClass('active-flip');
+		
+		anime({
+			targets: $closeButton.toArray(),
+			scale: 1,
+			top: $closeButton_top,
+			right: $closeButton_top,
+			opacity: 1,
+			delay: 800
+		});
 		// hide middleImg completely
 	}
 	handleClickOnCloseSectionButton = () => {
 		$(".flip-container").removeClass('active-flip');
-		delay(800).then(() => {
+		delay(300).then(() => {
 			this.setState({ allowSection: null });
+			$('#section-container').removeClass((index, className) => {
+				return (className.match(/(^|\s)section-container-\S+/g) || []).join(' ');
+			})
 		});
 	}
 }

@@ -1,5 +1,23 @@
 @charset"UTF-8";
 // this is not c
 #section-container.section-container-resume {
-    @include section_container_theme(#F44336, #FFEBEE, #C62828);
+	$main-color: #F44336;
+    @include section_container_theme($main-color, #FFEBEE, #C62828);
+    .close-button {
+    	background: $main-color;
+    }
+}
+#section-container.section-container-profile {
+	$main-color: #4CAF50;
+    @include section_container_theme($main-color, #E8F5E9, #388E3C);
+    .close-button {
+    	background: $main-color;
+    }
+}
+#section-container.section-container-portfolio {
+	$main-color: #2196F3;
+    @include section_container_theme($main-color, #E3F2FD, #1565BC);
+    .close-button {
+    	background: $main-color;
+    }
 }
