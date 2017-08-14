@@ -132,6 +132,11 @@ body {
 }
 
 // the table which has the skillbars inside
+#skills-table {
+	tbody {
+		border-bottom: 25px solid transparent;
+	}
+}
 .skillbar-container {
 	td:first-child {
 		width: 1px;
