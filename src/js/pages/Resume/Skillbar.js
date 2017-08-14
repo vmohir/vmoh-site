@@ -7,12 +7,14 @@ export default class Skillbar extends React.Component {
 		const { name, percent } = this.props;
 		
 		return (
-			<li>
-				<div className="skillbar-container" data-percent="{percent}">
-					<span className="skillbar-name">{name}</span>
-					<span className="skillbar-percent">{percent}</span>
-				</div>
-			</li>
+			<tr className="skillbar-container" data-percent={percent}>
+				<td>{name}</td>
+				<td class="progress">
+					<div class="progress-bar" role="progressbar" aria-valuenow={percent} aria-valuemin="0" aria-valuemax="100" style={{width: percent + "%"}}>
+						<span>{percent}%</span>
+					</div>
+				</td>
+			</tr>
 		);
 	}
 }
