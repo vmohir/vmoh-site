@@ -1,5 +1,8 @@
 @charset"UTF-8";
-// mixins
+
+/*************************** mixins **************************/
+
+// put "li"s of a list on a circle
 @mixin put_items_on_circle($item-count, $circle-size, $item-size) {
 	width: $circle-size;
 	height: $circle-size;
@@ -14,7 +17,7 @@
 		left: 50%;
 		width: $item-size;
 		height: $item-size;
-		line-height: $item-size;
+		line-height: $item-size + 5px;
 		background: #eee;
 		margin: -($item-size / 2);
 		border-radius: 100%;
@@ -29,7 +32,85 @@
 		}
 	}
 }
-// Other modules
+
+// the theme for each section-container
+@mixin section_container_theme($border-color, $inner-shadow-color, $outer-shadow-color) {
+	border-color: $border-color;
+	box-shadow: inset 0 0 0 14px $inner-shadow-color, 0 0 45px $outer-shadow-color, 0 100px 170px -70px rgba(0, 0, 0, 0.55);
+	;
+}
+
+@mixin nav-buttons-box-shadow($color, $direction) {
+	@if $direction == "top" {
+		box-shadow: 0 7px 13px -11px $color;
+	} @else {
+		box-shadow: 0 -7px 13px -11px $color;
+	}
+}
+
+/*************************** End of mixins **************************/
+
+.section-container-padding-safe {
+	$height: 65%;
+	height: $height;
+	position: absolute;
+	top: (100% - $height) / 2;
+	right: 50%;
+	transform: translateX(50%);
+	width: 65%;
+}
+
+.absolute-center-container {
+	position: absolute;
+	width: 100%;
+	right: 50%;
+	top: 50%;
+	transform: translateX(50%) translateY(-50%);
+	max-height: 100%;
+	overflow: auto;
+	padding: 10px 0;
+}
+
+// The vertical slider (used in section containers)
+.vertical-slider-container {
+	@extend .section-container-padding-safe;
+	.vertical-slider-item {
+		@extend .absolute-center-container;
+		transform: translateX(50%) translateY(-50%) scale(0.8);
+		opacity: 0;
+		visibility: hidden;
+		transition: all 0.3s ease-in-out;
+		&.vertical-slider-item-active {
+			transform: translateX(50%) translateY(-50%) scale(1);
+			visibility: initial;
+			opacity: 1;
+			transition: all 0.6s 0.1s cubic-bezier(0.33, -0.07, 0.27, 1.55);
+		}
+	}
+}
+
+.vertical-slider-nav-btn {
+	position: absolute;
+	right: 50%;
+	transform: translateX(50%);
+	border-radius: 100px;
+	padding: 5px 30px;
+	box-shadow: none;
+	background: #fff;
+	z-index: 21;
+}
+
+.vertical-slider-nav-bottom {
+	bottom: 50px;
+	@include nav-buttons-box-shadow($color: #696969, $direction: "bottom");
+}
+
+.vertical-slider-nav-top {
+	@include nav-buttons-box-shadow($color: #696969, $direction: "top");
+	top: 50px;
+}
+
+// a card which flips and shows the backside of it when it has the class "active-flip"
 $scale_amount: 1.7;
 $width_percent: $scale_amount * 100%;
 $margin_percent: ($width_percent - 100%) / -2;
@@ -67,7 +148,8 @@ $margin_percent: ($width_percent - 100%) / -2;
 	}
 	.flip-card-front {
 		z-index: 2;
-		transform: rotateY(0deg); /* for firefox 31 */
+		transform: rotateY(0deg);
+		/* for firefox 31 */
 		transition: all .7s ease;
 	}
 	.flip-card-back {
@@ -76,16 +158,43 @@ $margin_percent: ($width_percent - 100%) / -2;
 	}
 }
 
+// The rounded close button
 .close-button {
-    border-radius: 100%;
-    width: 55px;
-    height: 55px;
-    color: #fff;
-    font-size: 20px;
-    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+	border-radius: 100%;
+	width: 55px;
+	height: 55px;
+	color: #fff;
+	font-size: 20px;
+	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
-@mixin section_container_theme($border-color, $outer-shadow-color, $inner-shadow-color) {
-	border-color: $border-color;
-    box-shadow: inset 0 0 0 14px $outer-shadow-color, 0 0 24px $inner-shadow-color;
+// Custom styles for progress bars (from bootstrap)
+.progress {
+	border-radius: 100px;
+	padding: 4px;
+	box-sizing: content-box;
+	background: transparent;
+	box-shadow: none;
+	margin: 0;
+	overflow: visible;
+	.progress-bar {
+		border-radius: 100px;
+		background: url(http://api.thumbr.it/whitenoise-361x370.png?background=ff1100ff&noise=ffffff&density=62&opacity=50);
+		box-shadow: inset -62px 0 30px -50px rgba(255, 255, 255, .8), inset -90px 0 80px -50px rgba(255, 255, 255, 0.7), inset 80px 0 80px -50px rgba(0, 0, 0, 0.3), inset 2px 8px 7px -5px rgba(0, 0, 0, 0.1), inset 2px -8px 7px -5px rgba(0, 0, 0, 0.1), 0 1px #dc766f, 3px 2px 9px -4px rgba(101, 0, 0, 1), 0 7px 9px -8px rgba(101, 0, 0, 1), 0 0px 30px 0px rgba(228, 78, 78, 0.3);
+		border-right: 2px solid #fff;
+		padding: 0 8px;
+		span {
+			color: #fff;
+			margin-top: 1px;
+			display: inline-block;
+			font-style: italic;
+			text-shadow: 0 1px 2px rgba(113, 8, 0, 0.5), 0 0 10px #f44336;
+			white-space: nowrap;
+		}
+	}
+}
+
+// glyphicons at the top of headers
+.big-glyphicon {
+	font-size: 35px;
 }
