@@ -19,11 +19,13 @@ export default class Layout extends React.Component {
 			allowSection: null,
 			sections: null,
 			allowSectionButtons: false,
+			MiddleImageStates: {
+				isActive: false,
+			}
 		};
 
 		// attributes
 		const { fullname, bio } = this.state;
-		const idAttr = {'id': 'value'};
 
 		this.state.sections = {
 			Resume: {jsx: (<Resume />)},
@@ -40,7 +42,7 @@ export default class Layout extends React.Component {
 	}
 
 	render() {
-		const { fullname, bio } = this.state;
+		const { fullname, bio, MiddleImageStates } = this.state;
 		return (
 			<div id="react-root" class="full-height">	
 				<section id="middle-img-container" class="text-center">
@@ -49,10 +51,10 @@ export default class Layout extends React.Component {
 					</ul>
 					<div id="middle-img" className="flip-container center-block">
 						<div className="flipper">
-							<Middle_image fullname={fullname} bio={bio} handleMouseOver={this.handleHoverMiddleImage} className="flip-card flip-card-front" />
+							<Middle_image fullname={fullname} bio={bio} handleMouseOver={this.handleHoverMiddleImage} className="flip-card flip-card-front" isActive={MiddleImageStates.isActive} />
 							<div id="section-container" className="flip-card flip-card-back">
 								<button id="close-section-button" className="close-button" onClick={this.handleClickOnCloseSectionButton}><span class="glyphicon glyphicon-remove center-block text-center" aria-hidden="true"></span></button>
-								{this.showSection()}
+								<div className="section-content">{this.showSection()}</div>
 							</div>
 						</div>
 					</div>
@@ -64,11 +66,9 @@ export default class Layout extends React.Component {
 	showSection = () => {
 		const { allowSection, sections } = this.state;
 		let result = null;
-		if (allowSection) {
-			if (sections.hasOwnProperty(allowSection)) {
-				result = sections[allowSection].jsx;
-				$('#section-container').addClass(sections[allowSection].sectionContainerClass);
-			}
+		if (allowSection && sections.hasOwnProperty(allowSection)) {
+			result = sections[allowSection].jsx;
+			$('#section-container').addClass(sections[allowSection].sectionContainerClass);
 		}
 		return result;
 	}
