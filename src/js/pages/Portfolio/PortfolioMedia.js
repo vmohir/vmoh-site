@@ -6,11 +6,13 @@ export default class PortfolioMedia extends React.Component {
 	render() {
 		const { title, img, desc } = this.props;
 		return (
-			<div>
+			<li class="vertical-slider-item portfolio-media-item">
 				<img src={img} alt={title} />
-				<h1>{title}</h1>
-				<p>{desc}</p>
-			</div>
+				<div className="portfolio-media-content">
+					<h1>{title}</h1>
+					<p>{desc}</p>
+				</div>
+			</li>
 		);
 	}
 }
