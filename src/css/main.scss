@@ -1,16 +1,24 @@
 @charset"UTF-8";
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:600');
+
 /************************************ variables ************************************/
+
 // counts
-$number_of_sections: 3;
+$number_of_sections: 3; // each section has a circle around the avatar
 // lines
 $middle_img_contianer_width: 370px;
 // z-indexes
 $middle_img_z: 10;
+
 /************************************ styles ************************************/
+
 @import "base.scss";
 @import "modules.scss";
 // Elements
-#app {}
+body {
+	background: url(/images/bg.png);
+	font-family: 'Josefin Sans', tahoma, sans-serif;
+}
 
 #react-root {
 	position: relative;
@@ -30,31 +38,114 @@ $middle_img_z: 10;
 			z-index: $middle_img_z;
 			position: relative;
 			#main-avatar {
-				border: 5px solid #eee;
+				border: 7px solid #c5b297;
+				box-shadow: 0 0 0 1px #d1c4b0, 0 2px 30px 0 #6b5f4c, 0 0 0 0px rgba(232, 229, 224, 0), 0 0 0 0px rgba(255, 251, 239, 0), 0 0 0 1px rgba(255, 255, 255, 0.2);
+				transition: all 1s ease-in-out;
+				&.is-active {
+					border: 5px solid #c5b297;
+					box-shadow: 0 0 0 2px #e0d6c8, 0 2px 20px 0 #6b5f4c, 0 0 0 20px rgba(232, 229, 224, 1), 0 0 0 26px rgba(255, 251, 239, 0.3), 0 0 0 600px rgba(255, 255, 255, 0);
+				}
 			}
 		}
 	}
 }
 
+// the circles around the middle_img
 #section-buttons {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	opacity: 0.3;
 	@include put_items_on_circle($number_of_sections, $middle_img_contianer_width +95px, 125px);
+	>li {
+		background: #f6f6f6;
+		box-shadow: inset 0 10px 30px #f8f8f8, inset 0 -10px 30px #f4f4f4, 0 1px 0 1px #ebebeb, 0 3px 9px 2px #d0cdc8;
+		border: 1px solid #e8e8e8;
+		transition: all .3s ease;
+		color: #888;
+		font-size: 21px;
+		&:hover {
+			color: #666;
+			background: #f9f9f9;
+			box-shadow: inset 0 10px 30px #fbfbfb, inset 0 -10px 30px #f7f7f7, 0 2px 0 1px #ebebeb, 0 3px 15px 3px #d0cdc8;
+			border: 1px solid #e8e8e8;
+		}
+		&:active {
+			color: #666;
+			text-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+			background: #d4d4d4;
+			box-shadow: inset 0 1px 0 1px #888, inset 0 3px 5px 2px #8c8c8c, inset 0 10px 50px #acacac, inset 0 -10px 30px #d6d6d6;
+			border: 1px solid #e8e8e8;
+		}
+	}
 }
 
+// container in each section
 #section-container {
 	background: #fff;
 	box-shadow: inset 0 0 0 14px #eee, 0 0 24px #aaa;
 	border-radius: 100%;
 	border: 3px solid #aaa;
-	padding: 35px;
+	// overflow: hidden; don't enable it!!!!!!
+	.section-content {
+		height: 100%;
+		width: 100%;
+		padding: 35px;
+		border-radius: 100%;
+		overflow: hidden;
+	}
 }
+
+// items in portfolio section
+.portfolio-media-item {
+	background: #fff;
+	border-radius: 0 0 3px 3px;
+	padding: 30px;
+	img {
+		max-width: 80%;
+		max-height: 160px;
+		position: absolute;
+		top: -30px;
+		right: 5%;
+		box-shadow: 10px 0 20px -7px rgba(0, 0, 0, 0.15), -10px 0 20px -7px rgba(0, 0, 0, 0.15);
+		border-bottom: 2px solid #ccc;
+		border-radius: 4px 4px 0 0;
+	}
+	.portfolio-media-content {
+		border-left: 2px dashed #ddd;
+		padding-left: 22px;
+		margin-left: -9px;
+		margin-top: 130px;
+		h1 {
+			font-size: 42px;
+			font-weight: bold;
+			text-align: left;
+			margin-top: 0;
+			text-transform: capitalize;
+		}
+		p {
+			text-align: justify;
+			color: #555;
+			font-size: 15px;
+		}
+	}
+}
+
+// the table which has the skillbars inside
+.skillbar-container {
+	td:first-child {
+		width: 1px;
+		white-space: nowrap;
+		padding-right: 10px;
+		text-align: left;
+		font-weight: bold;
+	}
+}
+
 #close-section-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+	position: absolute;
+	top: 20px;
+	right: 20px;
 }
 
 @import "theme.scss";
