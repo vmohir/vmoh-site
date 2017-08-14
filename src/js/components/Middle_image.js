@@ -28,6 +28,7 @@ export default class Middle_image extends React.Component {
 			return false;
 		}
 		const _self = e.currentTarget;
+		$(_self).find("#main-avatar").addClass('is-active');
 		const animation = anime({
 			targets: _self,
 			update: (anim) => {
