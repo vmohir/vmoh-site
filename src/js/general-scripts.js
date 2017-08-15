@@ -1,6 +1,3 @@
-import Ps from "perfect-scrollbar";
-require('perfect-scrollbar/jquery')($);
-
 $(document).ready(function() {
 
 

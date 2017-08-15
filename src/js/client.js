@@ -1,5 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import Ps from "perfect-scrollbar";
+require('perfect-scrollbar/jquery')($);
 
 require('../css/main.scss');
 
