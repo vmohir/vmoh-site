@@ -2,7 +2,7 @@
 #section-container.section-container-resume {
     $color-main: #F44336;
     $color-shadow-light: #FFEBEE;
-    $color-shadow-dark: rgba(121, 26, 26, 0.6);
+    $color-shadow-dark: rgba(101, 46, 46, 0.5);
     $color-nav-buttons-shadow: #9e0b00;
     $color-background: #fff8f9;
 
@@ -11,18 +11,15 @@
     .close-button {
         background: $color-main;
     }
-    .vertical-slider-nav-top {
-        @include nav-buttons-box-shadow($color-nav-buttons-shadow, "top");
-    }
-    .vertical-slider-nav-bottom {
-        @include nav-buttons-box-shadow($color-nav-buttons-shadow, "bottom");
+    .vertical-slider-nav-btn:hover {
+        color: $color-nav-buttons-shadow;
     }
 }
 
 #section-container.section-container-profile {
     $color-main: #4CAF50;
     $color-shadow-light: #E8F5E9;
-    $color-shadow-dark: rgba(44, 115, 48, 0.6);
+    $color-shadow-dark: rgba(44, 77, 45, 0.5);
     $color-nav-buttons-shadow: #307034;
     $color-background: #f8fff9;
 
@@ -31,26 +28,23 @@
     .close-button {
         background: $color-main;
     }
-    .vertical-slider-nav-top {
-        @include nav-buttons-box-shadow($color-nav-buttons-shadow, "top");
-    }
-    .vertical-slider-nav-bottom {
-        @include nav-buttons-box-shadow($color-nav-buttons-shadow, "bottom");
+    .vertical-slider-nav-btn:hover {
+        color: $color-nav-buttons-shadow;
     }
 }
 
 #section-container.section-container-portfolio {
     $color-main: #2196F3;
     $color-shadow-light: #e3f2fd;
-    $color-shadow-dark: rgba(17, 77, 144, 0.6);
-    $color-image-shadow: rgba(16, 48, 74, 0.49);
+    $color-shadow-dark: rgba(20, 48, 70, 0.5);
+    $color-image-shadow: rgba(16, 48, 74, 0.5);
     $color-background: #f5fbff;
     $color-nav-buttons-shadow: #1565bc;
 
     background: $color-background;
     @include section_container_theme($color-main, $color-shadow-light, $color-shadow-dark);
     .portfolio-media-item {
-        border-top-color: $color-shadow-dark;
+        border-top-color: $color-main;
         box-shadow: inset 0 25px #bfddf3, inset 0 105px #e4f3ff, 0 5px 20px -5px rgba(0, 0, 0, 0.2), 0 14px 0 -10px #fff, 0 16px 8px -10px rgba(0, 0, 0, 0.08), 0 28px 0 -20px #fff, 0 30px 8px -20px rgba(0, 0, 0, 0.08);
         img {
             border-bottom-color: $color-main;
@@ -59,10 +53,7 @@
     .close-button {
         background: $color-main;
     }
-    .vertical-slider-nav-top {
-        @include nav-buttons-box-shadow($color-nav-buttons-shadow, "top");
-    }
-    .vertical-slider-nav-bottom {
-        @include nav-buttons-box-shadow($color-nav-buttons-shadow, "bottom");
+    .vertical-slider-nav-btn:hover {
+        color: $color-nav-buttons-shadow;
     }
 }

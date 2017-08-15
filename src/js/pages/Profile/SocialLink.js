@@ -8,7 +8,7 @@ export default class SocialLink extends React.Component {
 		
 		return (
 			<li>
-				<a href="{url}">{name}</a>
+				<a href={url}>{name}</a>
 			</li>
 		);
 	}

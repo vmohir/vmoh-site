@@ -70,7 +70,7 @@ export default class Resume extends React.Component {
 					<div class="vertical-slider-item" id="skills">
 						<div class="big-glyphicon glyphicon glyphicon-knight"></div>
 						<h1>Skills</h1>
-						<div>
+						<div id="scrollbar1">
 							<table id="skills-table">
 								{skillsComp}
 							</table>
@@ -98,9 +98,20 @@ export default class Resume extends React.Component {
 
 	componentDidMount() {
 		this.initiateVerticalSlider();
+		this.initiateJqueryPerfectSlider();
+	}
+	componentDidUpdate(prevProps, prevState) {
+		this.updateJqueryPerfectSlide();
 	}
 
+	initiateJqueryPerfectSlider = () => {
+		$('#scrollbar1').perfectScrollbar();
+	}
 	initiateVerticalSlider = () => {
 		$('.vertical-slider-item:first-child').addClass('vertical-slider-item-active');
+	}
+
+	updateJqueryPerfectSlide = () => {
+		$('#scrollbar1').perfectScrollbar('update');
 	}
 }

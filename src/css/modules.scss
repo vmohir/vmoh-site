@@ -40,14 +40,6 @@
 	;
 }
 
-@mixin nav-buttons-box-shadow($color, $direction) {
-	@if $direction == "top" {
-		box-shadow: 0 7px 13px -11px $color;
-	} @else {
-		box-shadow: 0 -7px 13px -11px $color;
-	}
-}
-
 /*************************** End of mixins **************************/
 
 .section-container-padding-safe {
@@ -67,25 +59,25 @@
 	top: 50%;
 	transform: translateX(50%) translateY(-50%);
 	max-height: 100%;
-	overflow: auto;
 	padding: 10px 0;
 }
 
 // The vertical slider (used in section containers)
 .vertical-slider-container {
 	@extend .section-container-padding-safe;
-	.vertical-slider-item {
-		@extend .absolute-center-container;
-		transform: translateX(50%) translateY(-50%) scale(0.8);
-		opacity: 0;
-		visibility: hidden;
-		transition: all 0.3s ease-in-out;
-		&.vertical-slider-item-active {
-			transform: translateX(50%) translateY(-50%) scale(1);
-			visibility: initial;
-			opacity: 1;
-			transition: all 0.6s 0.1s cubic-bezier(0.33, -0.07, 0.27, 1.55);
-		}
+}
+
+.vertical-slider-item {
+	@extend .absolute-center-container;
+	transform: translateX(50%) translateY(-50%) scale(0.8);
+	opacity: 0;
+	visibility: hidden;
+	transition: all 0.3s ease-in-out;
+	&.vertical-slider-item-active {
+		transform: translateX(50%) translateY(-50%) scale(1);
+		visibility: initial;
+		opacity: 1;
+		transition: all 0.6s 0.1s cubic-bezier(0.33, -0.07, 0.27, 1.55);
 	}
 }
 
@@ -96,17 +88,17 @@
 	border-radius: 100px;
 	padding: 5px 30px;
 	box-shadow: none;
-	background: #fff;
 	z-index: 21;
+	background: transparent;
+    font-size: 30px;
+    color: rgba(0, 0, 0, 0.4);
 }
 
 .vertical-slider-nav-bottom {
 	bottom: 50px;
-	@include nav-buttons-box-shadow($color: #696969, $direction: "bottom");
 }
 
 .vertical-slider-nav-top {
-	@include nav-buttons-box-shadow($color: #696969, $direction: "top");
 	top: 50px;
 }
 
@@ -179,7 +171,8 @@ $margin_percent: ($width_percent - 100%) / -2;
 	overflow: visible;
 	.progress-bar {
 		border-radius: 100px;
-		background: url(http://api.thumbr.it/whitenoise-361x370.png?background=ff1100ff&noise=ffffff&density=62&opacity=50);
+		background: url(/images/whitenoise-80x20.png);
+		// background: url(http://api.thumbr.it/whitenoise-40x20.png?background=ff1100ff&noise=ffffff&density=62&opacity=50);
 		box-shadow: inset -62px 0 30px -50px rgba(255, 255, 255, .8), inset -90px 0 80px -50px rgba(255, 255, 255, 0.7), inset 80px 0 80px -50px rgba(0, 0, 0, 0.3), inset 2px 8px 7px -5px rgba(0, 0, 0, 0.1), inset 2px -8px 7px -5px rgba(0, 0, 0, 0.1), 0 1px #dc766f, 3px 2px 9px -4px rgba(101, 0, 0, 1), 0 7px 9px -8px rgba(101, 0, 0, 1), 0 0px 30px 0px rgba(228, 78, 78, 0.3);
 		border-right: 2px solid #fff;
 		padding: 0 8px;

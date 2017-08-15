@@ -9,7 +9,7 @@ export default class Job extends React.Component {
 		return (
 			<li>
 				<div className="job-container">
-					<h3><a href="{url}">{title}</a></h3>
+					<h3><a href={url}>{title}</a></h3>
 					<span>{compony}</span>
 					<p>{desc}</p>
 				</div>
