@@ -27,7 +27,7 @@ export default class Middle_image extends React.Component {
 		if (!allowHoverMiddleImgContainer) {
 			return false;
 		}
-		const _self = e.currentTarget;
+		const _self = e.currentTarget; // #middle-img-comp
 		$(_self).find("#main-avatar").addClass('is-active');
 		const animation = anime({
 			targets: _self,

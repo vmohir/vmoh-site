@@ -1,5 +1,5 @@
 import React from "react";
-import Middle_image from "./Middle_image";
+import Middle_image from "./MiddleImage";
 import Resume from "../pages/Resume";
 import Profile from "../pages/Profile";
 import Portfolio from "../pages/Portfolio";
@@ -7,6 +7,8 @@ import SectionRevealButton from "./SectionRevealButton";
 import anime from 'animejs';
 import $ from 'jquery';
 import delay from "../functions";
+import update from 'react-addons-update';
+import CloseButton from './CloseButton';
 
 // main layout (the app)
 
@@ -18,10 +20,7 @@ export default class Layout extends React.Component {
 			bio: "Web developer and designer",
 			allowSection: null,
 			sections: null,
-			allowSectionButtons: false,
-			MiddleImageStates: {
-				isActive: false,
-			}
+			allowSectionButtons: false
 		};
 
 		// attributes
@@ -51,9 +50,9 @@ export default class Layout extends React.Component {
 					</ul>
 					<div id="middle-img" className="flip-container center-block">
 						<div className="flipper">
-							<Middle_image fullname={fullname} bio={bio} handleMouseOver={this.handleHoverMiddleImage} className="flip-card flip-card-front" isActive={MiddleImageStates.isActive} />
+							<Middle_image fullname={fullname} bio={bio} handleMouseOver={this.handleHoverMiddleImage} className="flip-card flip-card-front" />
 							<div id="section-container" className="flip-card flip-card-back">
-								<button id="close-section-button" className="close-button" onClick={this.handleClickOnCloseSectionButton}><span class="glyphicon glyphicon-remove center-block text-center" aria-hidden="true"></span></button>
+								<CloseButton handleClick={this.handleClickOnCloseSectionButton} ref={CloseButton => this.closeButton = CloseButton} />
 								<div className="section-content">{this.showSection()}</div>
 							</div>
 						</div>
@@ -84,7 +83,7 @@ export default class Layout extends React.Component {
 		return result;
 	}
 
-	handleHoverMiddleImage = (elm) => {
+	handleHoverMiddleImage = (elm) => { // elm = #middle-img-comp
 		if (this.state.allowSectionButtons)
 			return;
 		this.setState({ allowSectionButtons: true });
@@ -98,15 +97,16 @@ export default class Layout extends React.Component {
 	 * 1. "MiddleImg" scaleDown
 	 * 2. section buttons rotate and scaleUp
 	 */
-	animationsOnHoverMiddleImage = (elm) => {
+	animationsOnHoverMiddleImage = (elm) => { // elm = #middle-img-comp
 		const $sectionButtons = $('#section-buttons');
 
-		// first state
+		// initial state
 		$sectionButtons.css({
 			transform: 'scale(0) rotate(-30deg) translateX(-50%) translateY(-50%)',
 			opacity: 0.3,
 		});
-		// second state
+
+		// final state
 		anime({ // scaleDown middle img
 			targets: $(elm).closest('#middle-img').toArray(),
 			scale: 0.7,
@@ -131,39 +131,18 @@ export default class Layout extends React.Component {
 		});
 	}
 
-	handleClickOnSectionRevealButton = (e) => {
-
+	handleClickOnSectionRevealButton = (event) => { // event is click on a section reveal button
 		// show the section
-		const _self = e.currentTarget;
+		const _self = event.currentTarget;
 		const section_name = $(_self).html();
 		this.setState({ allowSection: section_name });
 		
-
 		// scaleUp and rotate the Middle img
-		const $middleImg = $("#middle-img-comp");
-
 		const $flipContianer = $(".flip-container");
-
-		const $closeButton = $flipContianer.find('#close-section-button');
-		const $closeButton_top = $closeButton.css('top').replace("px", "");
-		$closeButton.css({
-			top: ($closeButton_top * 3).toString() + 'px',
-			right: ($closeButton_top * 3).toString() + 'px',
-		    transform: 'scale(0)',
-		    opacity: 0,
-		});
-
 		$flipContianer.addClass('active-flip');
-		
-		anime({
-			targets: $closeButton.toArray(),
-			scale: 1,
-			top: $closeButton_top,
-			right: $closeButton_top,
-			opacity: 1,
-			delay: 800
-		});
-		// hide middleImg completely
+
+		// show the close button
+		this.closeButton.handleSectionReaveal($flipContianer);
 	}
 	handleClickOnCloseSectionButton = () => {
 		$(".flip-container").removeClass('active-flip');
