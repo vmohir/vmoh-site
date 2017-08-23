@@ -10,33 +10,60 @@ export default class Resume extends React.Component {
 		super();
 		this.state = {
 			skillgroups: [
-				[
-					{name: "HTML5", percent: 100},
-					{name: "CSS3", percent: 100},
-					{name: "Bootstrap", percent: 100},
-				],
-				[
-					{name: "JS/ES6", percent: 70},
-					{name: "jQuery", percent: 60},
-					{name: "React", percent: 20},
-				],
-				[
-					{name: "Wordpress", percent: 90},
-					{name: "PHP", percent: 60},
-					{name: "PHPUnit", percent: 20},
-					{name: "Composer", percent: 15},
-					{name: "MySQL", percent: 40},
-				],
-				[
-					{name: "Git", percent: 40},
-				],
-				[
-					{name: "C/C++", percent: 50},
-					{name: "Qt", percent: 20},
-				],
-				[
-					{name: "Python", percent: 25},
-				]
+				{
+					title: "Frontend web designer",
+					skills: [
+						{name: "HTML5 - CSS3", percent: 100},
+						{name: "Sass", percent: 100},
+						{name: "SMACSS", percent: 100},
+						{name: "Bootstrap", percent: 100},
+						{name: "JS/ES6", percent: 70},
+						{name: "jQuery", percent: 60},
+						{name: "React", percent: 20},
+					],
+				},
+				{
+					title: "Wordpress developing",
+					skills: [
+						{name: "Theme developing", percent: 90},
+						{name: "Woocommerce", percent: 100},
+						{name: "bbpress", percent: 100},
+						{name: "buddypress", percent: 60},
+					],
+				},
+				{
+					title: "PHP developing",
+					skills: [
+						{name: "PHP", percent: 60},
+						{name: "PHPUnit", percent: 20},
+						{name: "Composer", percent: 15},
+						{name: "MySQL", percent: 40},
+						{name: "Telegram API", percent: 90},
+					],
+				},
+				{
+					title: "C/C++ programming",
+					skills: [
+						{name: "C/C++", percent: 50},
+						{name: "Qt", percent: 20},
+					],
+				},
+				{
+					title: "Python developing",
+					skills: [
+						{name: "Python", percent: 25},
+					],
+				},
+				{
+					title: "Other skills",
+					skills: [
+						{name: "Photoshop", percent: 100},
+						{name: "Illustrator", percent: 20},
+						{name: "UI/UX", percent: 80},
+						{name: "SEO", percent: 70},
+						{name: "Git", percent: 40},
+					],
+				},
 			],
 			education: [
 				{institue: "University of Tehran", field: "Software Engineering", desc: "I'm student"}
@@ -52,10 +79,12 @@ export default class Resume extends React.Component {
 		const { id:section_id } = this.props;
 		
 		// repeated code
-		const skillsComp = skillgroups.map((skills,main_index) => {
-			const skillsGroup = skills.map((item,index) => <Skillbar {...item} key={main_index + index} />);
+		const skillsComp = skillgroups.map((group, main_index) => {
+			const colCount = Object.keys(group.skills[0]).length;
+			const skillsGroup = group.skills.map((item, index) => <Skillbar {...item} key={main_index + index} />);
 			return (
 				<tbody>
+					<tr><td className="skill-group-title" colSpan={colCount}>{group.title}</td></tr>
 					{skillsGroup}
 				</tbody>
 			);
@@ -70,7 +99,7 @@ export default class Resume extends React.Component {
 					<div class="vertical-slider-item" id="skills">
 						<div class="big-glyphicon glyphicon glyphicon-knight"></div>
 						<h1>Skills</h1>
-						<div id="scrollbar1">
+						<div>
 							<table id="skills-table">
 								{skillsComp}
 							</table>
@@ -105,13 +134,13 @@ export default class Resume extends React.Component {
 	}
 
 	initiateJqueryPerfectSlider = () => {
-		$('#scrollbar1').perfectScrollbar();
+		$('#skills').perfectScrollbar();
 	}
 	initiateVerticalSlider = () => {
 		$('.vertical-slider-item:first-child').addClass('vertical-slider-item-active');
 	}
 
 	updateJqueryPerfectSlide = () => {
-		$('#scrollbar1').perfectScrollbar('update');
+		$('#skills').perfectScrollbar('update');
 	}
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import anime from 'animejs';
 import $ from 'jquery';
+import avatar_img from "../../images/avatar.jpg";
 
 // the main title and image and description that is show at first
 
@@ -15,7 +16,7 @@ export default class Middle_image extends React.Component {
 		const { fullname, bio, className } = this.props;
 		return (
 			<div id="middle-img-comp" class={"center-block "+className} onMouseOver={this.handleHoverMiddleImgContainer}>
-				<img id="main-avatar" src="/images/avatar.jpg" alt={fullname} class="center-block img-responsive img-circle" />
+				<img id="main-avatar" src={avatar_img} alt={fullname} class="center-block img-responsive img-circle" />
 				<h1>{fullname}</h1>
 				<p>{bio}</p>
 			</div>

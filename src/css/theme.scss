@@ -5,7 +5,6 @@
     $color-shadow-dark: rgba(101, 46, 46, 0.5);
     $color-nav-buttons-shadow: #9e0b00;
     $color-background: #fff8f9;
-
     background: $color-background;
     @include section_container_theme($color-main, $color-shadow-light, $color-shadow-dark);
     .close-button {
@@ -13,6 +12,9 @@
     }
     .vertical-slider-nav-btn:hover {
         color: $color-nav-buttons-shadow;
+    }
+    .skill-group-title {
+        color: #af0c00;
     }
 }
 
@@ -22,7 +24,6 @@
     $color-shadow-dark: rgba(44, 77, 45, 0.5);
     $color-nav-buttons-shadow: #307034;
     $color-background: #f8fff9;
-
     background: $color-background;
     @include section_container_theme($color-main, $color-shadow-light, $color-shadow-dark);
     .close-button {
@@ -40,14 +41,25 @@
     $color-image-shadow: rgba(16, 48, 74, 0.5);
     $color-background: #f5fbff;
     $color-nav-buttons-shadow: #1565bc;
-
+    $color-imaeg-container-border-bottom: #b9c3cc;
     background: $color-background;
     @include section_container_theme($color-main, $color-shadow-light, $color-shadow-dark);
     .portfolio-media-item {
         border-top-color: $color-main;
-        box-shadow: inset 0 25px #bfddf3, inset 0 105px #e4f3ff, 0 5px 20px -5px rgba(0, 0, 0, 0.2), 0 14px 0 -10px #fff, 0 16px 8px -10px rgba(0, 0, 0, 0.08), 0 28px 0 -20px #fff, 0 30px 8px -20px rgba(0, 0, 0, 0.08);
-        img {
-            border-bottom-color: $color-main;
+        $inset-shadow-dark-color: #bfddf3;
+        $inset-shadow-light-color: #e4f3ff;
+        @include portfolio_media_item_shadow($inset-shadow-dark-color, $inset-shadow-light-color);
+        &.portfolio-media-no-img {
+            @include portfolio_media_item_shadow($inset-shadow-light-color, $inset-shadow-light-color, true);
+        }
+        .portfolio-media-image-container {
+            border-bottom-color: $color-imaeg-container-border-bottom;
+        }
+        .portfolio-media-techs {
+            li {
+                background: #e9f1f7;
+                color: #00579c;
+            }
         }
     }
     .close-button {

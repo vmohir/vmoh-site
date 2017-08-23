@@ -2,7 +2,9 @@
 
 /*************************** mixins **************************/
 
-// put "li"s of a list on a circle
+
+/* put "li"s of a list on a circle */
+
 @mixin put_items_on_circle($item-count, $circle-size, $item-size) {
 	width: $circle-size;
 	height: $circle-size;
@@ -33,14 +35,31 @@
 	}
 }
 
-// the theme for each section-container
+
+/* the theme for each section-container */
+
 @mixin section_container_theme($border-color, $inner-shadow-color, $outer-shadow-color) {
 	border-color: $border-color;
 	box-shadow: inset 0 0 0 14px $inner-shadow-color, 0 0 45px $outer-shadow-color, 0 100px 170px -70px rgba(0, 0, 0, 0.55);
 	;
 }
+@mixin portfolio_media_item_shadow($inset-shadow-dark-color, $inset-shadow-light-color, $no-image-mode: false) {
+	@if $no-image-mode == false {
+		box-shadow: inset 0 25px $inset-shadow-dark-color, inset 0 105px $inset-shadow-light-color, 0 5px 20px -5px rgba(0, 0, 0, 0.2), 0 14px 0 -10px #fff, 0 16px 8px -10px rgba(0, 0, 0, 0.08), 0 28px 0 -20px #fff, 0 30px 8px -20px rgba(0, 0, 0, 0.08);
+	} @else {
+		box-shadow: inset 0 25px $inset-shadow-dark-color, 0 5px 20px -5px rgba(0, 0, 0, 0.2), 0 14px 0 -10px #fff, 0 16px 8px -10px rgba(0, 0, 0, 0.08), 0 28px 0 -20px #fff, 0 30px 8px -20px rgba(0, 0, 0, 0.08);
+	}
+}
 
 /*************************** End of mixins **************************/
+
+/*************************** Animation Keyframes **************************/
+@keyframes my-animation {
+    0%, 10% {transform: translateY(0%)}
+    90%, 100% {transform: translateY(calc( -100% + 160px ))}
+}
+/*************************** End of Animations **************************/
+
 
 .section-container-padding-safe {
 	$height: 65%;
@@ -59,10 +78,12 @@
 	top: 50%;
 	transform: translateX(50%) translateY(-50%);
 	max-height: 100%;
-	padding: 10px 0;
+	// padding: 10px 0;
 }
 
-// The vertical slider (used in section containers)
+
+/* The vertical slider (used in section containers) */
+
 .vertical-slider-container {
 	@extend .section-container-padding-safe;
 }
@@ -90,8 +111,8 @@
 	box-shadow: none;
 	z-index: 21;
 	background: transparent;
-    font-size: 30px;
-    color: rgba(0, 0, 0, 0.4);
+	font-size: 30px;
+	color: rgba(0, 0, 0, 0.4);
 }
 
 .vertical-slider-nav-bottom {
@@ -102,7 +123,9 @@
 	top: 50px;
 }
 
-// a card which flips and shows the backside of it when it has the class "active-flip"
+
+/* a card which flips and shows the backside of it when it has the class "active-flip" */
+
 $scale_amount: 1.7;
 $width_percent: $scale_amount * 100%;
 $margin_percent: ($width_percent - 100%) / -2;
@@ -150,7 +173,9 @@ $margin_percent: ($width_percent - 100%) / -2;
 	}
 }
 
-// The rounded close button
+
+/* The rounded close button */
+
 .close-button {
 	border-radius: 100%;
 	width: 55px;
@@ -160,7 +185,9 @@ $margin_percent: ($width_percent - 100%) / -2;
 	text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
-// Custom styles for progress bars (from bootstrap)
+
+/* Custom styles for progress bars (from bootstrap) */
+
 .progress {
 	border-radius: 100px;
 	padding: 4px;
@@ -171,8 +198,8 @@ $margin_percent: ($width_percent - 100%) / -2;
 	overflow: visible;
 	.progress-bar {
 		border-radius: 100px;
-		background: url(/images/whitenoise-80x20.png);
-		// background: url(http://api.thumbr.it/whitenoise-40x20.png?background=ff1100ff&noise=ffffff&density=62&opacity=50);
+		background: url(../images/whitenoise-80x20.png);
+		/* background: url(http://api.thumbr.it/whitenoise-40x20.png?background=ff1100ff&noise=ffffff&density=62&opacity=50); */
 		box-shadow: inset -62px 0 30px -50px rgba(255, 255, 255, .8), inset -90px 0 80px -50px rgba(255, 255, 255, 0.7), inset 80px 0 80px -50px rgba(0, 0, 0, 0.3), inset 2px 8px 7px -5px rgba(0, 0, 0, 0.1), inset 2px -8px 7px -5px rgba(0, 0, 0, 0.1), 0 1px #dc766f, 3px 2px 9px -4px rgba(101, 0, 0, 1), 0 7px 9px -8px rgba(101, 0, 0, 1), 0 0px 30px 0px rgba(228, 78, 78, 0.3);
 		border-right: 2px solid #fff;
 		padding: 0 8px;
@@ -187,7 +214,14 @@ $margin_percent: ($width_percent - 100%) / -2;
 	}
 }
 
-// glyphicons at the top of headers
+
+/* glyphicons at the top of headers */
+
 .big-glyphicon {
 	font-size: 35px;
+}
+
+// prefect slider
+.ps {
+	padding: 10px;
 }

@@ -9,6 +9,9 @@ export default class SocialLinks extends React.Component {
 		this.state = {
 			social_links: [
 				{name: "linkedin", url: "https://www.linkedin.com/in/vahidmohammadi/"},
+				{name: "stackoverflow", url: "https://stackoverflow.com/users/1889607/vmoh-ir"},
+				{name: "Github", url: "http://github.com/gvmohzibat/"},
+				{name: "Jobinja", url: "https://jobinja.ir/user/vmoh_ir"},
 			],
 		}
 	}

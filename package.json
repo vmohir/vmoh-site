@@ -25,13 +25,14 @@
     "webpack-dev-server": "^2.6.1"
   },
   "scripts": {
-    "dev": "webpack-dev-server --content-base src --inline --hot",
+    "dev": "webpack-dev-server --content-base output --inline --hot",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Vahid",
   "license": "ISC",
   "devDependencies": {
     "extract-text-webpack-plugin": "^2.1.2",
+    "file-loader": "^0.11.2",
     "node-sass": "^4.5.3",
     "sass-loader": "^6.0.6",
     "webpack": "^3.4.1"

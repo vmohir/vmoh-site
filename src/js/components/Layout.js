@@ -43,7 +43,7 @@ export default class Layout extends React.Component {
 	render() {
 		const { fullname, bio, MiddleImageStates } = this.state;
 		return (
-			<div id="react-root" class="full-height">	
+			<div id="react-root" class="full-height">
 				<section id="middle-img-container" class="text-center">
 					<ul id="section-buttons">
 						{this.showSectionButtons() /* list of li */}

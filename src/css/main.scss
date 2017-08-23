@@ -1,10 +1,16 @@
 @charset"UTF-8";
 @import url('https://fonts.googleapis.com/css?family=Josefin+Sans:600');
+@import "~perfect-scrollbar/dist/css/perfect-scrollbar.css";
 
 /************************************ variables ************************************/
 
+// urls
+$background_image: "../images/bg.jpg";
 // counts
-$number_of_sections: 3; // each section has a circle around the avatar
+$number_of_sections: 3;
+
+/* each section has a circle around the avatar */
+
 // lines
 $middle_img_contianer_width: 370px;
 // z-indexes
@@ -14,9 +20,11 @@ $middle_img_z: 10;
 
 @import "base.scss";
 @import "modules.scss";
-// Elements
+
+/* Elements */
+
 body {
-	background: url(/images/bg.png);
+	background: url($background_image);
 	font-family: 'Josefin Sans', tahoma, sans-serif;
 }
 
@@ -59,7 +67,9 @@ body {
 	}
 }
 
-// the circles around the middle_img
+
+/* the circles around the middle_img */
+
 #section-buttons {
 	position: absolute;
 	top: 50%;
@@ -89,13 +99,15 @@ body {
 	}
 }
 
-// container in each section
+
+/* container in each section */
+
 #section-container {
 	background: #fff;
 	box-shadow: inset 0 0 0 14px #eee, 0 0 24px #aaa;
 	border-radius: 100%;
 	border: 3px solid #aaa;
-	// overflow: hidden; don't enable it!!!!!!
+	/* overflow: hidden; don't enable it!!!!!! */
 	.section-content {
 		height: 100%;
 		width: 100%;
@@ -105,21 +117,36 @@ body {
 	}
 }
 
-// items in portfolio section
+
+/* items in portfolio section */
 .portfolio-media-item {
+	$item: &;
 	background: #fff;
 	border-radius: 0 0 3px 3px;
 	padding: 30px;
 	border-top: 2px solid #aaa;
-	img {
-		max-width: 80%;
-		max-height: 160px;
+	&.portfolio-media-no-img {
+		.portfolio-media-content {
+			margin-top: 30px;
+		}
+	}
+	.portfolio-media-image-container {
+		$image_container: &;
+		width: 80%;
+		height: 160px;
 		position: absolute;
 		top: -30px;
 		right: 5%;
 		box-shadow: 10px 0 20px -7px rgba(0, 0, 0, 0.15), -10px 0 20px -7px rgba(0, 0, 0, 0.15);
 		border-bottom: 2px solid #ccc;
 		border-radius: 4px 4px 0 0;
+		overflow: hidden;
+		img {
+			width: 100%;
+			@at-root #{$item}:hover img {
+				animation: my-animation 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0s infinite alternate;
+			}
+		}
 	}
 	.portfolio-media-content {
 		border-left: 2px dashed #ddd;
@@ -127,7 +154,7 @@ body {
 		margin-left: -9px;
 		margin-top: 130px;
 		h1 {
-			font-size: 42px;
+			font-size: 32px;
 			font-weight: bold;
 			text-align: left;
 			margin-top: 0;
@@ -138,14 +165,35 @@ body {
 			color: #555;
 			font-size: 15px;
 		}
+		.portfolio-media-techs {
+			text-align: left;
+			li {
+				display: inline-block;
+				padding: 2px 5px;
+				margin: 3px 6px 3px 0;
+				background: #e9f1f7;
+				color: #00579c;
+				&:last-child {
+					margin-right: 0;
+				}
+			}
+		}
 	}
 }
 
-// the table which has the skillbars inside
+
+/* the table which has the skillbars inside */
+
 #skills-table {
 	tbody {
 		border-bottom: 25px solid transparent;
 	}
+}
+
+.skill-group-title {
+	font-size: 20px;
+	padding-bottom: 10px;
+	color: #444;
 }
 
 .skillbar-container {
@@ -165,169 +213,3 @@ body {
 }
 
 @import "theme.scss";
-#scrollbar1 {
-	height: 200px;
-	position: relative;
-	padding: 15px;
-}
-
-
-/* perfect-scrollbar v0.7.1 */
-
-.ps {
-	-ms-touch-action: auto;
-	touch-action: auto;
-	overflow: hidden !important;
-	-ms-overflow-style: none;
-}
-
-@supports (-ms-overflow-style: none) {
-	.ps {
-		overflow: auto !important;
-	}
-}
-
-@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-	.ps {
-		overflow: auto !important;
-	}
-}
-
-.ps.ps--active-x>.ps__scrollbar-x-rail, .ps.ps--active-y>.ps__scrollbar-y-rail {
-	display: block;
-	background-color: transparent;
-}
-
-.ps.ps--in-scrolling.ps--x>.ps__scrollbar-x-rail {
-	background-color: #eee;
-	opacity: 0.9;
-}
-
-.ps.ps--in-scrolling.ps--x>.ps__scrollbar-x-rail>.ps__scrollbar-x {
-	background-color: #999;
-	height: 11px;
-}
-
-.ps.ps--in-scrolling.ps--y>.ps__scrollbar-y-rail {
-	background-color: #eee;
-	opacity: 0.9;
-}
-
-.ps.ps--in-scrolling.ps--y>.ps__scrollbar-y-rail>.ps__scrollbar-y {
-	background-color: #999;
-	width: 11px;
-}
-
-.ps>.ps__scrollbar-x-rail {
-	display: none;
-	position: absolute;
-	/* please don't change 'position' */
-	opacity: 0;
-	-webkit-transition: background-color .2s linear, opacity .2s linear;
-	-moz-transition: background-color .2s linear, opacity .2s linear;
-	-o-transition: background-color .2s linear, opacity .2s linear;
-	transition: background-color .2s linear, opacity .2s linear;
-	bottom: 0px;
-	/* there must be 'bottom' for ps__scrollbar-x-rail */
-	height: 15px;
-}
-
-.ps>.ps__scrollbar-x-rail>.ps__scrollbar-x {
-	position: absolute;
-	/* please don't change 'position' */
-	background-color: #aaa;
-	-webkit-border-radius: 6px;
-	-moz-border-radius: 6px;
-	border-radius: 6px;
-	-webkit-transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, -webkit-border-radius .2s ease-in-out;
-	transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, -webkit-border-radius .2s ease-in-out;
-	-moz-transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, border-radius .2s ease-in-out, -moz-border-radius .2s ease-in-out;
-	-o-transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, border-radius .2s ease-in-out;
-	transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, border-radius .2s ease-in-out;
-	transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, border-radius .2s ease-in-out, -webkit-border-radius .2s ease-in-out, -moz-border-radius .2s ease-in-out;
-	bottom: 2px;
-	/* there must be 'bottom' for ps__scrollbar-x */
-	height: 6px;
-}
-
-.ps>.ps__scrollbar-x-rail:hover>.ps__scrollbar-x, .ps>.ps__scrollbar-x-rail:active>.ps__scrollbar-x {
-	height: 11px;
-}
-
-.ps>.ps__scrollbar-y-rail {
-	display: none;
-	position: absolute;
-	/* please don't change 'position' */
-	opacity: 0;
-	-webkit-transition: background-color .2s linear, opacity .2s linear;
-	-moz-transition: background-color .2s linear, opacity .2s linear;
-	-o-transition: background-color .2s linear, opacity .2s linear;
-	transition: background-color .2s linear, opacity .2s linear;
-	right: 0;
-	/* there must be 'right' for ps__scrollbar-y-rail */
-	width: 15px;
-}
-
-.ps>.ps__scrollbar-y-rail>.ps__scrollbar-y {
-	position: absolute;
-	/* please don't change 'position' */
-	background-color: #aaa;
-	-webkit-border-radius: 6px;
-	-moz-border-radius: 6px;
-	border-radius: 6px;
-	-webkit-transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, -webkit-border-radius .2s ease-in-out;
-	transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, -webkit-border-radius .2s ease-in-out;
-	-moz-transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, border-radius .2s ease-in-out, -moz-border-radius .2s ease-in-out;
-	-o-transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, border-radius .2s ease-in-out;
-	transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, border-radius .2s ease-in-out;
-	transition: background-color .2s linear, height .2s linear, width .2s ease-in-out, border-radius .2s ease-in-out, -webkit-border-radius .2s ease-in-out, -moz-border-radius .2s ease-in-out;
-	right: 2px;
-	/* there must be 'right' for ps__scrollbar-y */
-	width: 6px;
-}
-
-.ps>.ps__scrollbar-y-rail:hover>.ps__scrollbar-y, .ps>.ps__scrollbar-y-rail:active>.ps__scrollbar-y {
-	width: 11px;
-}
-
-.ps:hover.ps--in-scrolling.ps--x>.ps__scrollbar-x-rail {
-	background-color: #eee;
-	opacity: 0.9;
-}
-
-.ps:hover.ps--in-scrolling.ps--x>.ps__scrollbar-x-rail>.ps__scrollbar-x {
-	background-color: #999;
-	height: 11px;
-}
-
-.ps:hover.ps--in-scrolling.ps--y>.ps__scrollbar-y-rail {
-	background-color: #eee;
-	opacity: 0.9;
-}
-
-.ps:hover.ps--in-scrolling.ps--y>.ps__scrollbar-y-rail>.ps__scrollbar-y {
-	background-color: #999;
-	width: 11px;
-}
-
-.ps:hover>.ps__scrollbar-x-rail, .ps:hover>.ps__scrollbar-y-rail {
-	opacity: 0.6;
-}
-
-.ps:hover>.ps__scrollbar-x-rail:hover {
-	background-color: #eee;
-	opacity: 0.9;
-}
-
-.ps:hover>.ps__scrollbar-x-rail:hover>.ps__scrollbar-x {
-	background-color: #999;
-}
-
-.ps:hover>.ps__scrollbar-y-rail:hover {
-	background-color: #eee;
-	opacity: 0.9;
-}
-
-.ps:hover>.ps__scrollbar-y-rail:hover>.ps__scrollbar-y {
-	background-color: #999;
-}
