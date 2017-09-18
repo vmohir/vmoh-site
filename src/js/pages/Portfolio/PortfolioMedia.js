@@ -22,7 +22,7 @@ export default class PortfolioMedia extends React.Component {
 		return (
 			<li class={"vertical-slider-item portfolio-media-item "+mainListItem_noImgClass}>
 				{imgComp}
-				<a href={link}></a>
+				<a className="portfolio-media-view-link" href={link} target="_blank">View link</a>
 				<div className="portfolio-media-content">
 					<h1>{title}</h1>
 					<p>{desc}</p>

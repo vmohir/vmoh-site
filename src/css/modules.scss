@@ -198,11 +198,12 @@ $margin_percent: ($width_percent - 100%) / -2;
 	overflow: visible;
 	.progress-bar {
 		border-radius: 100px;
-		background: url(../images/whitenoise-80x20.png);
+		background: url(../images/whitenoise-80x20.jpg);
 		/* background: url(http://api.thumbr.it/whitenoise-40x20.png?background=ff1100ff&noise=ffffff&density=62&opacity=50); */
 		box-shadow: inset -62px 0 30px -50px rgba(255, 255, 255, .8), inset -90px 0 80px -50px rgba(255, 255, 255, 0.7), inset 80px 0 80px -50px rgba(0, 0, 0, 0.3), inset 2px 8px 7px -5px rgba(0, 0, 0, 0.1), inset 2px -8px 7px -5px rgba(0, 0, 0, 0.1), 0 1px #dc766f, 3px 2px 9px -4px rgba(101, 0, 0, 1), 0 7px 9px -8px rgba(101, 0, 0, 1), 0 0px 30px 0px rgba(228, 78, 78, 0.3);
 		border-right: 2px solid #fff;
 		padding: 0 8px;
+		min-width: 35px;
 		span {
 			color: #fff;
 			margin-top: 1px;

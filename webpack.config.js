@@ -20,13 +20,21 @@ module.exports = {
 		},
 		{
 			test: /\.scss$/,
-			use: debug ? [{
-				loader: "style-loader" // creates style nodes from JS strings
-			}, {
-				loader: "css-loader" // translates CSS into CommonJS
-			}, {
-				loader: "sass-loader" // compiles Sass to CSS
-			}] : ExtractTextPlugin.extract({
+			use: debug ? [
+				{
+					loader: "style-loader" // creates style nodes from JS strings
+				},
+				{
+					loader: "css-loader" // translates CSS into CommonJS
+				},
+				{
+					loader: 'postcss-loader'
+				},
+				{
+					loader: "sass-loader" // compiles Sass to CSS
+				},
+			] :
+			ExtractTextPlugin.extract({
 				fallback: "style-loader",
 				use: [
 				{
@@ -34,6 +42,9 @@ module.exports = {
 					options: {
 						minimize: true,
 					},
+				},
+				{
+					loader: 'postcss-loader'
 				},
 				{
 					loader: "sass-loader",
@@ -63,9 +74,9 @@ module.exports = {
 		filename: "client.min.js"
 	},
 	plugins: debug ? [] : [
-	new ExtractTextPlugin('style.min.css'),
-	new webpack.optimize.OccurrenceOrderPlugin(),
-	new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
+		new ExtractTextPlugin('style.min.css'),
+		new webpack.optimize.OccurrenceOrderPlugin(),
+		new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
 	],
 	externals: {
 		"jquery": "jQuery",

@@ -119,19 +119,27 @@ body {
 
 
 /* items in portfolio section */
+
 .portfolio-media-item {
-	$item: &;
 	background: #fff;
 	border-radius: 0 0 3px 3px;
 	padding: 30px;
 	border-top: 2px solid #aaa;
+	&:hover {
+		img {
+			animation: my-animation 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0s infinite alternate;
+		}
+		.portfolio-media-view-link {
+	    	transform: scale(1);
+	    	opacity: 1;
+	    }
+	}
 	&.portfolio-media-no-img {
 		.portfolio-media-content {
 			margin-top: 30px;
 		}
 	}
 	.portfolio-media-image-container {
-		$image_container: &;
 		width: 80%;
 		height: 160px;
 		position: absolute;
@@ -143,10 +151,21 @@ body {
 		overflow: hidden;
 		img {
 			width: 100%;
-			@at-root #{$item}:hover img {
-				animation: my-animation 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0s infinite alternate;
-			}
 		}
+	}
+	.portfolio-media-view-link {
+		position: absolute;
+    	z-index: 10;
+	    left: 25%;
+	    width: 50%;
+	    bottom: -15px;
+	    padding: 5px 28px;
+	    background: #337ab7;
+	    color: #fff;
+	    box-shadow: 0 5px 20px -5px rgba(0, 0, 0, 0.2), 0 -7px 0 -5px rgba(34, 102, 161, 0.5), 0 -10px 8px -5px rgba(0, 0, 0, 0.08);
+	    opacity: 0;
+	    transform: scale(0.9);
+	    transition: all .3s;
 	}
 	.portfolio-media-content {
 		border-left: 2px dashed #ddd;
@@ -188,21 +207,38 @@ body {
 	tbody {
 		border-bottom: 25px solid transparent;
 	}
+	.skill-group-title {
+		font-size: 20px;
+		padding-bottom: 10px;
+		color: #444;
+	}
+	.skillbar-container {
+		td:first-child {
+			width: 1px;
+			white-space: nowrap;
+			padding-right: 10px;
+			text-align: left;
+			font-weight: bold;
+		}
+	}
 }
 
-.skill-group-title {
-	font-size: 20px;
-	padding-bottom: 10px;
-	color: #444;
+#profile {
+	.profile-full-bio {
+		font-size: 15px;
+	}
 }
 
-.skillbar-container {
-	td:first-child {
-		width: 1px;
-		white-space: nowrap;
-		padding-right: 10px;
-		text-align: left;
-		font-weight: bold;
+// Social links in profile section
+
+#social-links-list {
+	list-style: none;
+	li {
+		display: inline-block;
+		margin: 3px 3px 3px 0;
+		padding: 5px;
+		text-transform: capitalize;
+		font-size: 15px;
 	}
 }
 

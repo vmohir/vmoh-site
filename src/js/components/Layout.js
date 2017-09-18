@@ -24,11 +24,11 @@ export default class Layout extends React.Component {
 		};
 
 		// attributes
-		const { fullname, bio } = this.state;
+		const { fullname, fullbio } = this.state;
 
 		this.state.sections = {
 			Resume: {jsx: (<Resume />)},
-			Profile: {jsx: (<Profile fullname={fullname} bio={bio} />)},
+			Profile: {jsx: (<Profile fullname={fullname} />)},
 			Portfolio: {jsx: (<Portfolio />)},
 		};
 

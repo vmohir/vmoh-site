@@ -14,12 +14,20 @@ export default class Resume extends React.Component {
 					title: "Frontend web designer",
 					skills: [
 						{name: "HTML5 - CSS3", percent: 100},
-						{name: "Sass", percent: 100},
-						{name: "SMACSS", percent: 100},
-						{name: "Bootstrap", percent: 100},
+						{name: "Sass/PostCSS/SMACSS etc", percent: 100},
+						{name: "Bootstrap/Semantic etc", percent: 100},
 						{name: "JS/ES6", percent: 70},
 						{name: "jQuery", percent: 60},
-						{name: "React", percent: 20},
+						{name: "React", percent: 50},
+					],
+				},
+				{
+					title: "Designing skills",
+					skills: [
+						{name: "Photoshop", percent: 100},
+						{name: "Illustrator", percent: 20},
+						{name: "After effects", percent: 10},
+						{name: "UI/UX", percent: 80},
 					],
 				},
 				{
@@ -35,9 +43,9 @@ export default class Resume extends React.Component {
 					title: "PHP developing",
 					skills: [
 						{name: "PHP", percent: 60},
-						{name: "PHPUnit", percent: 20},
+						{name: "Laravel", percent: 10},
+						{name: "PHPUnit", percent: 10},
 						{name: "Composer", percent: 15},
-						{name: "MySQL", percent: 40},
 						{name: "Telegram API", percent: 90},
 					],
 				},
@@ -55,18 +63,28 @@ export default class Resume extends React.Component {
 					],
 				},
 				{
+					title: "Databases"
+					skills: [
+						{name: "MySQL", percent: 40},
+					],
+				},
+				{
 					title: "Other skills",
 					skills: [
-						{name: "Photoshop", percent: 100},
-						{name: "Illustrator", percent: 20},
-						{name: "UI/UX", percent: 80},
 						{name: "SEO", percent: 70},
 						{name: "Git", percent: 40},
 					],
 				},
+				{
+					title: "English",
+					skills: [
+						{name: "Writing/Listening", percent: 90},
+						{name: "Speaking", percent: 70},
+					],
+				},
 			],
 			education: [
-				{institue: "University of Tehran", field: "Software Engineering", desc: "I'm student"}
+				{institue: "University of Tehran", field: "Software Engineering", desc: "I've been studying computer engineering at University of Tehran since Sep 2015."}
 			],
 			jobs: [
 				{title: "Web designer and webmaster", compony: "etuts.ir", desc: "technology tutorials", url: "http://etuts.ir"}

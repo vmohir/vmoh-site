@@ -4,6 +4,7 @@ import etuts_img from "../../images/portfolio/etuts.jpg";
 import pstuts_img from "../../images/portfolio/pstuts.jpg";
 import opencharity_img from "../../images/portfolio/opencharity.jpg";
 import etuts_bot_img from "../../images/portfolio/etutsbot.jpg";
+import graph_web from "../../images/portfolio/graphWeb.jpg";
 
 // main layout (the app)
 
@@ -14,9 +15,10 @@ export default class Portfolio extends React.Component {
 			gallery: [
 				{img: etuts_img, title: "Etuts Wordpress Theme", desc: "A Wordpress/WooCommerce/bbpress theme", technologies: ["PHP","Wordpress","WooCommerce","bbpress","jQuery Ajax","CSS3","MyCred API","Responsive"], link: "http://etuts.ir"},
 				{img: pstuts_img, title: "Pstuts Wordpress Theme", desc: "A Wordpress blog theme", technologies: ["PHP","Wordpress","CSS3","Responsive"], link: "http://demo.vmoh.ir/pstuts"},
-				{img: opencharity_img, title: "Open Charity Drupal Theme", desc: "A Drupal Theme for OpenCharity website", technologies: ["PHP","Drupal","CSS3","Sass","Javascript","Responsive"], link: "http://vmoh.ir/drupal/drupal-open-charity-design/"},
+				{img: opencharity_img, title: "Open Charity Drupal Theme", desc: "A Drupal Theme for OpenCharity website", technologies: ["PHP","Drupal","CSS3","Sass","JS","Responsive"], link: "http://vmoh.ir/drupal/drupal-open-charity-design/"},
 				{img: etuts_bot_img, title: "Etuts Telegram Bot", desc: "A Telegram bot for etuts.ir", technologies: ["PHP","Composer","Telegram API","Guzzle HTTP"], link: "https://github.com/gvmohzibat/etuts-telegram-bot"},
-				{img: null, title: "TAP30 Contest", desc: "A Constest held by TAP30 Company in University of Tehran. My job was to design the frontend of the website", technologies: ["Javascript","jQuery","CSS3"], link: "https://github.com/UT-CE-ACM/tap30-contest"},
+				{img: null, title: "TAP30 Contest", desc: "A Constest held by TAP30 Company in University of Tehran. My job was to design the frontend of the website", technologies: ["HTML5","JS","jQuery","CSS3"], link: "https://github.com/UT-CE-ACM/tap30-contest"},
+				{img: graph_web, title: "Graph web", desc: "A project from Mohaymen Company to test my frontend designing skills.", technologies: ["ES6","ReactJS","CSS3","SVG","HTML5","Webpack"], link: "https://github.com/gvmohzibat/graph-web"},
 			]
 		}
 	}

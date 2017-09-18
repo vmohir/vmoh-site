@@ -15,12 +15,18 @@ export default class Middle_image extends React.Component {
 	render() {
 		const { fullname, bio, className } = this.props;
 		return (
-			<div id="middle-img-comp" class={"center-block "+className} onMouseOver={this.handleHoverMiddleImgContainer}>
+			<div id="middle-img-comp" class={"center-block "+className} onMouseOver={this.handleHoverMiddleImgContainer} ref={_self => {this.MiddleImg = _self}}>
 				<img id="main-avatar" src={avatar_img} alt={fullname} class="center-block img-responsive img-circle" />
 				<h1>{fullname}</h1>
 				<p>{bio}</p>
 			</div>
 		);
+	}
+
+	componentDidMount() {
+		setTimeout(() => {
+			this.fireHoverMiddleImgContainer();
+		}, 1200);
 	}
 
 	handleHoverMiddleImgContainer = (e) => {
@@ -41,5 +47,12 @@ export default class Middle_image extends React.Component {
 				this.setState({ allowHoverMiddleImgContainer: false }); // this should be last line
 			}
 		});
+	}
+
+	// Hover simulate
+	fireHoverMiddleImgContainer = () => {
+		var evObj = document.createEvent( 'Events' );
+        evObj.initEvent( 'mouseover', true, false );
+        this.MiddleImg.dispatchEvent( evObj );
 	}
 }
