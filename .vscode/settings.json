@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": false,
+  "prettier.printWidth": 9999,
+  "editor.tabSize": 2,
+  "prettier.singleQuote": true,
+  "prettier.semi": false,
+  "prettier.trailingComma": "es5",
+  "files.eol": "\n"
+}
