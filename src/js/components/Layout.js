@@ -9,7 +9,7 @@ import $ from 'jquery'
 import delay from '../functions'
 import update from 'react-addons-update'
 import CloseButton from './CloseButton'
-import { pdfMake } from 'pdfmake'
+// import { pdfMake } from 'pdfmake'
 
 // main layout (the app)
 

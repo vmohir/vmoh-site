@@ -16,7 +16,6 @@
     "babel-preset-stage-0": "^6.24.1",
     "css-loader": "^0.28.4",
     "jquery": "^3.2.1",
-    "pdfmake": "^0.1.33",
     "perfect-scrollbar": "^0.7.1",
     "react": "^15.6.1",
     "react-addons-update": "^15.6.0",
