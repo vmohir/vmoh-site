@@ -9,7 +9,7 @@ import $ from 'jquery'
 import delay from '../functions'
 import update from 'react-addons-update'
 import CloseButton from './CloseButton'
-import { pdfMake } from 'pdfmake'
+// import { pdfMake } from 'pdfmake'
 
 // main layout (the app)
 
@@ -56,7 +56,7 @@ export default class Layout extends React.Component {
               </div>
             </div>
           </div>
-          <button onClick={this.handleClickDownloadPDF()}>download pdf</button>
+          {/* <button onClick={this.handleClickDownloadPDF()}>download pdf</button> */}
         </section>
       </div>
     )
@@ -158,10 +158,10 @@ export default class Layout extends React.Component {
       })
     })
   }
-  handleClickDownloadPDF = e => {
-    const docDefinition = {
-      content: ['this is a text'],
-    }
-    pdfMake.createPdf(docDefinition).download()
-  }
+  // handleClickDownloadPDF = e => {
+  //   const docDefinition = {
+  //     content: ['this is a text'],
+  //   }
+  //   pdfMake.createPdf(docDefinition).download()
+  // }
 }

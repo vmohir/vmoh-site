@@ -17,9 +17,9 @@ export default class Resume extends React.Component {
 						{ name: 'Sass/PostCSS/SMACSS etc', percent: 100 },
 						{ name: 'Bootstrap/Semantic etc', percent: 100 },
 						{ name: 'JS/ES6', percent: 100 },
-						{ name: 'jQuery', percent: 60 },
 						{ name: 'React Redux', percent: 100 },
 						{ name: 'Angular & AngularJS', percent: 100 },
+						{ name: 'jQuery', percent: 60 },
 					],
 				},
 				{

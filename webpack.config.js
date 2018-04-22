@@ -8,7 +8,7 @@ module.exports = {
 	devtool: debug ? "inline-sourcemap" : false,
 	entry: "./js/client.js",
 	module: {
-		loaders: [
+		rules: [
 		{
 			test: /\.js?$/,
 			exclude: /(node_modules|bower_components)/,
@@ -75,8 +75,7 @@ module.exports = {
 	},
 	plugins: debug ? [] : [
 		new ExtractTextPlugin('style.min.css'),
-		new webpack.optimize.OccurrenceOrderPlugin(),
-		new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
+		new webpack.optimize.OccurrenceOrderPlugin()
 	],
 	externals: {
 		"jquery": "jQuery",
