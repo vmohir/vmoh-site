@@ -61,14 +61,14 @@ export default class Portfolio extends React.Component {
         },
         {
           img: smarty_push,
-          title: 'Smart Push Publishers Dashboard',
+          title: 'Smarty Push Publishers Dashboard',
           desc: 'Dashboard of publishers at smarty push.',
           technologies: ['Angular', 'Typescript', 'CSS3', 'Sass', 'HTML5', 'Material', 'Bootstrap'],
           link: '#',
         },
         {
           img: smarty_push_admin,
-          title: 'Smart Push Admin Dashboard',
+          title: 'Smarty Push Admin Dashboard',
           desc: 'Dashboard of admins at smarty push.',
           technologies: ['Angular', 'Typescript', 'CSS3', 'Sass', 'HTML5', 'Material', 'Bootstrap'],
           link: '#',
