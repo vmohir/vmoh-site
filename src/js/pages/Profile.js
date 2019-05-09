@@ -7,7 +7,7 @@ export default class Profile extends React.Component {
 	constructor() {
 		super();
 		this.state = {
-			fullbio: "Self starter, highly motivated and expert back-end and front-end developer",
+			fullbio: "Self starter, highly motivated and expert front-end developer",
 		};
 	}
 	render() {
