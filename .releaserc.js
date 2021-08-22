@@ -37,8 +37,7 @@ module.exports = {
     [
       '@semantic-release/exec',
       {
-        prepareCmd:
-          'npx husky install; mkdir -p sentry-artifacts; echo ${nextRelease.version} > sentry-artifacts/release-next-version.log',
+        prepareCmd: 'npx husky install',
       },
     ],
     '@semantic-release/changelog',
