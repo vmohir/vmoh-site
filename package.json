@@ -30,8 +30,7 @@
     "prepare": "husky install",
     "postinstall": "ngcc --tsconfig 'tsconfig.json'",
     "prettier:check": "prettier --config .prettierrc.json --check \"projects/**/*.{ts,tsx,scss,json,html}\"",
-    "prettier:write": "prettier --config .prettierrc.json --write \"projects/**/*.{ts,tsx,scss,json,html}\"",
-    "netlify-staging": "netlify deploy --site=$SITE --auth=$AUTH --dir=$DIST"
+    "prettier:write": "prettier --config .prettierrc.json --write \"projects/**/*.{ts,tsx,scss,json,html}\""
   },
   "author": "Vahid",
   "license": "ISC",
