@@ -7,7 +7,8 @@ module.exports = {
   context: path.join(__dirname, 'src'),
   devtool: debug ? 'inline-sourcemap' : false,
   entry: './js/client.js',
-  watch: true,
+  watch: debug,
+  mode: process.env.NODE_ENV || 'development',
   module: {
     rules: [
       {

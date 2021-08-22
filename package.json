@@ -24,13 +24,14 @@
     "style-loader": "^0.18.2"
   },
   "scripts": {
-    "dev": "webpack serve",
+    "dev": "NODE_ENV=develop webpack",
     "build": "NODE_ENV=production webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
     "postinstall": "ngcc --tsconfig 'tsconfig.json'",
     "prettier:check": "prettier --config .prettierrc.json --check \"projects/**/*.{ts,tsx,scss,json,html}\"",
-    "prettier:write": "prettier --config .prettierrc.json --write \"projects/**/*.{ts,tsx,scss,json,html}\""
+    "prettier:write": "prettier --config .prettierrc.json --write \"projects/**/*.{ts,tsx,scss,json,html}\"",
+    "netlify-deploy": "netlify deploy --site=$SITE --auth=$AUTH --dir=$DIST"
   },
   "author": "Vahid",
   "license": "ISC",
