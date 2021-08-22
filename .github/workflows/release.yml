@@ -21,10 +21,7 @@ jobs:
       - name: Build
         run: npm run build
       - name: Deploy
-        run: SITE=NETLIFY_SITE_ID AUTH=NETLIFY_AUTH DIST="output" npm run netlify-deploy -- --prod
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH: ${{ secrets.NETLIFY_AUTH }}
+        run: SITE=${{ secrets.NETLIFY_SITE_ID }} AUTH=${{ secrets.NETLIFY_AUTH }} DIST="output" npm run netlify-deploy -- --prod
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
