@@ -1,0 +1,4 @@
+{
+  "projects/**/*.{ts,js,html,jsx,tsx,scss,json,css,md}": ["prettier --write"],
+  "projects/**/*.{ts,js,html}": ["eslint --fix"]
+}

@@ -24,21 +24,41 @@
     "style-loader": "^0.18.2"
   },
   "scripts": {
-    "dev": "webpack-dev-server --content-base output --inline --hot",
+    "dev": "webpack serve",
     "build": "NODE_ENV=production webpack",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install",
+    "lint": "eslint 'projects/**/*.{ts,js,html}'",
+    "postinstall": "ngcc --tsconfig 'tsconfig.json'",
+    "prettier:check": "prettier --config .prettierrc.json --check \"projects/**/*.{ts,tsx,scss,json,html}\"",
+    "prettier:write": "prettier --config .prettierrc.json --write \"projects/**/*.{ts,tsx,scss,json,html}\"",
+    "netlify-staging": "netlify deploy --site=$SITE --auth=$AUTH --dir=$DIST"
   },
   "author": "Vahid",
   "license": "ISC",
   "devDependencies": {
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
+    "@commitlint/prompt": "^13.1.0",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/exec": "^5.0.0",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/gitlab": "^6.2.2",
+    "@tapsellorg/stylelint-config": "^1.0.3",
+    "@webpack-cli/serve": "^1.5.2",
     "autoprefixer": "^7.1.2",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^1.1.11",
+    "husky": "^7.0.1",
+    "lint-staged": "^11.1.2",
     "node-sass": "^4.5.3",
     "postcss-loader": "^2.0.6",
+    "prettier": "^2.3.2",
     "sass-loader": "^6.0.6",
+    "semantic-release": "^17.4.5",
+    "stylelint": "^13.13.1",
     "webpack": "^4.20.2",
-    "webpack-cli": "^3.1.1",
-    "webpack-dev-server": "^2.8.2"
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.0.0"
   }
 }
