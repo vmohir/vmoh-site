@@ -1,6 +1,6 @@
 {
   "name": "vmoh-site-project",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Personal site for Vahid Mohammadi",
   "main": "webpack.config.js",
   "dependencies": {
