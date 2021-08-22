@@ -28,7 +28,6 @@
     "build": "NODE_ENV=production webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
-    "lint": "eslint 'projects/**/*.{ts,js,html}'",
     "postinstall": "ngcc --tsconfig 'tsconfig.json'",
     "prettier:check": "prettier --config .prettierrc.json --check \"projects/**/*.{ts,tsx,scss,json,html}\"",
     "prettier:write": "prettier --config .prettierrc.json --write \"projects/**/*.{ts,tsx,scss,json,html}\"",
