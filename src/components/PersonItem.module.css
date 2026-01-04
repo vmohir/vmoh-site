@@ -13,3 +13,7 @@
 .personItem button {
   padding: 0.25rem 0.5rem;
 }
+
+.personNameInput {
+  border-bottom: 1px dashed #ccc;
+}

@@ -1,7 +1,7 @@
-import PeopleSection from './PeopleSection';
-import ItemsSection from './ItemsSection';
-import TaxTipSection from './TaxTipSection';
-import ResultsSection from './ResultsSection';
+import PeopleSection from "./PeopleSection";
+import ItemsSection from "./ItemsSection";
+import TaxTipSection from "./TaxTipSection";
+import ResultsSection from "./ResultsSection";
 
 export default function SplitBillApp() {
   return (

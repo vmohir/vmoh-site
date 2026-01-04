@@ -7,7 +7,6 @@ import ResultsSection from './ResultsSection';
 
 <div class="split-bill-container">
   <section class="people-section">
-    <h2>People</h2>
     <PeopleSection client:load />
   </section>
 
@@ -28,6 +27,7 @@ import ResultsSection from './ResultsSection';
 </div>
 
 <style>
+  @reference "../styles/global.css";
   .split-bill-container {
     display: flex;
     flex-direction: column;
@@ -38,13 +38,6 @@ import ResultsSection from './ResultsSection';
   }
 
   section {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 1.5rem;
+    @apply flex flex-col gap-4;
   }
 </style>
