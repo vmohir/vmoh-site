@@ -95,3 +95,61 @@
     font-size: var(--text-lg);
   }
 }
+
+@layer components {
+  /* Buttons */
+  .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    border: 1px solid var(--border-primary);
+    background: var(--surface-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn:hover {
+    color: var(--text-primary);
+    background: var(--interactive-hover-bg);
+  }
+
+  .btn-ghost {
+    border: none;
+    background: transparent;
+    &:hover {
+      background: var(--interactive-hover-bg);
+    }
+  }
+
+  .btn-danger {
+    color: var(--text-muted);
+    &:hover {
+      color: var(--status-error);
+      background: transparent;
+    }
+  }
+
+  /* Inputs */
+  .input {
+    padding: 0.5rem;
+    background: var(--surface-bg);
+    border: 1px solid var(--border-primary);
+    color: var(--text-primary);
+    border-radius: 0.25rem;
+    &:focus-visible {
+      outline: none;
+      border-color: var(--text-primary);
+    }
+  }
+
+  /* Select */
+  .select {
+    padding: 0.5rem;
+    background: var(--surface-bg);
+    border: 1px solid var(--border-primary);
+    color: var(--text-primary);
+    border-radius: 0.25rem;
+  }
+}

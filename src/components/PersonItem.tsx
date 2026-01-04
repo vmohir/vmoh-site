@@ -68,7 +68,7 @@ export default function PersonItem({ person, onRemove }: PersonItemProps) {
 
       <button
         onClick={() => onRemove(person.id)}
-        class="ml-auto px-2 py-1 text-sm text-muted hover:text-error transition-colors"
+        class="btn btn-danger ml-auto"
       >
         Remove
       </button>

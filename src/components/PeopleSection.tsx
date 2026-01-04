@@ -12,10 +12,7 @@ export default function PeopleSection() {
       {/* Title row with add button */}
       <div class="flex items-center justify-between gap-3">
         <h2>People</h2>
-        <button
-          onClick={handleAddRandom}
-          class="px-3 py-1.5 text-sm font-medium text-secondary hover:text-foreground border border-border rounded-md hover:bg-interactive-hover transition-colors"
-        >
+        <button onClick={handleAddRandom} class="btn">
           Add
         </button>
       </div>
