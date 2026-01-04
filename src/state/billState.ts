@@ -24,6 +24,7 @@ export const baseCurrency = signal<Currency>("USD");
 export const settlementAlgorithm = signal<SettlementAlgorithm>(
   "minimize-transactions",
 );
+export const hasMultipleCurrencies = signal<boolean>(false);
 
 // Computed signal for calculated totals
 export const calculatedTotals = computed<PersonTotal[]>(() => {

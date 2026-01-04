@@ -1,13 +1,19 @@
-import type { Item, Person, Currency } from "splitApp/split.types.ts";
+import type { Item, Person } from "splitApp/split.types.ts";
 import {
   toggleItemAssignment,
   setItemPayer,
   updateItemCurrency,
   updateItemName,
   updateItemPrice,
+  hasMultipleCurrencies,
 } from "state/billState.ts";
 import EditableText from "ui/EditableText";
 import styles from "./ItemCard.module.css";
+import {
+  type Currency,
+  formatCurrency,
+  getCurrencySymbol,
+} from "../utils/currency.utils.ts";
 
 interface ItemCardProps {
   item: Item;
@@ -26,16 +32,6 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
 
   const totalPaid = getTotalPaid();
   const isBalanced = Math.abs(totalPaid - item.price) < 0.01;
-
-  // Currency formatter
-  const formatCurrency = (amount: number, currency: Currency): string => {
-    return new Intl.NumberFormat(undefined, {
-      style: "currency",
-      currency: currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  };
 
   // Name edit handler
   const handleSaveName = (newName: string) => {
@@ -57,10 +53,15 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
   return (
     <div class={styles.itemCard}>
       <div class={styles.itemHeader}>
-        <div class={styles.itemInfo}>
-          <EditableText value={item.name} onSave={handleSaveName} />
+        <div class="flex flex-1 gap-2">
+          <EditableText
+            className="flex-1"
+            value={item.name}
+            onSave={handleSaveName}
+          />
 
-          <div class={styles.priceRow}>
+          <div class="flex gap-0.5 items-center">
+            {getCurrencySymbol(item.currency)}
             <EditableText
               value={item.price.toString()}
               onSave={handleSavePrice}
@@ -69,24 +70,25 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
               validate={validatePrice}
               autoFocus={false}
             />
-            {formatCurrency(item.price, item.currency)}
-            <select
-              class={styles.currencySelector}
-              value={item.currency}
-              onChange={(e) =>
-                updateItemCurrency(
-                  item.id,
-                  (e.target as HTMLSelectElement).value as Currency,
-                )
-              }
-            >
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="GBP">GBP</option>
-              <option value="JPY">JPY</option>
-              <option value="CAD">CAD</option>
-              <option value="AUD">AUD</option>
-            </select>
+            {hasMultipleCurrencies.value && (
+              <select
+                class={styles.currencySelector}
+                value={item.currency}
+                onChange={(e) =>
+                  updateItemCurrency(
+                    item.id,
+                    (e.target as HTMLSelectElement).value as Currency,
+                  )
+                }
+              >
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="JPY">JPY</option>
+                <option value="CAD">CAD</option>
+                <option value="AUD">AUD</option>
+              </select>
+            )}
           </div>
         </div>
         <button onClick={() => onRemove(item.id)} class="btn btn-sm btn-danger">

@@ -8,6 +8,7 @@ interface EditableTextProps {
   inputMode?: string;
   autoFocus?: boolean;
   validate?: (value: string) => boolean;
+  className?: string;
 }
 
 export default function EditableText({
@@ -17,6 +18,7 @@ export default function EditableText({
   inputMode,
   autoFocus = true,
   validate,
+  className,
 }: EditableTextProps) {
   const [editValue, setEditValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -68,7 +70,7 @@ export default function EditableText({
       onInput={(e) => setEditValue((e.target as HTMLInputElement).value)}
       onBlur={handleSave}
       onKeyDown={handleKeyPress}
-      class={styles.editableText}
+      class={`${className} ${styles.editableText}`}
     />
   );
 }

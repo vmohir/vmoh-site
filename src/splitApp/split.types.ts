@@ -1,4 +1,4 @@
-export type Currency = "USD" | "EUR" | "GBP" | "JPY" | "CAD" | "AUD";
+import type { Currency } from "../utils/currency.utils.ts";
 
 export interface Person {
   id: string;

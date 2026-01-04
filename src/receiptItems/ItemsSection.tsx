@@ -1,13 +1,25 @@
 import { useState } from "preact/hooks";
-import { items, people, addItem, removeItem } from "../state/billState.ts";
-import type { Currency } from "../SplitApp/split.types.ts";
+import {
+  items,
+  people,
+  addItem,
+  removeItem,
+  hasMultipleCurrencies,
+} from "../state/billState.ts";
 import ItemCard from "./ItemCard.tsx";
 import styles from "./ItemsSection.module.css";
+import {
+  type Currency,
+  getCurrencyFromLocale,
+} from "../utils/currency.utils.ts";
 
 export default function ItemsSection() {
   const [nameInput, setNameInput] = useState("");
   const [priceInput, setPriceInput] = useState("");
-  const [currencyInput, setCurrencyInput] = useState<Currency>("USD");
+
+  const [currencyInput, setCurrencyInput] = useState<Currency>(
+    getCurrencyFromLocale(),
+  );
 
   const handleAdd = () => {
     const price = parseFloat(priceInput);
@@ -15,7 +27,6 @@ export default function ItemsSection() {
       addItem(nameInput, price, currencyInput);
       setNameInput("");
       setPriceInput("");
-      setCurrencyInput("USD");
     }
   };
 
@@ -44,19 +55,23 @@ export default function ItemsSection() {
           step="0.01"
           min="0"
         />
-        <select
-          value={currencyInput}
-          onChange={(e) =>
-            setCurrencyInput((e.target as HTMLSelectElement).value as Currency)
-          }
-        >
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="JPY">JPY</option>
-          <option value="CAD">CAD</option>
-          <option value="AUD">AUD</option>
-        </select>
+        {hasMultipleCurrencies.value && (
+          <select
+            value={currencyInput}
+            onChange={(e) =>
+              setCurrencyInput(
+                (e.target as HTMLSelectElement).value as Currency,
+              )
+            }
+          >
+            <option value="EUR">EUR</option>
+            <option value="USD">USD</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+            <option value="CAD">CAD</option>
+            <option value="AUD">AUD</option>
+          </select>
+        )}
         <button onClick={handleAdd}>Add Item</button>
       </div>
 
