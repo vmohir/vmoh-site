@@ -47,6 +47,14 @@ export function addPerson(name: string): void {
   people.value = [...people.value, newPerson];
 }
 
+export function updatePersonName(id: string, newName: string): void {
+  if (!newName.trim()) return;
+
+  people.value = people.value.map(p =>
+    p.id === id ? { ...p, name: newName.trim() } : p
+  );
+}
+
 export function removePerson(id: string): void {
   // Remove person from all item assignments and payments
   items.value = items.value.map(item => {
