@@ -1,4 +1,9 @@
-import type { Person, Item, PersonTotal, Currency } from "../types/models";
+import type {
+  Person,
+  Item,
+  PersonTotal,
+  Currency,
+} from "../SplitApp/split.types.ts";
 
 // Currency conversion helper
 function convertCurrency(

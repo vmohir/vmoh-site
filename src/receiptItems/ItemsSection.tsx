@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks";
-import { items, people, addItem, removeItem } from "../state/billState";
-import type { Currency } from "../types/models";
-import ItemCard from "./ItemCard";
+import { items, people, addItem, removeItem } from "../state/billState.ts";
+import type { Currency } from "../SplitApp/split.types.ts";
+import ItemCard from "./ItemCard.tsx";
 import styles from "./ItemsSection.module.css";
 
 export default function ItemsSection() {

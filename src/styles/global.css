@@ -36,6 +36,7 @@
     /* Borders */
     --border-primary: theme(colors.neutral.300);
     --border-subtle: theme(colors.neutral.200);
+    --border-radius: 0.375rem;
 
     /* Status */
     --status-success: theme(colors.green.600);
@@ -48,11 +49,12 @@
     /* Interactive */
     --interactive-hover-bg: theme(colors.neutral.200);
     --interactive-active-bg: theme(colors.neutral.300);
+    --transition-slow: 100ms ease;
   }
 
   [data-theme="dark"] {
     /* Backgrounds */
-    --canvas-bg: theme(colors.neutral.950);
+    --canvas-bg: theme(colors.neutral.800);
     --surface-bg: theme(colors.neutral.900);
     --surface-subtle-bg: theme(colors.neutral.800);
     --surface-muted-bg: theme(colors.neutral.700);

@@ -1,25 +1,24 @@
 import { useState, useRef, useEffect } from "preact/hooks";
-import type { Person } from "types/models";
-import { updatePersonName } from "state/billState";
+import type { Person } from "SplitApp/split.types.ts";
+import { updatePersonName } from "state/billState.ts";
 import styles from "./PersonItem.module.css";
 import { PersonAvatar } from "ui/PersonAvatar.tsx";
 
 interface PersonItemProps {
   person: Person;
-  onRemove: (id: string) => void;
+  onRemove?: (id: string) => void;
 }
 
 export default function PersonItem({ person, onRemove }: PersonItemProps) {
-  const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(person.name);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isEditing && inputRef.current) {
+    if (inputRef.current) {
       inputRef.current.focus();
       inputRef.current.select();
     }
-  }, [isEditing]);
+  }, []);
 
   const handleSave = () => {
     if (editValue.trim() && editValue !== person.name) {
@@ -27,12 +26,10 @@ export default function PersonItem({ person, onRemove }: PersonItemProps) {
     } else {
       setEditValue(person.name);
     }
-    setIsEditing(false);
   };
 
   const handleCancel = () => {
     setEditValue(person.name);
-    setIsEditing(false);
   };
 
   const handleKeyPress = (e: KeyboardEvent) => {
@@ -44,34 +41,26 @@ export default function PersonItem({ person, onRemove }: PersonItemProps) {
   };
 
   return (
-    <div class="flex items-center gap-3">
+    <div class={styles.personItem}>
       <PersonAvatar person={person} />
 
-      {isEditing ? (
-        <input
-          ref={inputRef}
-          type="text"
-          value={editValue}
-          onInput={(e) => setEditValue((e.target as HTMLInputElement).value)}
-          onBlur={handleSave}
-          onKeyDown={handleKeyPress}
-          class={styles.editableNameInput}
-        />
-      ) : (
+      <input
+        ref={inputRef}
+        type="text"
+        value={editValue}
+        onInput={(e) => setEditValue((e.target as HTMLInputElement).value)}
+        onBlur={handleSave}
+        onKeyDown={handleKeyPress}
+        class={styles.editableNameInput}
+      />
+      {onRemove && (
         <button
-          onClick={() => setIsEditing(true)}
-          class={styles.editableNameDisplay}
+          onClick={() => onRemove(person.id)}
+          class="btn btn-danger ml-auto"
         >
-          {person.name}
+          Remove
         </button>
       )}
-
-      <button
-        onClick={() => onRemove(person.id)}
-        class="btn btn-danger ml-auto"
-      >
-        Remove
-      </button>
     </div>
   );
 }

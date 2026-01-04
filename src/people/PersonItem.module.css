@@ -1,3 +1,14 @@
+.personItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  height: var(--person-item-height);
+  border-bottom: 1px solid var(--border-primary);
+  background-color: var(--surface-muted-bg);
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s;
+}
 .editableNameDisplay {
   flex: 1;
   text-align: start;
@@ -9,10 +20,9 @@
   font-size: 1rem;
   cursor: pointer;
   transition: border-color 0.2s;
-}
-
-.editableNameDisplay:hover {
-  border-bottom-color: var(--text-muted);
+  &:hover {
+    border-bottom-color: var(--text-muted);
+  }
 }
 
 .editableNameInput {
@@ -20,12 +30,10 @@
   padding: 0.5rem 0;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--text-primary);
   color: var(--text-primary);
   font-size: 1rem;
   outline: none;
-}
-
-.editableNameInput:focus {
-  border-bottom-color: var(--text-primary);
+  &:focus {
+    border-bottom-color: var(--text-primary);
+  }
 }

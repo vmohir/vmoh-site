@@ -1,9 +1,9 @@
-import type { Item, Person, Currency } from "../types/models";
+import type { Item, Person, Currency } from "../SplitApp/split.types.ts";
 import {
   toggleItemAssignment,
   setItemPayer,
   updateItemCurrency,
-} from "../state/billState";
+} from "../state/billState.ts";
 import styles from "./ItemCard.module.css";
 
 interface ItemCardProps {

@@ -1,5 +1,5 @@
-import PeopleSection from "./PeopleSection";
-import ItemsSection from "./ItemsSection";
+import PeopleSection from "../people/PeopleSection.tsx";
+import ItemsSection from "../receiptItems/ItemsSection.tsx";
 import TaxTipSection from "./TaxTipSection";
 import ResultsSection from "./ResultsSection";
 

@@ -4,7 +4,7 @@ import type {
   SettlementResult,
   SettlementAlgorithm,
   Currency,
-} from "../types/models";
+} from "../SplitApp/split.types.ts";
 
 /**
  * Calculate settlement transfers using the specified algorithm

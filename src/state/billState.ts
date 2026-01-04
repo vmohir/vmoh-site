@@ -7,12 +7,14 @@ import type {
   SettlementAlgorithm,
   ItemPayer,
   SettlementResult,
-} from "../types/models";
+} from "../SplitApp/split.types.ts";
 import { calculatePersonTotals } from "../utils/calculations";
 import { calculateSettlement } from "../utils/settlementAlgorithms";
 
 // Primary state signals
-export const people = signal<Person[]>([]);
+export const people = signal<Person[]>([
+  { name: "You", id: crypto.randomUUID() },
+]);
 export const items = signal<Item[]>([]);
 export const tax = signal<number>(0);
 export const taxIsPercent = signal<boolean>(true);
