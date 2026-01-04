@@ -22,21 +22,18 @@
 }
 
 .inputWithToggle {
-  display: flex;
-  gap: 0.5rem;
-}
+  input {
+    flex: 1;
+    padding: 0.5rem;
+    background: var(--surface-bg);
+    border: 1px solid var(--border-primary);
+    color: var(--text-primary);
+  }
 
-.inputWithToggle input {
-  flex: 1;
-  padding: 0.5rem;
-  background: var(--surface-bg);
-  border: 1px solid var(--border-primary);
-  color: var(--text-primary);
-}
-
-.inputWithToggle select {
-  padding: 0.5rem;
-  background: var(--surface-bg);
-  border: 1px solid var(--border-primary);
-  color: var(--text-primary);
+  select {
+    padding: 0.5rem;
+    background: var(--surface-bg);
+    border: 1px solid var(--border-primary);
+    color: var(--text-primary);
+  }
 }
