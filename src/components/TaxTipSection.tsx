@@ -13,11 +13,12 @@ export default function TaxTipSection() {
     <div class={styles.taxTipSection}>
       <div class={styles.inputRow}>
         <label>
-          <div class={`${styles.inputWithToggle} flex gap-2 items-center`}>
+          <div class={`flex gap-2 items-center`}>
             <span>Tax:</span>
             <input
               type="text"
               inputmode="number"
+              class={`input`}
               value={tax.value}
               onInput={(e) =>
                 updateTax(
@@ -27,6 +28,7 @@ export default function TaxTipSection() {
               }
             />
             <select
+              class={`select`}
               value={taxIsPercent.value ? "percent" : "fixed"}
               onChange={(e) =>
                 updateTax(
@@ -44,11 +46,12 @@ export default function TaxTipSection() {
 
       <div class={styles.inputRow}>
         <label>
-          <div className={`${styles.inputWithToggle} flex gap-2 items-center`}>
+          <div className={`flex gap-2 items-center`}>
             <span>Tip:</span>
             <input
               type="text"
               inputmode="number"
+              class={`input`}
               value={tip.value}
               onInput={(e) =>
                 updateTip(
@@ -58,6 +61,7 @@ export default function TaxTipSection() {
               }
             />
             <select
+              class={`select`}
               value={tipIsPercent.value ? "percent" : "fixed"}
               onChange={(e) =>
                 updateTip(

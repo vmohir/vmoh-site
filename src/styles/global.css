@@ -152,4 +152,19 @@
     color: var(--text-primary);
     border-radius: 0.25rem;
   }
+
+  /*input {*/
+  /*  flex: 1;*/
+  /*  padding: 0.5rem;*/
+  /*  background: var(--surface-bg);*/
+  /*  border: 1px solid var(--border-primary);*/
+  /*  color: var(--text-primary);*/
+  /*}*/
+
+  /*select {*/
+  /*  padding: 0.5rem;*/
+  /*  background: var(--surface-bg);*/
+  /*  border: 1px solid var(--border-primary);*/
+  /*  color: var(--text-primary);*/
+  /*}*/
 }
