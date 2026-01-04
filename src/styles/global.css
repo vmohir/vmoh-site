@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+@theme {
+  --color-canvas: var(--canvas-bg);
+  --color-surface: var(--surface-bg);
+  --color-surface-subtle: var(--surface-subtle-bg);
+  --color-surface-muted: var(--surface-muted-bg);
+  --color-foreground: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-border: var(--border-primary);
+  --color-border-subtle: var(--border-subtle);
+  --color-success: var(--status-success);
+  --color-success-bg: var(--status-success-bg);
+  --color-error: var(--status-error);
+  --color-error-bg: var(--status-error-bg);
+  --color-warning: var(--status-warning);
+  --color-warning-bg: var(--status-warning-bg);
+  --color-interactive-hover: var(--interactive-hover-bg);
+  --color-interactive-active: var(--interactive-active-bg);
+}
+
 @layer base {
   :root {
     /* Backgrounds */

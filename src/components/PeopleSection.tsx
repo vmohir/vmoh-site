@@ -11,10 +11,10 @@ export default function PeopleSection() {
     <div class="flex flex-col gap-4">
       {/* Title row with add button */}
       <div class="flex items-center justify-between gap-3">
-        <h2 class="text-xl font-semibold">People</h2>
+        <h2>People</h2>
         <button
           onClick={handleAddRandom}
-          class="px-3 py-1.5 text-sm font-medium hover:text-neutral-900 dark:hover:text-neutral-100 border border-neutral-300 rounded-md hover:border-neutral-400 transition-colors"
+          class="px-3 py-1.5 text-sm font-medium text-secondary hover:text-foreground border border-border rounded-md hover:bg-interactive-hover transition-colors"
         >
           Add
         </button>
@@ -28,7 +28,7 @@ export default function PeopleSection() {
       </div>
 
       {people.value.length === 0 && (
-        <p class="text-sm text-neutral-500 italic">No people added yet</p>
+        <p class="text-sm text-muted italic">No people added yet</p>
       )}
     </div>
   );
