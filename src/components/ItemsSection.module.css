@@ -11,6 +11,9 @@
 
 .inputGroup input {
   padding: 0.5rem;
+  background: var(--surface-bg);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
 }
 
 .inputGroup input[type="text"] {
@@ -23,10 +26,21 @@
 
 .inputGroup select {
   padding: 0.5rem;
+  background: var(--surface-bg);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
 }
 
 .inputGroup button {
   padding: 0.5rem 1rem;
+  background: var(--surface-subtle-bg);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.inputGroup button:hover {
+  background: var(--interactive-hover-bg);
 }
 
 .itemsList {
@@ -37,6 +51,6 @@
 
 .emptyMessage {
   margin: 0;
-  color: #666;
+  color: var(--text-muted);
   font-style: italic;
 }

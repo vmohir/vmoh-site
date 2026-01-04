@@ -6,6 +6,11 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Split Bill App</title>
+		<script is:inline>
+			// Set theme before page renders to avoid flash
+			const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+			document.documentElement.setAttribute('data-theme', theme);
+		</script>
 	</head>
 	<body>
 		<slot />
@@ -20,19 +25,9 @@
 		width: 100%;
 		min-height: 100vh;
 		font-family: system-ui, -apple-system, sans-serif;
-		background: #fff;
-		color: #171717;
 	}
 
 	* {
 		box-sizing: border-box;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		html,
-		body {
-			background: #0a0a0a;
-			color: #fafafa;
-		}
 	}
 </style>

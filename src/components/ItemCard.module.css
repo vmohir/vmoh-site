@@ -3,7 +3,8 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-primary);
+  background: var(--surface-bg);
 }
 
 .itemHeader {
@@ -20,6 +21,10 @@
   flex: 1;
 }
 
+.itemInfo strong {
+  color: var(--text-primary);
+}
+
 .priceRow {
   display: flex;
   align-items: center;
@@ -27,17 +32,28 @@
 }
 
 .price {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 1rem;
 }
 
 .currencySelector {
   padding: 0.25rem;
   font-size: 0.875rem;
+  background: var(--surface-subtle-bg);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
 }
 
 .itemHeader button {
   padding: 0.25rem 0.5rem;
+  background: var(--surface-subtle-bg);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.itemHeader button:hover {
+  background: var(--interactive-hover-bg);
 }
 
 .itemAssignments {
@@ -45,7 +61,7 @@
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.5rem;
-  background: #f8f9fa;
+  background: var(--surface-subtle-bg);
   border-radius: 4px;
 }
 
@@ -54,13 +70,13 @@
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.5rem;
-  background: #fff3cd;
+  background: var(--status-warning-bg);
   border-radius: 4px;
 }
 
 .label {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -75,6 +91,7 @@
   align-items: center;
   gap: 0.25rem;
   cursor: pointer;
+  color: var(--text-primary);
 }
 
 .payerInputs {
@@ -92,16 +109,20 @@
 .payerRow label {
   flex: 1;
   font-size: 0.875rem;
+  color: var(--text-primary);
 }
 
 .payerRow input {
   width: 100px;
   padding: 0.25rem;
+  background: var(--surface-bg);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
 }
 
 .currencyLabel {
   font-size: 0.75rem;
-  color: #666;
+  color: var(--text-muted);
   width: 40px;
 }
 
@@ -116,13 +137,13 @@
 }
 
 .paymentSummary.balanced {
-  background: #d4edda;
-  color: #155724;
+  background: var(--status-success-bg);
+  color: var(--status-success);
 }
 
 .paymentSummary.unbalanced {
-  background: #f8d7da;
-  color: #721c24;
+  background: var(--status-error-bg);
+  color: var(--status-error);
 }
 
 .paymentSummary .warning {
