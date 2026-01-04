@@ -1,4 +1,4 @@
-export type Currency = 'USD' | 'EUR' | 'GBP' | 'JPY' | 'CAD' | 'AUD';
+export type Currency = "USD" | "EUR" | "GBP" | "JPY" | "CAD" | "AUD";
 
 export interface Person {
   id: string;
@@ -56,4 +56,4 @@ export interface SettlementResult {
   isBalanced: boolean;
 }
 
-export type SettlementAlgorithm = 'minimize-transactions' | 'simple-pairwise';
+export type SettlementAlgorithm = "minimize-transactions" | "simple-pairwise";

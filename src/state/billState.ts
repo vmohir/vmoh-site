@@ -1,7 +1,15 @@
-import { signal, computed } from '@preact/signals';
-import type { Person, Item, PersonTotal, Currency, SettlementAlgorithm, ItemPayer, SettlementResult } from '../types/models';
-import { calculatePersonTotals } from '../utils/calculations';
-import { calculateSettlement } from '../utils/settlementAlgorithms';
+import { signal, computed } from "@preact/signals";
+import type {
+  Person,
+  Item,
+  PersonTotal,
+  Currency,
+  SettlementAlgorithm,
+  ItemPayer,
+  SettlementResult,
+} from "../types/models";
+import { calculatePersonTotals } from "../utils/calculations";
+import { calculateSettlement } from "../utils/settlementAlgorithms";
 
 // Primary state signals
 export const people = signal<Person[]>([]);
@@ -10,8 +18,10 @@ export const tax = signal<number>(0);
 export const taxIsPercent = signal<boolean>(true);
 export const tip = signal<number>(0);
 export const tipIsPercent = signal<boolean>(true);
-export const baseCurrency = signal<Currency>('USD');
-export const settlementAlgorithm = signal<SettlementAlgorithm>('minimize-transactions');
+export const baseCurrency = signal<Currency>("USD");
+export const settlementAlgorithm = signal<SettlementAlgorithm>(
+  "minimize-transactions",
+);
 
 // Computed signal for calculated totals
 export const calculatedTotals = computed<PersonTotal[]>(() => {
@@ -22,7 +32,7 @@ export const calculatedTotals = computed<PersonTotal[]>(() => {
     taxIsPercent.value,
     tip.value,
     tipIsPercent.value,
-    baseCurrency.value
+    baseCurrency.value,
   );
 });
 
@@ -31,7 +41,7 @@ export const calculatedSettlement = computed<SettlementResult>(() => {
   return calculateSettlement(
     calculatedTotals.value,
     settlementAlgorithm.value,
-    baseCurrency.value
+    baseCurrency.value,
   );
 });
 
@@ -41,7 +51,7 @@ export function addPerson(name: string): void {
 
   const newPerson: Person = {
     id: crypto.randomUUID(),
-    name: name.trim()
+    name: name.trim(),
   };
 
   people.value = [...people.value, newPerson];
@@ -50,14 +60,14 @@ export function addPerson(name: string): void {
 export function updatePersonName(id: string, newName: string): void {
   if (!newName.trim()) return;
 
-  people.value = people.value.map(p =>
-    p.id === id ? { ...p, name: newName.trim() } : p
+  people.value = people.value.map((p) =>
+    p.id === id ? { ...p, name: newName.trim() } : p,
   );
 }
 
 export function removePerson(id: string): void {
   // Remove person from all item assignments and payments
-  items.value = items.value.map(item => {
+  items.value = items.value.map((item) => {
     const newAssignedTo = new Set(item.usedBy);
     newAssignedTo.delete(id);
 
@@ -68,11 +78,15 @@ export function removePerson(id: string): void {
   });
 
   // Remove person from list
-  people.value = people.value.filter(p => p.id !== id);
+  people.value = people.value.filter((p) => p.id !== id);
 }
 
 // Item operations
-export function addItem(name: string, price: number, currency: Currency = 'USD'): void {
+export function addItem(
+  name: string,
+  price: number,
+  currency: Currency = "USD",
+): void {
   if (!name.trim() || price < 0) return;
 
   const newItem: Item = {
@@ -81,18 +95,18 @@ export function addItem(name: string, price: number, currency: Currency = 'USD')
     price,
     currency,
     usedBy: new Set<string>(),
-    paidBy: new Map<string, ItemPayer>()
+    paidBy: new Map<string, ItemPayer>(),
   };
 
   items.value = [...items.value, newItem];
 }
 
 export function removeItem(id: string): void {
-  items.value = items.value.filter(item => item.id !== id);
+  items.value = items.value.filter((item) => item.id !== id);
 }
 
 export function toggleItemAssignment(itemId: string, personId: string): void {
-  items.value = items.value.map(item => {
+  items.value = items.value.map((item) => {
     if (item.id !== itemId) return item;
 
     const newAssignedTo = new Set(item.usedBy);
@@ -122,9 +136,9 @@ export function setItemPayer(
   itemId: string,
   personId: string,
   amount: number,
-  currency?: Currency
+  currency?: Currency,
 ): void {
-  items.value = items.value.map(item => {
+  items.value = items.value.map((item) => {
     if (item.id !== itemId) return item;
 
     const newPaidBy = new Map(item.paidBy);
@@ -137,7 +151,7 @@ export function setItemPayer(
       newPaidBy.set(personId, {
         personId,
         amount,
-        currency: currency || item.currency
+        currency: currency || item.currency,
       });
     }
 
@@ -146,7 +160,7 @@ export function setItemPayer(
 }
 
 export function removeItemPayer(itemId: string, personId: string): void {
-  items.value = items.value.map(item => {
+  items.value = items.value.map((item) => {
     if (item.id !== itemId) return item;
 
     const newPaidBy = new Map(item.paidBy);
@@ -158,7 +172,7 @@ export function removeItemPayer(itemId: string, personId: string): void {
 
 // Currency operations
 export function updateItemCurrency(itemId: string, currency: Currency): void {
-  items.value = items.value.map(item => {
+  items.value = items.value.map((item) => {
     if (item.id !== itemId) return item;
     return { ...item, currency };
   });
@@ -169,6 +183,8 @@ export function updateBaseCurrency(currency: Currency): void {
 }
 
 // Settlement operations
-export function updateSettlementAlgorithm(algorithm: SettlementAlgorithm): void {
+export function updateSettlementAlgorithm(
+  algorithm: SettlementAlgorithm,
+): void {
   settlementAlgorithm.value = algorithm;
 }

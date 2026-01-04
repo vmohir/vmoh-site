@@ -1,26 +1,26 @@
-import { useState } from 'preact/hooks';
-import { items, people, addItem, removeItem } from '../state/billState';
-import type { Currency } from '../types/models';
-import ItemCard from './ItemCard';
-import styles from './ItemsSection.module.css';
+import { useState } from "preact/hooks";
+import { items, people, addItem, removeItem } from "../state/billState";
+import type { Currency } from "../types/models";
+import ItemCard from "./ItemCard";
+import styles from "./ItemsSection.module.css";
 
 export default function ItemsSection() {
-  const [nameInput, setNameInput] = useState('');
-  const [priceInput, setPriceInput] = useState('');
-  const [currencyInput, setCurrencyInput] = useState<Currency>('USD');
+  const [nameInput, setNameInput] = useState("");
+  const [priceInput, setPriceInput] = useState("");
+  const [currencyInput, setCurrencyInput] = useState<Currency>("USD");
 
   const handleAdd = () => {
     const price = parseFloat(priceInput);
     if (nameInput.trim() && !isNaN(price) && price >= 0) {
       addItem(nameInput, price, currencyInput);
-      setNameInput('');
-      setPriceInput('');
-      setCurrencyInput('USD');
+      setNameInput("");
+      setPriceInput("");
+      setCurrencyInput("USD");
     }
   };
 
   const handleKeyPress = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleAdd();
     }
   };
@@ -46,7 +46,9 @@ export default function ItemsSection() {
         />
         <select
           value={currencyInput}
-          onChange={(e) => setCurrencyInput((e.target as HTMLSelectElement).value as Currency)}
+          onChange={(e) =>
+            setCurrencyInput((e.target as HTMLSelectElement).value as Currency)
+          }
         >
           <option value="USD">USD</option>
           <option value="EUR">EUR</option>
@@ -59,7 +61,7 @@ export default function ItemsSection() {
       </div>
 
       <div class={styles.itemsList}>
-        {items.value.map(item => (
+        {items.value.map((item) => (
           <ItemCard
             key={item.id}
             item={item}
