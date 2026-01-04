@@ -16,7 +16,7 @@ export interface Item {
   name: string;
   price: number;
   currency: Currency;
-  assignedTo: Set<string>; // person IDs - who consumes the item
+  usedBy: Set<string>; // person IDs - who consumes the item
   paidBy: Map<string, ItemPayer>; // personId -> ItemPayer - who paid for the item
 }
 

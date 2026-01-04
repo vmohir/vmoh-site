@@ -1,0 +1,35 @@
+.taxTipSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.inputRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputRow label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.inputRow span {
+  font-weight: 500;
+}
+
+.inputWithToggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inputWithToggle input {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.inputWithToggle select {
+  padding: 0.5rem;
+}

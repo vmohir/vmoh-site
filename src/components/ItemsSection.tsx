@@ -2,6 +2,7 @@ import { useState } from 'preact/hooks';
 import { items, people, addItem, removeItem } from '../state/billState';
 import type { Currency } from '../types/models';
 import ItemCard from './ItemCard';
+import styles from './ItemsSection.module.css';
 
 export default function ItemsSection() {
   const [nameInput, setNameInput] = useState('');
@@ -25,8 +26,8 @@ export default function ItemsSection() {
   };
 
   return (
-    <div class="items-section-content">
-      <div class="input-group">
+    <div class={styles.itemsSection}>
+      <div class={styles.inputGroup}>
         <input
           type="text"
           value={nameInput}
@@ -57,7 +58,7 @@ export default function ItemsSection() {
         <button onClick={handleAdd}>Add Item</button>
       </div>
 
-      <div class="items-list">
+      <div class={styles.itemsList}>
         {items.value.map(item => (
           <ItemCard
             key={item.id}
@@ -69,53 +70,8 @@ export default function ItemsSection() {
       </div>
 
       {items.value.length === 0 && (
-        <p class="empty-message">No items added yet</p>
+        <p class={styles.emptyMessage}>No items added yet</p>
       )}
-
-      <style>{`
-        .items-section-content {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .input-group {
-          display: flex;
-          gap: 0.5rem;
-        }
-
-        .input-group input {
-          padding: 0.5rem;
-        }
-
-        .input-group input[type="text"] {
-          flex: 2;
-        }
-
-        .input-group input[type="number"] {
-          flex: 1;
-        }
-
-        .input-group select {
-          padding: 0.5rem;
-        }
-
-        .input-group button {
-          padding: 0.5rem 1rem;
-        }
-
-        .items-list {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .empty-message {
-          margin: 0;
-          color: #666;
-          font-style: italic;
-        }
-      `}</style>
     </div>
   );
 }

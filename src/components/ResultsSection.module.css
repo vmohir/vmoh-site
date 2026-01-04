@@ -1,0 +1,166 @@
+.resultsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.personResults h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.personResult {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  margin-bottom: 1rem;
+}
+
+.personResult h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+}
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.breakdownSection strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.breakdownSection ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.breakdownSection li {
+  margin-bottom: 0.25rem;
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+}
+
+.breakdownRow.balance {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 2px solid #333;
+}
+
+.breakdownRow.overpaid {
+  color: #28a745;
+}
+
+.breakdownRow.underpaid {
+  color: #dc3545;
+}
+
+.breakdownRow.settled {
+  color: #6c757d;
+}
+
+.settlementSection {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.settlementSection h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.algorithmSelector {
+  margin-bottom: 1.5rem;
+}
+
+.algorithmSelector label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.algorithmSelector span {
+  font-weight: 500;
+}
+
+.algorithmSelector select {
+  padding: 0.5rem;
+}
+
+.algorithmDescription {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.875rem;
+  color: #666;
+  font-style: italic;
+}
+
+.transfers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.transferCount {
+  margin: 0 0 1rem 0;
+  font-weight: 500;
+}
+
+.transferItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.from {
+  font-weight: 500;
+  color: #dc3545;
+}
+
+.arrow {
+  color: #6c757d;
+  font-size: 1.25rem;
+}
+
+.to {
+  font-weight: 500;
+  color: #28a745;
+}
+
+.amount {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.settledMessage {
+  margin: 0;
+  color: #28a745;
+  font-weight: 500;
+  text-align: center;
+  padding: 1rem;
+}
+
+.warning {
+  padding: 0.75rem;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  color: #856404;
+}
+
+.noItems,
+.emptyMessage {
+  margin: 0;
+  color: #666;
+  font-style: italic;
+}

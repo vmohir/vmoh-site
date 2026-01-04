@@ -1,0 +1,42 @@
+.itemsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inputGroup input {
+  padding: 0.5rem;
+}
+
+.inputGroup input[type="text"] {
+  flex: 2;
+}
+
+.inputGroup input[type="number"] {
+  flex: 1;
+}
+
+.inputGroup select {
+  padding: 0.5rem;
+}
+
+.inputGroup button {
+  padding: 0.5rem 1rem;
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.emptyMessage {
+  margin: 0;
+  color: #666;
+  font-style: italic;
+}

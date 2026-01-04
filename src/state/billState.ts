@@ -50,13 +50,13 @@ export function addPerson(name: string): void {
 export function removePerson(id: string): void {
   // Remove person from all item assignments and payments
   items.value = items.value.map(item => {
-    const newAssignedTo = new Set(item.assignedTo);
+    const newAssignedTo = new Set(item.usedBy);
     newAssignedTo.delete(id);
 
     const newPaidBy = new Map(item.paidBy);
     newPaidBy.delete(id);
 
-    return { ...item, assignedTo: newAssignedTo, paidBy: newPaidBy };
+    return { ...item, usedBy: newAssignedTo, paidBy: newPaidBy };
   });
 
   // Remove person from list
@@ -72,7 +72,7 @@ export function addItem(name: string, price: number, currency: Currency = 'USD')
     name: name.trim(),
     price,
     currency,
-    assignedTo: new Set<string>(),
+    usedBy: new Set<string>(),
     paidBy: new Map<string, ItemPayer>()
   };
 
@@ -87,14 +87,14 @@ export function toggleItemAssignment(itemId: string, personId: string): void {
   items.value = items.value.map(item => {
     if (item.id !== itemId) return item;
 
-    const newAssignedTo = new Set(item.assignedTo);
+    const newAssignedTo = new Set(item.usedBy);
     if (newAssignedTo.has(personId)) {
       newAssignedTo.delete(personId);
     } else {
       newAssignedTo.add(personId);
     }
 
-    return { ...item, assignedTo: newAssignedTo };
+    return { ...item, usedBy: newAssignedTo };
   });
 }
 

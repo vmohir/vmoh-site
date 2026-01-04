@@ -49,14 +49,14 @@ export function calculatePersonTotals(
 
   // Calculate item shares (consumption) and payments
   items.forEach(item => {
-    const assignedCount = item.assignedTo.size;
+    const assignedCount = item.usedBy.size;
 
     // Process consumption (assignedTo)
     if (assignedCount > 0) {
       const sharePerPerson = item.price / assignedCount;
       const shareInBaseCurrency = convertCurrency(sharePerPerson, item.currency, baseCurrency);
 
-      item.assignedTo.forEach(personId => {
+      item.usedBy.forEach(personId => {
         const data = personData.get(personId);
         if (data) {
           data.itemsSubtotal += shareInBaseCurrency;

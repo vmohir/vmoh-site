@@ -1,12 +1,13 @@
 import { tax, taxIsPercent, tip, tipIsPercent, updateTax, updateTip } from '../state/billState';
+import styles from './TaxTipSection.module.css';
 
 export default function TaxTipSection() {
   return (
-    <div class="tax-tip-section-content">
-      <div class="input-row">
+    <div class={styles.taxTipSection}>
+      <div class={styles.inputRow}>
         <label>
           <span>Tax:</span>
-          <div class="input-with-toggle">
+          <div class={styles.inputWithToggle}>
             <input
               type="number"
               value={tax.value}
@@ -25,10 +26,10 @@ export default function TaxTipSection() {
         </label>
       </div>
 
-      <div class="input-row">
+      <div class={styles.inputRow}>
         <label>
           <span>Tip:</span>
-          <div class="input-with-toggle">
+          <div class={styles.inputWithToggle}>
             <input
               type="number"
               value={tip.value}
@@ -46,44 +47,6 @@ export default function TaxTipSection() {
           </div>
         </label>
       </div>
-
-      <style>{`
-        .tax-tip-section-content {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .input-row {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .input-row label {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-        }
-
-        .input-row span {
-          font-weight: 500;
-        }
-
-        .input-with-toggle {
-          display: flex;
-          gap: 0.5rem;
-        }
-
-        .input-with-toggle input {
-          flex: 1;
-          padding: 0.5rem;
-        }
-
-        .input-with-toggle select {
-          padding: 0.5rem;
-        }
-      `}</style>
     </div>
   );
 }

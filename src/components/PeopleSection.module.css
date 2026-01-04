@@ -1,0 +1,31 @@
+.peopleSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inputGroup input {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.inputGroup button {
+  padding: 0.5rem 1rem;
+}
+
+.peopleList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.emptyMessage {
+  margin: 0;
+  color: #666;
+  font-style: italic;
+}
