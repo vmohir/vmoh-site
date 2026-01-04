@@ -1,6 +1,5 @@
 import type { Person } from "../types/models.ts";
 import styles from "./PersonAvatar.module.css";
-import { useEffect, useRef } from "preact/hooks";
 
 const colors = [
   "bg-red-800",
@@ -27,8 +26,6 @@ interface PersonAvatarProps {
   person: Person;
 }
 
-let colorCounter = 0;
-
 export const PersonAvatar = ({ person }: PersonAvatarProps) => {
   const initials = person.name
     .split(" ")
@@ -36,12 +33,9 @@ export const PersonAvatar = ({ person }: PersonAvatarProps) => {
     .join("")
     .slice(0, 2);
 
-  const colorRef = useRef<number>(colorCounter);
-  useEffect(() => {
-    colorCounter++;
-  }, []);
-
-  const colorIndex = colorRef.current % colors.length;
+  const colorIndex =
+    person.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) %
+    colors.length;
   const backgroundColor = colors[colorIndex];
 
   return <div class={`${styles.avatar} ${backgroundColor}`}>{initials}</div>;
