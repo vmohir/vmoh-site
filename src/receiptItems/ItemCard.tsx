@@ -1,9 +1,12 @@
-import type { Item, Person, Currency } from "../SplitApp/split.types.ts";
+import type { Item, Person, Currency } from "splitApp/split.types.ts";
 import {
   toggleItemAssignment,
   setItemPayer,
   updateItemCurrency,
-} from "../state/billState.ts";
+  updateItemName,
+  updateItemPrice,
+} from "state/billState.ts";
+import EditableText from "ui/EditableText";
 import styles from "./ItemCard.module.css";
 
 interface ItemCardProps {
@@ -24,13 +27,49 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
   const totalPaid = getTotalPaid();
   const isBalanced = Math.abs(totalPaid - item.price) < 0.01;
 
+  // Currency formatter
+  const formatCurrency = (amount: number, currency: Currency): string => {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  // Name edit handler
+  const handleSaveName = (newName: string) => {
+    updateItemName(item.id, newName);
+  };
+
+  const handleSavePrice = (newPrice: string) => {
+    const price = parseFloat(newPrice);
+    if (!isNaN(price) && price >= 0) {
+      updateItemPrice(item.id, price);
+    }
+  };
+
+  const validatePrice = (value: string): boolean => {
+    const price = parseFloat(value);
+    return !isNaN(price) && price >= 0;
+  };
+
   return (
     <div class={styles.itemCard}>
       <div class={styles.itemHeader}>
         <div class={styles.itemInfo}>
-          <strong>{item.name}</strong>
+          <EditableText value={item.name} onSave={handleSaveName} />
+
           <div class={styles.priceRow}>
-            <span class={styles.price}>{item.price.toFixed(2)}</span>
+            <EditableText
+              value={item.price.toString()}
+              onSave={handleSavePrice}
+              type="text"
+              inputMode="decimal"
+              validate={validatePrice}
+              autoFocus={false}
+            />
+            {formatCurrency(item.price, item.currency)}
             <select
               class={styles.currencySelector}
               value={item.currency}
@@ -50,7 +89,9 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
             </select>
           </div>
         </div>
-        <button onClick={() => onRemove(item.id)}>Remove</button>
+        <button onClick={() => onRemove(item.id)} class="btn btn-sm btn-danger">
+          Remove
+        </button>
       </div>
 
       {people.length > 0 && (
@@ -102,10 +143,10 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
               class={`${styles.paymentSummary} ${isBalanced ? styles.balanced : styles.unbalanced}`}
             >
               <span>
-                Total paid: {totalPaid.toFixed(2)} {item.currency}
+                Total paid: {formatCurrency(totalPaid, item.currency)}
               </span>
               <span>
-                Item price: {item.price.toFixed(2)} {item.currency}
+                Item price: {formatCurrency(item.price, item.currency)}
               </span>
               {!isBalanced && (
                 <span class={styles.warning}>

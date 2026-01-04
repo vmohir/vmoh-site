@@ -3,8 +3,8 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 1rem;
-  border: 1px solid var(--border-primary);
-  background: var(--surface-bg);
+  border-radius: var(--border-radius);
+  background: var(--surface-muted-bg);
 }
 
 .itemHeader {

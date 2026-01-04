@@ -7,7 +7,7 @@ import type {
   SettlementAlgorithm,
   ItemPayer,
   SettlementResult,
-} from "../SplitApp/split.types.ts";
+} from "../splitApp/split.types.ts";
 import { calculatePersonTotals } from "../utils/calculations";
 import { calculateSettlement } from "../utils/settlementAlgorithms";
 
@@ -105,6 +105,22 @@ export function addItem(
 
 export function removeItem(id: string): void {
   items.value = items.value.filter((item) => item.id !== id);
+}
+
+export function updateItemName(id: string, newName: string): void {
+  if (!newName.trim()) return;
+
+  items.value = items.value.map((item) =>
+    item.id === id ? { ...item, name: newName.trim() } : item,
+  );
+}
+
+export function updateItemPrice(id: string, newPrice: number): void {
+  if (newPrice < 0) return;
+
+  items.value = items.value.map((item) =>
+    item.id === id ? { ...item, price: newPrice } : item,
+  );
 }
 
 export function toggleItemAssignment(itemId: string, personId: string): void {

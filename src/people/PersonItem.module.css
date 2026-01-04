@@ -9,31 +9,3 @@
   border-radius: var(--border-radius);
   transition: background-color 0.2s;
 }
-.editableNameDisplay {
-  flex: 1;
-  text-align: start;
-  padding: 0.5rem 0;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--border-primary);
-  color: var(--text-primary);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: border-color 0.2s;
-  &:hover {
-    border-bottom-color: var(--text-muted);
-  }
-}
-
-.editableNameInput {
-  flex: 1;
-  padding: 0.5rem 0;
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-size: 1rem;
-  outline: none;
-  &:focus {
-    border-bottom-color: var(--text-primary);
-  }
-}

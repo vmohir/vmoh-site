@@ -1,0 +1,14 @@
+.editableText {
+  padding: 0.25rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.editableText:focus {
+  border-bottom-color: var(--text-primary);
+}
