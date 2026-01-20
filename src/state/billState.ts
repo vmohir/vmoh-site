@@ -7,6 +7,8 @@ import type {
   SettlementAlgorithm,
   ItemPayer,
   SettlementResult,
+  Adjustment,
+  AdjustmentType,
 } from "../splitApp/split.types.ts";
 import { calculatePersonTotals } from "../utils/calculations";
 import { calculateSettlement } from "../utils/settlementAlgorithms";
@@ -16,10 +18,10 @@ export const people = signal<Person[]>([
   { name: "You", id: crypto.randomUUID() },
 ]);
 export const items = signal<Item[]>([]);
-export const tax = signal<number>(0);
-export const taxIsPercent = signal<boolean>(true);
-export const tip = signal<number>(0);
-export const tipIsPercent = signal<boolean>(true);
+export const adjustments = signal<Adjustment[]>([
+  { id: crypto.randomUUID(), label: "Tax", value: 0, isPercent: true, type: "tax" },
+  { id: crypto.randomUUID(), label: "Tip", value: 0, isPercent: true, type: "tip" },
+]);
 export const baseCurrency = signal<Currency>("USD");
 export const settlementAlgorithm = signal<SettlementAlgorithm>(
   "minimize-transactions",
@@ -31,10 +33,7 @@ export const calculatedTotals = computed<PersonTotal[]>(() => {
   return calculatePersonTotals(
     people.value,
     items.value,
-    tax.value,
-    taxIsPercent.value,
-    tip.value,
-    tipIsPercent.value,
+    adjustments.value,
     baseCurrency.value,
   );
 });
@@ -139,15 +138,57 @@ export function toggleItemAssignment(itemId: string, personId: string): void {
   });
 }
 
-// Tax/Tip operations
-export function updateTax(value: number, isPercent: boolean): void {
-  tax.value = Math.max(0, value);
-  taxIsPercent.value = isPercent;
+// Adjustment operations
+function getDefaultLabel(type: AdjustmentType): string {
+  const defaults = {
+    tip: "Tip",
+    tax: "Tax",
+    discount: "Discount",
+  };
+  return defaults[type];
 }
 
-export function updateTip(value: number, isPercent: boolean): void {
-  tip.value = Math.max(0, value);
-  tipIsPercent.value = isPercent;
+export function addAdjustment(
+  label: string,
+  value: number,
+  isPercent: boolean,
+  type: AdjustmentType,
+): void {
+  const newAdjustment: Adjustment = {
+    id: crypto.randomUUID(),
+    label: label.trim() || getDefaultLabel(type),
+    value: Math.max(0, value),
+    isPercent,
+    type,
+  };
+
+  adjustments.value = [...adjustments.value, newAdjustment];
+}
+
+export function updateAdjustment(
+  id: string,
+  updates: Partial<Omit<Adjustment, 'id'>>,
+): void {
+  adjustments.value = adjustments.value.map((adj) =>
+    adj.id === id ? { ...adj, ...updates } : adj
+  );
+}
+
+export function removeAdjustment(id: string): void {
+  adjustments.value = adjustments.value.filter((adj) => adj.id !== id);
+}
+
+export function duplicateAdjustment(id: string): void {
+  const original = adjustments.value.find((adj) => adj.id === id);
+  if (!original) return;
+
+  const duplicate: Adjustment = {
+    ...original,
+    id: crypto.randomUUID(),
+    label: `${original.label} (copy)`,
+  };
+
+  adjustments.value = [...adjustments.value, duplicate];
 }
 
 // Payment operations

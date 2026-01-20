@@ -1,6 +1,6 @@
 import PeopleSection from "../people/PeopleSection.tsx";
 import ItemsSection from "../receiptItems/ItemsSection.tsx";
-import TaxTipSection from "./TaxTipSection";
+import AdjustmentsSection from "./AdjustmentsSection";
 import ResultsSection from "./ResultsSection";
 
 export default function SplitBillApp() {
@@ -16,9 +16,9 @@ export default function SplitBillApp() {
         <ItemsSection />
       </section>
 
-      <section class="tax-tip-section">
-        <h2>Tax & Tip</h2>
-        <TaxTipSection />
+      <section class="adjustments-section">
+        <h2>Adjustments</h2>
+        <AdjustmentsSection />
       </section>
 
       <section class="results-section">

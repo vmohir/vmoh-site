@@ -60,19 +60,19 @@ export default function ResultsSection() {
                 <span>${personTotal.itemsSubtotal.toFixed(2)}</span>
               </div>
 
-              {personTotal.taxAmount > 0 && (
-                <div class={styles.breakdownRow}>
-                  <span>Tax:</span>
-                  <span>${personTotal.taxAmount.toFixed(2)}</span>
+              {/* Dynamic adjustments breakdown */}
+              {personTotal.adjustments.map((adj) => (
+                <div
+                  key={adj.id}
+                  class={`${styles.breakdownRow} ${styles[`adjustment-${adj.type}`]}`}
+                >
+                  <span>{adj.label}:</span>
+                  <span>
+                    {adj.type === "discount" ? "-" : ""}$
+                    {Math.abs(adj.amount).toFixed(2)}
+                  </span>
                 </div>
-              )}
-
-              {personTotal.tipAmount > 0 && (
-                <div class={styles.breakdownRow}>
-                  <span>Tip:</span>
-                  <span>${personTotal.tipAmount.toFixed(2)}</span>
-                </div>
-              )}
+              ))}
 
               <div class={styles.breakdownRow}>
                 <strong>Total Owed:</strong>

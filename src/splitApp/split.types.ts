@@ -1,5 +1,15 @@
 import type { Currency } from "../utils/currency.utils.ts";
 
+export type AdjustmentType = "tip" | "tax" | "discount";
+
+export interface Adjustment {
+  id: string;
+  label: string;
+  value: number;
+  isPercent: boolean;
+  type: AdjustmentType;
+}
+
 export interface Person {
   id: string;
   name: string;
@@ -24,8 +34,12 @@ export interface PersonTotal {
   personId: string;
   personName: string;
   itemsSubtotal: number;
-  taxAmount: number;
-  tipAmount: number;
+  adjustments: Array<{
+    id: string;
+    label: string;
+    type: AdjustmentType;
+    amount: number;
+  }>;
   total: number;
   totalPaid: number;
   balance: number;

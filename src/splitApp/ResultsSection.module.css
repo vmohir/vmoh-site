@@ -177,3 +177,28 @@
   color: var(--text-muted);
   font-style: italic;
 }
+
+/* Adjustment type-specific colors */
+.adjustment-tip {
+  color: #22c55e;
+}
+
+[data-theme="dark"] .adjustment-tip {
+  color: #4ade80;
+}
+
+.adjustment-tax {
+  color: #ca8a04;
+}
+
+[data-theme="dark"] .adjustment-tax {
+  color: #facc15;
+}
+
+.adjustment-discount {
+  color: #2563eb;
+}
+
+[data-theme="dark"] .adjustment-discount {
+  color: #60a5fa;
+}

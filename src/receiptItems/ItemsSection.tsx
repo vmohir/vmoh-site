@@ -45,6 +45,7 @@ export default function ItemsSection() {
           onInput={(e) => setNameInput((e.target as HTMLInputElement).value)}
           onKeyPress={handleKeyPress}
           placeholder="Item name"
+          class="input"
         />
         <input
           type="number"
@@ -54,6 +55,7 @@ export default function ItemsSection() {
           placeholder="Price"
           step="0.01"
           min="0"
+          class="input"
         />
         {hasMultipleCurrencies.value && (
           <select
@@ -63,6 +65,7 @@ export default function ItemsSection() {
                 (e.target as HTMLSelectElement).value as Currency,
               )
             }
+            class="select"
           >
             <option value="EUR">EUR</option>
             <option value="USD">USD</option>
@@ -72,7 +75,9 @@ export default function ItemsSection() {
             <option value="AUD">AUD</option>
           </select>
         )}
-        <button onClick={handleAdd}>Add Item</button>
+        <button class="btn" onClick={handleAdd}>
+          Add Item
+        </button>
       </div>
 
       <div class={styles.itemsList}>

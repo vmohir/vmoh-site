@@ -3,6 +3,7 @@ import type {
   Item,
   PersonTotal,
   Currency,
+  Adjustment,
 } from "../SplitApp/split.types.ts";
 
 // Currency conversion helper
@@ -29,10 +30,7 @@ function convertCurrency(
 export function calculatePersonTotals(
   people: Person[],
   items: Item[],
-  tax: number,
-  taxIsPercent: boolean,
-  tip: number,
-  tipIsPercent: boolean,
+  adjustments: Adjustment[],
   baseCurrency: Currency = "USD",
 ): PersonTotal[] {
   // Initialize tracking for each person
@@ -110,23 +108,55 @@ export function calculatePersonTotals(
     return sum + priceInBaseCurrency;
   }, 0);
 
-  // Calculate total tax and tip
-  const totalTax = taxIsPercent ? (billSubtotal * tax) / 100 : tax;
-  const totalTip = tipIsPercent ? (billSubtotal * tip) / 100 : tip;
+  // Calculate adjustments
+  const adjustmentResults = adjustments.map((adjustment) => {
+    let totalAmount: number;
+
+    if (adjustment.type === "discount") {
+      // Discounts reduce the subtotal before other adjustments
+      totalAmount = adjustment.isPercent
+        ? (billSubtotal * adjustment.value) / 100
+        : adjustment.value;
+      // Discounts are subtracted (capped at billSubtotal to prevent negative)
+      totalAmount = Math.min(totalAmount, billSubtotal);
+    } else {
+      // Tips and taxes are added
+      totalAmount = adjustment.isPercent
+        ? (billSubtotal * adjustment.value) / 100
+        : adjustment.value;
+    }
+
+    return {
+      ...adjustment,
+      totalAmount,
+    };
+  });
 
   // Build results for each person
   return people.map((person) => {
     const data = personData.get(person.id)!;
 
-    // Calculate proportional tax and tip based on consumption
+    // Calculate proportional ratio based on consumption
     let personRatio = 0;
     if (billSubtotal > 0) {
       personRatio = data.itemsSubtotal / billSubtotal;
     }
 
-    const taxAmount = totalTax * personRatio;
-    const tipAmount = totalTip * personRatio;
-    const totalOwed = data.itemsSubtotal + taxAmount + tipAmount;
+    // Calculate person's share of each adjustment
+    const personAdjustments = adjustmentResults.map((adjResult) => ({
+      id: adjResult.id,
+      label: adjResult.label,
+      type: adjResult.type,
+      amount: adjResult.totalAmount * personRatio,
+    }));
+
+    // Calculate total owed
+    const adjustmentsTotal = personAdjustments.reduce((sum, adj) => {
+      // Discounts subtract, tips and taxes add
+      return adj.type === "discount" ? sum - adj.amount : sum + adj.amount;
+    }, 0);
+
+    const totalOwed = data.itemsSubtotal + adjustmentsTotal;
 
     // Calculate balance: negative = overpaid (should receive), positive = underpaid (should pay)
     const balance = totalOwed - data.totalPaid;
@@ -135,8 +165,7 @@ export function calculatePersonTotals(
       personId: person.id,
       personName: person.name,
       itemsSubtotal: data.itemsSubtotal,
-      taxAmount,
-      tipAmount,
+      adjustments: personAdjustments,
       total: totalOwed,
       totalPaid: data.totalPaid,
       balance,

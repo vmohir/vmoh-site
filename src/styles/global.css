@@ -49,7 +49,7 @@
     /* Interactive */
     --interactive-hover-bg: theme(colors.neutral.200);
     --interactive-active-bg: theme(colors.neutral.300);
-    --transition-slow: 100ms ease;
+    --transition: 100ms ease;
   }
 
   [data-theme="dark"] {
@@ -109,7 +109,7 @@
     background: var(--surface-bg);
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition);
   }
 
   .btn:hover {
