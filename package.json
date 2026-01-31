@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "Personal site for Vahid Mohammadi",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "prebuild": "rm -rf dist",
-    "build": "npm run build --workspaces --if-present"
+    "build:homepage": "cd packages/homepage && npm run build",
+    "build:old": "cd packages/old && npm run build",
+    "build": "npm run build:homepage && npm run build:old"
   },
   "devDependencies": {
     "netlify-cli": "^23.14.0"
