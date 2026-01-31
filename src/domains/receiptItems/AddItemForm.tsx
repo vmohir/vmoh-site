@@ -1,7 +1,7 @@
-import { CURRENCY_LIST } from "../currencies/currency-list.contant.ts";
 import { useState } from "preact/hooks";
 import type { Currency } from "../../splitApp/split.types.ts";
 import { addItem } from "../../state/billState.ts";
+import { CurrencySelector } from "../currencies/CurrencySelector.tsx";
 import styles from "./AddItemForm.module.css";
 
 export function AddItemForm() {
@@ -43,18 +43,10 @@ export function AddItemForm() {
         step="0.01"
         min="0"
       />
-      <select
+      <CurrencySelector
         value={currencyInput}
-        onChange={(e) =>
-          setCurrencyInput((e.target as HTMLSelectElement).value as Currency)
-        }
-      >
-        {CURRENCY_LIST.map((currency) => (
-          <option key={currency.code} value={currency.code}>
-            {currency.code}
-          </option>
-        ))}
-      </select>
+        onChange={setCurrencyInput}
+      />
       <button onClick={handleAdd}>Add Item</button>
     </div>
   );

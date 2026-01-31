@@ -8,6 +8,7 @@ import {
   hasMultipleCurrencies,
 } from "state/billState.ts";
 import EditableText from "ui/EditableText";
+import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
 import styles from "./ItemCard.module.css";
 import {
   type Currency,
@@ -71,23 +72,11 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
               autoFocus={false}
             />
             {hasMultipleCurrencies.value && (
-              <select
+              <CurrencySelector
                 class={styles.currencySelector}
                 value={item.currency}
-                onChange={(e) =>
-                  updateItemCurrency(
-                    item.id,
-                    (e.target as HTMLSelectElement).value as Currency,
-                  )
-                }
-              >
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-                <option value="JPY">JPY</option>
-                <option value="CAD">CAD</option>
-                <option value="AUD">AUD</option>
-              </select>
+                onChange={(currency) => updateItemCurrency(item.id, currency)}
+              />
             )}
           </div>
         </div>
