@@ -1,4 +1,4 @@
-import type { Person } from "../SplitApp/split.types.ts";
+import type { Person } from "../splitApp/split.types.ts";
 import styles from "./PersonAvatar.module.css";
 
 const darkColors = [

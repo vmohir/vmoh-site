@@ -4,7 +4,7 @@ import type {
   PersonTotal,
   Currency,
   Adjustment,
-} from "../SplitApp/split.types.ts";
+} from "../splitApp/split.types.ts";
 
 // Currency conversion helper
 function convertCurrency(

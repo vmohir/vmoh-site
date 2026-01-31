@@ -1,4 +1,4 @@
-import type { Item, Person } from "splitApp/split.types.ts";
+import type { Item, Person } from "../splitApp/split.types.ts";
 import {
   toggleItemAssignment,
   setItemPayer,

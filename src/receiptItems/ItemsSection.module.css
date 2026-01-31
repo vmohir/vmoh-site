@@ -4,11 +4,6 @@
   gap: 1rem;
 }
 
-.inputGroup {
-  display: flex;
-  gap: 0.5rem;
-}
-
 .itemsList {
   display: flex;
   flex-direction: column;

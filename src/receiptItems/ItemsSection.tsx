@@ -1,86 +1,14 @@
-import { useState } from "preact/hooks";
-import {
-  items,
-  people,
-  addItem,
-  removeItem,
-  hasMultipleCurrencies,
-} from "../state/billState.ts";
+import { items, people, removeItem } from "../state/billState.ts";
 import ItemCard from "./ItemCard.tsx";
 import styles from "./ItemsSection.module.css";
-import {
-  type Currency,
-  getCurrencyFromLocale,
-} from "../utils/currency.utils.ts";
+import { AddItemForm } from "../domains/receiptItems/AddItemForm.tsx";
 
 export default function ItemsSection() {
-  const [nameInput, setNameInput] = useState("");
-  const [priceInput, setPriceInput] = useState("");
-
-  const [currencyInput, setCurrencyInput] = useState<Currency>(
-    getCurrencyFromLocale(),
-  );
-
-  const handleAdd = () => {
-    const price = parseFloat(priceInput);
-    if (nameInput.trim() && !isNaN(price) && price >= 0) {
-      addItem(nameInput, price, currencyInput);
-      setNameInput("");
-      setPriceInput("");
-    }
-  };
-
-  const handleKeyPress = (e: KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleAdd();
-    }
-  };
-
   return (
-    <div class={styles.itemsSection}>
-      <div class={styles.inputGroup}>
-        <input
-          type="text"
-          value={nameInput}
-          onInput={(e) => setNameInput((e.target as HTMLInputElement).value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Item name"
-          class="input"
-        />
-        <input
-          type="number"
-          value={priceInput}
-          onInput={(e) => setPriceInput((e.target as HTMLInputElement).value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Price"
-          step="0.01"
-          min="0"
-          class="input"
-        />
-        {hasMultipleCurrencies.value && (
-          <select
-            value={currencyInput}
-            onChange={(e) =>
-              setCurrencyInput(
-                (e.target as HTMLSelectElement).value as Currency,
-              )
-            }
-            class="select"
-          >
-            <option value="EUR">EUR</option>
-            <option value="USD">USD</option>
-            <option value="GBP">GBP</option>
-            <option value="JPY">JPY</option>
-            <option value="CAD">CAD</option>
-            <option value="AUD">AUD</option>
-          </select>
-        )}
-        <button class="btn" onClick={handleAdd}>
-          Add Item
-        </button>
-      </div>
+    <div className={styles.itemsSection}>
+      <AddItemForm />
 
-      <div class={styles.itemsList}>
+      <div className={styles.itemsList}>
         {items.value.map((item) => (
           <ItemCard
             key={item.id}
