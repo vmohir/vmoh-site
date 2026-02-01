@@ -1,4 +1,4 @@
-import { signal, computed } from "@preact/signals";
+import { signal, computed, effect } from "@preact/signals";
 import type {
   Person,
   Item,
@@ -27,6 +27,25 @@ export const settlementAlgorithm = signal<SettlementAlgorithm>(
   "minimize-transactions",
 );
 export const hasMultipleCurrencies = signal<boolean>(false);
+
+// Persist state to localStorage whenever it changes
+effect(() => {
+  const state: SerializedState = {
+    people: people.value,
+    items: serializeItems(items.value),
+    tax: tax.value,
+    taxIsPercent: taxIsPercent.value,
+    tip: tip.value,
+    tipIsPercent: tipIsPercent.value,
+    baseCurrency: baseCurrency.value,
+    settlementAlgorithm: settlementAlgorithm.value,
+  };
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.error("Failed to save state to localStorage:", e);
+  }
+});
 
 // Computed signal for calculated totals
 export const calculatedTotals = computed<PersonTotal[]>(() => {
