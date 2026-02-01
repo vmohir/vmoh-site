@@ -1,4 +1,4 @@
-import type { Currency } from "../utils/currency.utils.ts";
+export type { Currency } from "../utils/currency.utils.ts";
 
 export type AdjustmentType = "tip" | "tax" | "discount";
 

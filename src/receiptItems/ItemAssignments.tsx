@@ -1,5 +1,5 @@
 import type { Item, Person } from "../splitApp/split.types.ts";
-import { toggleItemAssignment } from "../state/billState.ts";
+import { toggleItemAssignment } from "state/billState.ts";
 import styles from "./ItemCard.module.css";
 
 interface ItemAssignmentsProps {

@@ -43,10 +43,8 @@ export function AddItemForm() {
         step="0.01"
         min="0"
       />
-      <CurrencySelector
-        value={currencyInput}
-        onChange={setCurrencyInput}
-      />
+      <CurrencySelector value={currencyInput} onChange={setCurrencyInput} />
+
       <button onClick={handleAdd}>Add Item</button>
     </div>
   );

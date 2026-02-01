@@ -1,5 +1,6 @@
 import type { Item, Person } from "../splitApp/split.types.ts";
-import { setItemPayer } from "../state/billState.ts";
+import { setItemPayer } from "state/billState.ts";
+import { formatCurrency } from "../utils/currency.utils.ts";
 import styles from "./ItemCard.module.css";
 
 interface ItemPayersProps {
@@ -43,12 +44,8 @@ export function ItemPayers({ item, people }: ItemPayersProps) {
       <div
         class={`${styles.paymentSummary} ${isBalanced ? styles.balanced : styles.unbalanced}`}
       >
-        <span>
-          Total paid: {totalPaid.toFixed(2)} {item.currency}
-        </span>
-        <span>
-          Item price: {item.price.toFixed(2)} {item.currency}
-        </span>
+        <span>Total paid: {formatCurrency(totalPaid, item.currency)}</span>
+        <span>Item price: {formatCurrency(item.price, item.currency)}</span>
         {!isBalanced && (
           <span class={styles.warning}>
             {totalPaid > item.price ? "Overpaid!" : "Underpaid!"}

@@ -13,32 +13,87 @@ import type {
 import { calculatePersonTotals } from "../utils/calculations";
 import { calculateSettlement } from "../utils/settlementAlgorithms";
 
+const STORAGE_KEY = "split-bill-state";
+
+// Serializable versions for localStorage
+interface SerializedItem {
+  id: string;
+  name: string;
+  price: number;
+  currency: Currency;
+  usedBy: string[];
+  paidBy: [string, ItemPayer][];
+}
+
+interface SerializedState {
+  people: Person[];
+  items: SerializedItem[];
+  adjustments: Adjustment[];
+  baseCurrency: Currency;
+  settlementAlgorithm: SettlementAlgorithm;
+  hasMultipleCurrencies: boolean;
+}
+
+function serializeItems(items: Item[]): SerializedItem[] {
+  return items.map((item) => ({
+    ...item,
+    usedBy: Array.from(item.usedBy),
+    paidBy: Array.from(item.paidBy.entries()),
+  }));
+}
+
+function deserializeItems(items: SerializedItem[]): Item[] {
+  return items.map((item) => ({
+    ...item,
+    usedBy: new Set(item.usedBy),
+    paidBy: new Map(item.paidBy),
+  }));
+}
+
+function loadState(): Partial<SerializedState> | null {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (e) {
+    console.error("Failed to load state from localStorage:", e);
+  }
+  return null;
+}
+
+const savedState = loadState();
+
 // Primary state signals
-export const people = signal<Person[]>([
-  { name: "You", id: crypto.randomUUID() },
-]);
-export const items = signal<Item[]>([]);
-export const adjustments = signal<Adjustment[]>([
-  { id: crypto.randomUUID(), label: "Tax", value: 0, isPercent: true, type: "tax" },
-  { id: crypto.randomUUID(), label: "Tip", value: 0, isPercent: true, type: "tip" },
-]);
-export const baseCurrency = signal<Currency>("USD");
-export const settlementAlgorithm = signal<SettlementAlgorithm>(
-  "minimize-transactions",
+export const people = signal<Person[]>(
+  savedState?.people ?? [{ name: "You", id: crypto.randomUUID() }],
 );
-export const hasMultipleCurrencies = signal<boolean>(false);
+export const items = signal<Item[]>(
+  savedState?.items ? deserializeItems(savedState.items) : [],
+);
+export const adjustments = signal<Adjustment[]>(
+  savedState?.adjustments ?? [
+    { id: crypto.randomUUID(), label: "Tax", value: 0, isPercent: true, type: "tax" },
+    { id: crypto.randomUUID(), label: "Tip", value: 0, isPercent: true, type: "tip" },
+  ],
+);
+export const baseCurrency = signal<Currency>(savedState?.baseCurrency ?? "USD");
+export const settlementAlgorithm = signal<SettlementAlgorithm>(
+  savedState?.settlementAlgorithm ?? "minimize-transactions",
+);
+export const hasMultipleCurrencies = signal<boolean>(
+  savedState?.hasMultipleCurrencies ?? false,
+);
 
 // Persist state to localStorage whenever it changes
 effect(() => {
   const state: SerializedState = {
     people: people.value,
     items: serializeItems(items.value),
-    tax: tax.value,
-    taxIsPercent: taxIsPercent.value,
-    tip: tip.value,
-    tipIsPercent: tipIsPercent.value,
+    adjustments: adjustments.value,
     baseCurrency: baseCurrency.value,
     settlementAlgorithm: settlementAlgorithm.value,
+    hasMultipleCurrencies: hasMultipleCurrencies.value,
   };
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
