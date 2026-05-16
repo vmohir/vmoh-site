@@ -17,7 +17,7 @@ export function ItemPayers({ item, people }: ItemPayersProps) {
 
   return (
     <div class={styles.itemPayers}>
-      <span class={styles.label}>Paid by (who actually paid):</span>
+      <span class={styles.label}>Amounts paid</span>
       <div class={styles.payerInputs}>
         {people.map((person) => {
           const payer = item.paidBy.get(person.id);

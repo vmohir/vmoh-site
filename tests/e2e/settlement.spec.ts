@@ -34,9 +34,10 @@ test("two people sharing one item — paid by one — settles to a single transf
   await page.getByPlaceholder("Price").fill("20");
   await page.getByPlaceholder("Price").press("Enter");
 
-  // Assign both people to the item.
-  await itemsSection.getByRole("checkbox", { name: "Alice" }).check();
-  await itemsSection.getByRole("checkbox", { name: "Bob" }).check();
+  // Open the inline "Paid by" dropdown on the item, then check both people.
+  await itemsSection.getByRole("button", { name: "Paid by" }).click();
+  await page.getByRole("checkbox", { name: "Alice" }).check();
+  await page.getByRole("checkbox", { name: "Bob" }).check();
 
   // Alice pays the full $20. The payer input is the sibling of <label>Alice:</label>.
   const alicePayerRow = itemsSection

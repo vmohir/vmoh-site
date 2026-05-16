@@ -7,7 +7,7 @@ import {
 } from "state/billState.ts";
 import EditableText from "ui/EditableText";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
-import { ItemAssignments } from "./ItemAssignments.tsx";
+import { ItemPaidBy } from "./ItemPaidBy.tsx";
 import { ItemPayers } from "./ItemPayers.tsx";
 import styles from "./ItemCard.module.css";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
@@ -38,43 +38,39 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
   return (
     <div class={styles.itemCard}>
       <div class={styles.itemHeader}>
-        <div class="flex flex-1 gap-2">
-          <EditableText
-            className="flex-1"
-            value={item.name}
-            onSave={handleSaveName}
-          />
+        <EditableText
+          className={styles.itemName}
+          value={item.name}
+          onSave={handleSaveName}
+        />
 
-          <div class="flex gap-0.5 items-center">
-            {getCurrencySymbol(item.currency)}
-            <EditableText
-              value={item.price.toString()}
-              onSave={handleSavePrice}
-              type="text"
-              inputMode="decimal"
-              validate={validatePrice}
-              autoFocus={false}
+        <div class={styles.priceGroup}>
+          {getCurrencySymbol(item.currency)}
+          <EditableText
+            value={item.price.toString()}
+            onSave={handleSavePrice}
+            type="text"
+            inputMode="decimal"
+            validate={validatePrice}
+            autoFocus={false}
+          />
+          {isAdvancedMode.value && (
+            <CurrencySelector
+              class={styles.currencySelector}
+              value={item.currency}
+              onChange={(currency) => updateItemCurrency(item.id, currency)}
             />
-            {isAdvancedMode.value && (
-              <CurrencySelector
-                class={styles.currencySelector}
-                value={item.currency}
-                onChange={(currency) => updateItemCurrency(item.id, currency)}
-              />
-            )}
-          </div>
+          )}
         </div>
+
+        {people.length > 0 && <ItemPaidBy item={item} people={people} />}
+
         <button onClick={() => onRemove(item.id)} class="btn btn-sm btn-danger">
           Remove
         </button>
       </div>
 
-      {people.length > 0 && (
-        <>
-          <ItemAssignments item={item} people={people} />
-          <ItemPayers item={item} people={people} />
-        </>
-      )}
+      {people.length > 0 && <ItemPayers item={item} people={people} />}
     </div>
   );
 }
