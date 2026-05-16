@@ -25,21 +25,14 @@
   color: var(--text-muted);
 }
 
-.inputGroup input[type="text"] {
+.nameInput {
   flex: 2;
   min-width: 0;
 }
 
-.inputGroup input[type="number"] {
+.priceInput {
   flex: 1;
   min-width: 0;
-  -moz-appearance: textfield;
-}
-
-.inputGroup input[type="number"]::-webkit-outer-spin-button,
-.inputGroup input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
 }
 
 .inputGroup select {

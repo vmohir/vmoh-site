@@ -36,10 +36,10 @@ test("add an item without advanced mode", async ({ page }) => {
   await page.getByPlaceholder("Price").press("Enter");
 
   await expect(page.getByText("No items added yet")).toBeHidden();
-  // The item card's editable name and price — first textbox is the empty Add Item name.
+  // Textboxes in the section: [Add name, Add price, Item name, Item price]. Both cleared on submit.
   const itemTextboxes = itemsSection(page).getByRole("textbox");
-  await expect(itemTextboxes.nth(1)).toHaveValue("Pizza");
-  await expect(itemTextboxes.nth(2)).toHaveValue("24");
+  await expect(itemTextboxes.nth(2)).toHaveValue("Pizza");
+  await expect(itemTextboxes.nth(3)).toHaveValue("24");
 });
 
 test("advanced mode shows the per-item currency selector", async ({ page }) => {
@@ -59,11 +59,11 @@ test("state survives a reload", async ({ page }) => {
   await page.getByPlaceholder("Price").fill("4.5");
   await page.getByPlaceholder("Price").press("Enter");
 
-  await expect(itemsSection(page).getByRole("textbox").nth(1)).toHaveValue("Coffee");
+  await expect(itemsSection(page).getByRole("textbox").nth(2)).toHaveValue("Coffee");
 
   await page.reload({ waitUntil: "networkidle" });
 
   const itemTextboxes = itemsSection(page).getByRole("textbox");
-  await expect(itemTextboxes.nth(1)).toHaveValue("Coffee");
-  await expect(itemTextboxes.nth(2)).toHaveValue("4.5");
+  await expect(itemTextboxes.nth(2)).toHaveValue("Coffee");
+  await expect(itemTextboxes.nth(3)).toHaveValue("4.5");
 });

@@ -192,9 +192,10 @@ export function updateItemName(id: string, newName: string): void {
 export function updateItemPrice(id: string, newPrice: number): void {
   if (newPrice < 0) return;
 
-  items.value = items.value.map((item) =>
-    item.id === id ? { ...item, price: newPrice } : item,
-  );
+  items.value = items.value.map((item) => {
+    if (item.id !== id) return item;
+    return { ...item, price: newPrice, paidBy: autoPaidBy(item, item.usedBy, newPrice) };
+  });
 }
 
 export function toggleItemAssignment(itemId: string, personId: string): void {
@@ -208,8 +209,33 @@ export function toggleItemAssignment(itemId: string, personId: string): void {
       newAssignedTo.add(personId);
     }
 
-    return { ...item, usedBy: newAssignedTo };
+    return { ...item, usedBy: newAssignedTo, paidBy: autoPaidBy(item, newAssignedTo) };
   });
+}
+
+export function setItemAssignees(itemId: string, personIds: string[]): void {
+  items.value = items.value.map((item) => {
+    if (item.id !== itemId) return item;
+    const newAssignedTo = new Set(personIds);
+    return { ...item, usedBy: newAssignedTo, paidBy: autoPaidBy(item, newAssignedTo) };
+  });
+}
+
+// When exactly one person is assigned, they automatically pay the full amount.
+// When nobody is assigned, clear payments. Otherwise leave them alone (user picks in advanced mode).
+function autoPaidBy(
+  item: Item,
+  usedBy: Set<string>,
+  price = item.price,
+): Map<string, ItemPayer> {
+  if (usedBy.size === 1) {
+    const only = usedBy.values().next().value!;
+    return new Map([[only, { personId: only, amount: price, currency: item.currency }]]);
+  }
+  if (usedBy.size === 0) {
+    return new Map();
+  }
+  return item.paidBy;
 }
 
 // Adjustment operations

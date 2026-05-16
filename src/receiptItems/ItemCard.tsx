@@ -70,7 +70,9 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         </button>
       </div>
 
-      {people.length > 0 && <ItemPayers item={item} people={people} />}
+      {isAdvancedMode.value && item.usedBy.size > 1 && (
+        <ItemPayers item={item} people={people} />
+      )}
     </div>
   );
 }

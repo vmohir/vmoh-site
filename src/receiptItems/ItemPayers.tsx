@@ -25,7 +25,8 @@ export function ItemPayers({ item, people }: ItemPayersProps) {
             <div key={person.id} class={styles.payerRow}>
               <label>{person.name}:</label>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={payer?.amount || ""}
                 onInput={(e) => {
                   const amount =
@@ -33,8 +34,6 @@ export function ItemPayers({ item, people }: ItemPayersProps) {
                   setItemPayer(item.id, person.id, amount, item.currency);
                 }}
                 placeholder="0.00"
-                step="0.01"
-                min="0"
               />
               <span class={styles.currencyLabel}>{item.currency}</span>
             </div>

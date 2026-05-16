@@ -19,11 +19,13 @@ test("two people sharing one item — paid by one — settles to a single transf
     .locator("section")
     .filter({ has: page.getByRole("heading", { name: "Results" }) });
 
+  // Advanced mode unlocks multi-select on the Paid-by control.
+  await page.getByRole("switch", { name: "Advanced" }).click();
+
   // Add a second person and rename both deterministically.
   await page.getByRole("button", { name: "+ Add Person" }).click();
   const personInputs = peopleSection.getByRole("textbox");
   await expect(personInputs).toHaveCount(2);
-
   await personInputs.nth(0).fill("Alice");
   await personInputs.nth(0).blur();
   await personInputs.nth(1).fill("Bob");
@@ -34,20 +36,32 @@ test("two people sharing one item — paid by one — settles to a single transf
   await page.getByPlaceholder("Price").fill("20");
   await page.getByPlaceholder("Price").press("Enter");
 
-  // Open the inline "Paid by" dropdown on the item, then check both people.
+  // Open the Paid-by dropdown; Alice first (auto-pays full), then add Bob.
   await itemsSection.getByRole("button", { name: "Paid by" }).click();
   await page.getByRole("checkbox", { name: "Alice" }).check();
   await page.getByRole("checkbox", { name: "Bob" }).check();
 
-  // Alice pays the full $20. The payer input is the sibling of <label>Alice:</label>.
-  const alicePayerRow = itemsSection
-    .locator("div")
-    .filter({ has: page.getByText("Alice:", { exact: true }) })
-    .last();
-  await alicePayerRow.getByRole("spinbutton").fill("20");
-  await alicePayerRow.getByRole("spinbutton").blur();
-
-  // Single transfer of $10.00 USD (Bob -> Alice).
+  // Bob -> Alice $10.00 (each owes 10, Alice paid 20).
   await expect(resultsSection.getByText("1 transaction needed")).toBeVisible();
   await expect(resultsSection.getByText("$10.00 USD")).toBeVisible();
+});
+
+test("basic mode auto-pays the single assignee", async ({ page }) => {
+  const itemsSection = page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "Items" }) });
+
+  await page.getByPlaceholder("Item name").fill("Coffee");
+  await page.getByPlaceholder("Price").fill("5");
+  await page.getByPlaceholder("Price").press("Enter");
+
+  await itemsSection.getByRole("button", { name: "Paid by" }).click();
+  await page.getByRole("checkbox", { name: "You" }).check();
+
+  // No "Amounts paid" detail (hidden when only 1 person is assigned).
+  await expect(itemsSection.getByText("Amounts paid")).toBeHidden();
+
+  // Avatar replaces the placeholder once selected — pill is in expanded state on first click.
+  const trigger = itemsSection.getByRole("button", { name: "Paid by" });
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
 });

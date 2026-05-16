@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import type { Item, Person } from "../splitApp/split.types.ts";
-import { toggleItemAssignment } from "state/billState.ts";
+import {
+  isAdvancedMode,
+  setItemAssignees,
+  toggleItemAssignment,
+} from "state/billState.ts";
 import { PersonAvatar } from "ui/PersonAvatar.tsx";
 import styles from "./ItemPaidBy.module.css";
 
@@ -59,17 +63,28 @@ export function ItemPaidBy({ item, people }: ItemPaidByProps) {
 
       {open && (
         <div class={styles.dropdown} role="listbox">
-          {people.map((person) => (
-            <label key={person.id} class={styles.option}>
-              <input
-                type="checkbox"
-                checked={item.usedBy.has(person.id)}
-                onChange={() => toggleItemAssignment(item.id, person.id)}
-              />
-              <PersonAvatar person={person} />
-              <span class={styles.optionName}>{person.name}</span>
-            </label>
-          ))}
+          {people.map((person) => {
+            const isChecked = item.usedBy.has(person.id);
+            return (
+              <label key={person.id} class={styles.option}>
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={() => {
+                    if (isAdvancedMode.value) {
+                      toggleItemAssignment(item.id, person.id);
+                    } else if (isChecked && item.usedBy.size === 1) {
+                      setItemAssignees(item.id, []);
+                    } else {
+                      setItemAssignees(item.id, [person.id]);
+                    }
+                  }}
+                />
+                <PersonAvatar person={person} />
+                <span class={styles.optionName}>{person.name}</span>
+              </label>
+            );
+          })}
         </div>
       )}
     </div>

@@ -35,19 +35,20 @@ export function AddItemForm() {
     <div className={styles.inputGroup}>
       <input
         type="text"
+        class={styles.nameInput}
         value={nameInput}
         onInput={(e) => setNameInput((e.target as HTMLInputElement).value)}
         onKeyPress={handleKeyPress}
         placeholder="Item name"
       />
       <input
-        type="number"
+        type="text"
+        inputMode="decimal"
+        class={styles.priceInput}
         value={priceInput}
         onInput={(e) => setPriceInput((e.target as HTMLInputElement).value)}
         onKeyPress={handleKeyPress}
         placeholder="Price"
-        step="0.01"
-        min="0"
       />
       {isAdvancedMode.value && (
         <CurrencySelector
