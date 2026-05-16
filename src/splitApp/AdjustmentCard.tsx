@@ -1,3 +1,4 @@
+import { Copy, X } from "lucide-preact";
 import type { Adjustment, AdjustmentType } from "./split.types";
 import {
   updateAdjustment,
@@ -85,16 +86,18 @@ export default function AdjustmentCard({ adjustment }: AdjustmentCardProps) {
           <button
             class="btn btn-sm"
             onClick={() => duplicateAdjustment(adjustment.id)}
+            aria-label="Duplicate"
             title="Duplicate"
           >
-            Copy
+            <Copy size={14} aria-hidden="true" />
           </button>
           <button
             class="btn btn-sm btn-danger"
             onClick={() => removeAdjustment(adjustment.id)}
+            aria-label="Remove"
             title="Remove"
           >
-            Remove
+            <X size={14} aria-hidden="true" />
           </button>
         </div>
       </div>

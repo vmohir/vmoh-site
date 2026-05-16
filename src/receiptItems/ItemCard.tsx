@@ -1,13 +1,15 @@
+import { X } from "lucide-preact";
 import type { Item, Person } from "../splitApp/split.types.ts";
 import {
   updateItemCurrency,
   updateItemName,
   updateItemPrice,
+  setItemAssignees,
   isAdvancedMode,
 } from "state/billState.ts";
 import EditableText from "ui/EditableText";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
-import { ItemPaidBy } from "./ItemPaidBy.tsx";
+import { PaidBySelector } from "./PaidBySelector.tsx";
 import { ItemPayers } from "./ItemPayers.tsx";
 import styles from "./ItemCard.module.css";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
@@ -63,10 +65,21 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
           )}
         </div>
 
-        {people.length > 0 && <ItemPaidBy item={item} people={people} />}
+        {people.length > 0 && (
+          <PaidBySelector
+            people={people}
+            selected={item.usedBy}
+            onChange={(next) => setItemAssignees(item.id, [...next])}
+          />
+        )}
 
-        <button onClick={() => onRemove(item.id)} class="btn btn-sm btn-danger">
-          Remove
+        <button
+          onClick={() => onRemove(item.id)}
+          class="btn btn-sm btn-danger"
+          aria-label="Remove"
+          title="Remove"
+        >
+          <X size={16} aria-hidden="true" />
         </button>
       </div>
 

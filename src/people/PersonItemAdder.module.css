@@ -1,4 +1,8 @@
 .personItemAdderButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
   border: 1px dashed var(--border-subtle);
   background: transparent;
   color: var(--text-muted);

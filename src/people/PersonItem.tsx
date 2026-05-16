@@ -1,3 +1,4 @@
+import { X } from "lucide-preact";
 import type { Person } from "splitApp/split.types.ts";
 import { updatePersonName } from "state/billState.ts";
 import styles from "./PersonItem.module.css";
@@ -22,8 +23,10 @@ export default function PersonItem({ person, onRemove }: PersonItemProps) {
         <button
           onClick={() => onRemove(person.id)}
           class="btn btn-danger ml-auto"
+          aria-label="Remove"
+          title="Remove"
         >
-          Remove
+          <X size={16} aria-hidden="true" />
         </button>
       )}
     </div>

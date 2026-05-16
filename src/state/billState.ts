@@ -162,16 +162,25 @@ export function addItem(
   name: string,
   price: number,
   currency: Currency = baseCurrency.value,
+  assignees: string[] = [],
 ): void {
   if (!name.trim() || price < 0) return;
+
+  const usedBy = new Set<string>(assignees);
+  const paidBy =
+    usedBy.size === 1
+      ? new Map<string, ItemPayer>([
+          [assignees[0]!, { personId: assignees[0]!, amount: price, currency }],
+        ])
+      : new Map<string, ItemPayer>();
 
   const newItem: Item = {
     id: crypto.randomUUID(),
     name: name.trim(),
     price,
     currency,
-    usedBy: new Set<string>(),
-    paidBy: new Map<string, ItemPayer>(),
+    usedBy,
+    paidBy,
   };
 
   items.value = [...items.value, newItem];

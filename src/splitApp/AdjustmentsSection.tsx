@@ -1,3 +1,4 @@
+import { Plus } from "lucide-preact";
 import { adjustments, addAdjustment } from "../state/billState";
 import AdjustmentCard from "./AdjustmentCard";
 import styles from "./AdjustmentsSection.module.css";
@@ -20,8 +21,9 @@ export default function AdjustmentsSection() {
         <p class={styles.emptyMessage}>No adjustments added yet</p>
       )}
 
-      <button class="btn" onClick={handleAddAdjustment}>
-        + Add Adjustment
+      <button class={styles.addButton} onClick={handleAddAdjustment}>
+        <Plus size={14} aria-hidden="true" />
+        Add Adjustment
       </button>
     </div>
   );

@@ -4,24 +4,28 @@ import {
   addItem,
   baseCurrency,
   isAdvancedMode,
+  people,
 } from "../../state/billState.ts";
 import { CurrencySelector } from "../currencies/CurrencySelector.tsx";
+import { PaidBySelector } from "../../receiptItems/PaidBySelector.tsx";
 import styles from "./AddItemForm.module.css";
 
 export function AddItemForm() {
   const [nameInput, setNameInput] = useState("");
   const [priceInput, setPriceInput] = useState("");
   const [currencyInput, setCurrencyInput] = useState<Currency | null>(null);
+  const [paidByDraft, setPaidByDraft] = useState<Set<string>>(new Set());
 
   const effectiveCurrency = currencyInput ?? baseCurrency.value;
 
   const handleAdd = () => {
     const price = parseFloat(priceInput);
     if (nameInput.trim() && !isNaN(price) && price >= 0) {
-      addItem(nameInput, price, effectiveCurrency);
+      addItem(nameInput, price, effectiveCurrency, [...paidByDraft]);
       setNameInput("");
       setPriceInput("");
       setCurrencyInput(null);
+      setPaidByDraft(new Set());
     }
   };
 
@@ -54,6 +58,14 @@ export function AddItemForm() {
         <CurrencySelector
           value={effectiveCurrency}
           onChange={setCurrencyInput}
+        />
+      )}
+
+      {people.value.length > 0 && (
+        <PaidBySelector
+          people={people.value}
+          selected={paidByDraft}
+          onChange={setPaidByDraft}
         />
       )}
 

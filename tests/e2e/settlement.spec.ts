@@ -23,7 +23,7 @@ test("two people sharing one item — paid by one — settles to a single transf
   await page.getByRole("switch", { name: "Advanced" }).click();
 
   // Add a second person and rename both deterministically.
-  await page.getByRole("button", { name: "+ Add Person" }).click();
+  await page.getByRole("button", { name: "Add Person" }).click();
   const personInputs = peopleSection.getByRole("textbox");
   await expect(personInputs).toHaveCount(2);
   await personInputs.nth(0).fill("Alice");
@@ -36,8 +36,8 @@ test("two people sharing one item — paid by one — settles to a single transf
   await page.getByPlaceholder("Price").fill("20");
   await page.getByPlaceholder("Price").press("Enter");
 
-  // Open the Paid-by dropdown; Alice first (auto-pays full), then add Bob.
-  await itemsSection.getByRole("button", { name: "Paid by" }).click();
+  // The item card's Paid-by trigger (Add Item form has its own — take the last).
+  await itemsSection.getByRole("button", { name: "Paid by" }).last().click();
   await page.getByRole("checkbox", { name: "Alice" }).check();
   await page.getByRole("checkbox", { name: "Bob" }).check();
 
@@ -55,13 +55,15 @@ test("basic mode auto-pays the single assignee", async ({ page }) => {
   await page.getByPlaceholder("Price").fill("5");
   await page.getByPlaceholder("Price").press("Enter");
 
-  await itemsSection.getByRole("button", { name: "Paid by" }).click();
+  const itemCardPaidBy = itemsSection
+    .getByRole("button", { name: "Paid by" })
+    .last();
+  await itemCardPaidBy.click();
   await page.getByRole("checkbox", { name: "You" }).check();
 
   // No "Amounts paid" detail (hidden when only 1 person is assigned).
   await expect(itemsSection.getByText("Amounts paid")).toBeHidden();
 
-  // Avatar replaces the placeholder once selected — pill is in expanded state on first click.
-  const trigger = itemsSection.getByRole("button", { name: "Paid by" });
-  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  // Pill stays open in expanded state after the first click.
+  await expect(itemCardPaidBy).toHaveAttribute("aria-expanded", "true");
 });

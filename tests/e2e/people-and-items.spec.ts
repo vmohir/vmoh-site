@@ -18,7 +18,7 @@ test("default state shows one person and no items", async ({ page }) => {
 });
 
 test("add and remove a person", async ({ page }) => {
-  await page.getByRole("button", { name: "+ Add Person" }).click();
+  await page.getByRole("button", { name: "Add Person" }).click();
 
   // With 2 people, both rows show a Remove button.
   const peopleRemove = peopleSection(page).getByRole("button", { name: "Remove" });
