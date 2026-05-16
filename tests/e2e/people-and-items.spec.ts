@@ -1,0 +1,69 @@
+import { test, expect, type Page } from "@playwright/test";
+
+test.beforeEach(async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => localStorage.removeItem("split-bill-state"));
+  await page.reload({ waitUntil: "networkidle" });
+});
+
+const peopleSection = (page: Page) =>
+  page.locator("section").filter({ has: page.getByRole("heading", { name: "People" }) });
+const itemsSection = (page: Page) =>
+  page.locator("section").filter({ has: page.getByRole("heading", { name: "Items" }) });
+
+test("default state shows one person and no items", async ({ page }) => {
+  await expect(page.getByRole("heading", { name: "Split Bill" })).toBeVisible();
+  await expect(peopleSection(page).getByRole("textbox")).toHaveValue("You");
+  await expect(page.getByText("No items added yet")).toBeVisible();
+});
+
+test("add and remove a person", async ({ page }) => {
+  await page.getByRole("button", { name: "+ Add Person" }).click();
+
+  // With 2 people, both rows show a Remove button.
+  const peopleRemove = peopleSection(page).getByRole("button", { name: "Remove" });
+  await expect(peopleRemove).toHaveCount(2);
+
+  await peopleRemove.nth(1).click();
+
+  // With only 1 person left, the Remove button is hidden to prevent emptying the list.
+  await expect(peopleRemove).toHaveCount(0);
+});
+
+test("add an item without advanced mode", async ({ page }) => {
+  await page.getByPlaceholder("Item name").fill("Pizza");
+  await page.getByPlaceholder("Price").fill("24");
+  await page.getByPlaceholder("Price").press("Enter");
+
+  await expect(page.getByText("No items added yet")).toBeHidden();
+  // The item card's editable name and price — first textbox is the empty Add Item name.
+  const itemTextboxes = itemsSection(page).getByRole("textbox");
+  await expect(itemTextboxes.nth(1)).toHaveValue("Pizza");
+  await expect(itemTextboxes.nth(2)).toHaveValue("24");
+});
+
+test("advanced mode shows the per-item currency selector", async ({ page }) => {
+  const items = itemsSection(page);
+
+  await expect(items.getByRole("combobox")).toHaveCount(0);
+
+  await page.getByRole("switch", { name: "Advanced" }).click();
+  await expect(items.getByRole("combobox")).toHaveCount(1);
+
+  await page.getByRole("switch", { name: "Advanced" }).click();
+  await expect(items.getByRole("combobox")).toHaveCount(0);
+});
+
+test("state survives a reload", async ({ page }) => {
+  await page.getByPlaceholder("Item name").fill("Coffee");
+  await page.getByPlaceholder("Price").fill("4.5");
+  await page.getByPlaceholder("Price").press("Enter");
+
+  await expect(itemsSection(page).getByRole("textbox").nth(1)).toHaveValue("Coffee");
+
+  await page.reload({ waitUntil: "networkidle" });
+
+  const itemTextboxes = itemsSection(page).getByRole("textbox");
+  await expect(itemTextboxes.nth(1)).toHaveValue("Coffee");
+  await expect(itemTextboxes.nth(2)).toHaveValue("4.5");
+});

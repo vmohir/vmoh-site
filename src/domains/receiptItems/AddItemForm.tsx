@@ -1,21 +1,27 @@
 import { useState } from "preact/hooks";
 import type { Currency } from "../../splitApp/split.types.ts";
-import { addItem } from "../../state/billState.ts";
+import {
+  addItem,
+  baseCurrency,
+  isAdvancedMode,
+} from "../../state/billState.ts";
 import { CurrencySelector } from "../currencies/CurrencySelector.tsx";
 import styles from "./AddItemForm.module.css";
 
 export function AddItemForm() {
   const [nameInput, setNameInput] = useState("");
   const [priceInput, setPriceInput] = useState("");
-  const [currencyInput, setCurrencyInput] = useState<Currency>("USD");
+  const [currencyInput, setCurrencyInput] = useState<Currency | null>(null);
+
+  const effectiveCurrency = currencyInput ?? baseCurrency.value;
 
   const handleAdd = () => {
     const price = parseFloat(priceInput);
     if (nameInput.trim() && !isNaN(price) && price >= 0) {
-      addItem(nameInput, price, currencyInput);
+      addItem(nameInput, price, effectiveCurrency);
       setNameInput("");
       setPriceInput("");
-      setCurrencyInput("USD");
+      setCurrencyInput(null);
     }
   };
 
@@ -43,9 +49,14 @@ export function AddItemForm() {
         step="0.01"
         min="0"
       />
-      <CurrencySelector value={currencyInput} onChange={setCurrencyInput} />
+      {isAdvancedMode.value && (
+        <CurrencySelector
+          value={effectiveCurrency}
+          onChange={setCurrencyInput}
+        />
+      )}
 
-      <button onClick={handleAdd}>Add Item</button>
+      <button onClick={handleAdd}>Add</button>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 ---
+import AppHeader from './AppHeader';
 import PeopleSection from '../people/PeopleSection';
 import ItemsSection from '../receiptItems/ItemsSection';
 import AdjustmentsSection from './AdjustmentsSection';
@@ -6,6 +7,8 @@ import ResultsSection from './ResultsSection';
 ---
 
 <div class="split-bill-container">
+  <AppHeader client:load />
+
   <section class="people-section">
     <PeopleSection client:load />
   </section>
@@ -31,13 +34,13 @@ import ResultsSection from './ResultsSection';
   .split-bill-container {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    padding: 1rem;
-    max-width: 800px;
+    gap: 2.25rem;
+    padding: 1.5rem 1rem 6rem;
+    max-width: 640px;
     margin: 0 auto;
   }
 
   section {
-    @apply flex flex-col gap-4;
+    @apply flex flex-col gap-3;
   }
 </style>

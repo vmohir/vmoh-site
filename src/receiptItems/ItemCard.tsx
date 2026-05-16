@@ -3,7 +3,7 @@ import {
   updateItemCurrency,
   updateItemName,
   updateItemPrice,
-  hasMultipleCurrencies,
+  isAdvancedMode,
 } from "state/billState.ts";
 import EditableText from "ui/EditableText";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
@@ -55,7 +55,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
               validate={validatePrice}
               autoFocus={false}
             />
-            {hasMultipleCurrencies.value && (
+            {isAdvancedMode.value && (
               <CurrencySelector
                 class={styles.currencySelector}
                 value={item.currency}

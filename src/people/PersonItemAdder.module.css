@@ -1,12 +1,17 @@
 .personItemAdderButton {
-  border: 2px dashed var(--border-primary);
+  border: 1px dashed var(--border-subtle);
+  background: transparent;
   color: var(--text-muted);
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
   height: var(--person-item-height);
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: background var(--transition);
-  &:hover {
-    background: var(--surface-bg);
-  }
+  transition: all var(--transition);
+}
+
+.personItemAdderButton:hover {
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+  background: var(--surface-bg);
 }

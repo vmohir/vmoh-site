@@ -2,11 +2,16 @@
   padding: 0.25rem 0;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--border-primary);
+  border-bottom: 1px dashed transparent;
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: 0.9375rem;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color var(--transition);
+  min-width: 0;
+}
+
+.editableText:hover {
+  border-bottom-color: var(--border-subtle);
 }
 
 .editableText:focus {

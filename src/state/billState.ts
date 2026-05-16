@@ -31,7 +31,7 @@ interface SerializedState {
   adjustments: Adjustment[];
   baseCurrency: Currency;
   settlementAlgorithm: SettlementAlgorithm;
-  hasMultipleCurrencies: boolean;
+  isAdvancedMode: boolean;
 }
 
 function serializeItems(items: Item[]): SerializedItem[] {
@@ -81,8 +81,8 @@ export const baseCurrency = signal<Currency>(savedState?.baseCurrency ?? "USD");
 export const settlementAlgorithm = signal<SettlementAlgorithm>(
   savedState?.settlementAlgorithm ?? "minimize-transactions",
 );
-export const hasMultipleCurrencies = signal<boolean>(
-  savedState?.hasMultipleCurrencies ?? false,
+export const isAdvancedMode = signal<boolean>(
+  savedState?.isAdvancedMode ?? false,
 );
 
 // Persist state to localStorage whenever it changes
@@ -93,7 +93,7 @@ effect(() => {
     adjustments: adjustments.value,
     baseCurrency: baseCurrency.value,
     settlementAlgorithm: settlementAlgorithm.value,
-    hasMultipleCurrencies: hasMultipleCurrencies.value,
+    isAdvancedMode: isAdvancedMode.value,
   };
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -161,7 +161,7 @@ export function removePerson(id: string): void {
 export function addItem(
   name: string,
   price: number,
-  currency: Currency = "USD",
+  currency: Currency = baseCurrency.value,
 ): void {
   if (!name.trim() || price < 0) return;
 
@@ -321,4 +321,9 @@ export function updateSettlementAlgorithm(
   algorithm: SettlementAlgorithm,
 ): void {
   settlementAlgorithm.value = algorithm;
+}
+
+// Advanced mode
+export function toggleAdvancedMode(): void {
+  isAdvancedMode.value = !isAdvancedMode.value;
 }

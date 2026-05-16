@@ -1,11 +1,12 @@
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
   user-select: none;
 }

@@ -1,38 +1,69 @@
 .inputGroup {
   display: flex;
   gap: 0.5rem;
+  padding: 0.375rem;
+  background: var(--surface-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius);
+  transition: border-color var(--transition);
+}
+
+.inputGroup:focus-within {
+  border-color: var(--border-primary);
 }
 
 .inputGroup input {
-  padding: 0.5rem;
-  background: var(--surface-bg);
-  border: 1px solid var(--border-primary);
+  padding: 0.375rem 0.5rem;
+  background: transparent;
+  border: none;
   color: var(--text-primary);
+  font-size: 0.9375rem;
+  outline: none;
+}
+
+.inputGroup input::placeholder {
+  color: var(--text-muted);
 }
 
 .inputGroup input[type="text"] {
   flex: 2;
+  min-width: 0;
 }
 
 .inputGroup input[type="number"] {
   flex: 1;
+  min-width: 0;
+  -moz-appearance: textfield;
+}
+
+.inputGroup input[type="number"]::-webkit-outer-spin-button,
+.inputGroup input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .inputGroup select {
-  padding: 0.5rem;
-  background: var(--surface-bg);
-  border: 1px solid var(--border-primary);
-  color: var(--text-primary);
+  padding: 0.375rem 0.25rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  outline: none;
 }
 
 .inputGroup button {
-  padding: 0.5rem 1rem;
-  background: var(--surface-subtle-bg);
-  border: 1px solid var(--border-primary);
-  color: var(--text-primary);
+  padding: 0.375rem 0.875rem;
+  background: var(--text-primary);
+  border: none;
+  color: var(--surface-bg);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background var(--transition);
 }
 
 .inputGroup button:hover {
-  background: var(--interactive-hover-bg);
+  background: var(--text-secondary);
 }
