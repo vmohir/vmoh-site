@@ -53,32 +53,34 @@
   }
 
   [data-theme="dark"] {
+    /* Linear-inspired: slightly cool, desaturated, low-contrast surfaces */
+
     /* Backgrounds */
-    --canvas-bg: theme(colors.neutral.950);
-    --surface-bg: theme(colors.neutral.900);
-    --surface-subtle-bg: theme(colors.neutral.900);
-    --surface-muted-bg: theme(colors.neutral.800);
+    --canvas-bg: #0a0a0c;
+    --surface-bg: #131316;
+    --surface-subtle-bg: #17171b;
+    --surface-muted-bg: #1f1f25;
 
-    /* Text */
-    --text-primary: theme(colors.neutral.50);
-    --text-secondary: theme(colors.neutral.300);
-    --text-muted: theme(colors.neutral.400);
+    /* Text — primary just shy of pure white for comfort */
+    --text-primary: #ededee;
+    --text-secondary: #a8a9b0;
+    --text-muted: #6e6f78;
 
-    /* Borders */
-    --border-primary: theme(colors.neutral.700);
-    --border-subtle: theme(colors.neutral.800);
+    /* Borders — barely visible, just hint at separation */
+    --border-primary: #2c2c33;
+    --border-subtle: #222227;
 
-    /* Status */
-    --status-success: theme(colors.emerald.400);
-    --status-success-bg: theme(colors.emerald.950);
-    --status-error: theme(colors.rose.400);
-    --status-error-bg: theme(colors.rose.950);
-    --status-warning: theme(colors.amber.400);
-    --status-warning-bg: theme(colors.amber.950);
+    /* Status — softer, less neon than the default palettes */
+    --status-success: #4dc28f;
+    --status-success-bg: #0d2218;
+    --status-error: #f17979;
+    --status-error-bg: #2a1417;
+    --status-warning: #e5b048;
+    --status-warning-bg: #251b0a;
 
     /* Interactive */
-    --interactive-hover-bg: theme(colors.neutral.800);
-    --interactive-active-bg: theme(colors.neutral.700);
+    --interactive-hover-bg: #1d1d22;
+    --interactive-active-bg: #26262d;
   }
 
   html,

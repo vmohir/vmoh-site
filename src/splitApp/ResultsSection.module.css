@@ -212,7 +212,7 @@
 }
 
 [data-theme="dark"] .adjustment-tip {
-  color: #34d399;
+  color: #5ec391;
 }
 
 .adjustment-tax {
@@ -220,7 +220,7 @@
 }
 
 [data-theme="dark"] .adjustment-tax {
-  color: #fbbf24;
+  color: #d4a247;
 }
 
 .adjustment-discount {
@@ -228,5 +228,5 @@
 }
 
 [data-theme="dark"] .adjustment-discount {
-  color: #60a5fa;
+  color: #6ba5e0;
 }

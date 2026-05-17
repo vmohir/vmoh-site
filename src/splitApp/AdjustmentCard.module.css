@@ -65,21 +65,21 @@
 }
 
 [data-theme="dark"] .adjustmentCard.tip .typeSelector {
-  color: #34d399;
-  background: #064e3b;
-  border-color: #065f46;
+  color: #5ec391;
+  background: #0d2218;
+  border-color: #1a3528;
 }
 
 [data-theme="dark"] .adjustmentCard.tax .typeSelector {
-  color: #fbbf24;
-  background: #451a03;
-  border-color: #78350f;
+  color: #d4a247;
+  background: #241b0a;
+  border-color: #3a2e16;
 }
 
 [data-theme="dark"] .adjustmentCard.discount .typeSelector {
-  color: #60a5fa;
-  background: #172554;
-  border-color: #1e3a8a;
+  color: #6ba5e0;
+  background: #0d1c2c;
+  border-color: #1a3050;
 }
 
 .cardBody {
