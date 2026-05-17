@@ -45,43 +45,6 @@
   font-size: 0.8125rem;
 }
 
-/* Type tag — small color pill instead of a heavy left border */
-.adjustmentCard.tip .typeSelector {
-  color: #059669;
-  border-color: #a7f3d0;
-  background: #ecfdf5;
-}
-
-.adjustmentCard.tax .typeSelector {
-  color: #b45309;
-  border-color: #fde68a;
-  background: #fffbeb;
-}
-
-.adjustmentCard.discount .typeSelector {
-  color: #1d4ed8;
-  border-color: #bfdbfe;
-  background: #eff6ff;
-}
-
-[data-theme="dark"] .adjustmentCard.tip .typeSelector {
-  color: #5ec391;
-  background: #0d2218;
-  border-color: #1a3528;
-}
-
-[data-theme="dark"] .adjustmentCard.tax .typeSelector {
-  color: #d4a247;
-  background: #241b0a;
-  border-color: #3a2e16;
-}
-
-[data-theme="dark"] .adjustmentCard.discount .typeSelector {
-  color: #6ba5e0;
-  background: #0d1c2c;
-  border-color: #1a3050;
-}
-
 .cardBody {
   display: flex;
   gap: 0.5rem;

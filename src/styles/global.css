@@ -55,16 +55,16 @@
   [data-theme="dark"] {
     /* Linear-inspired: slightly cool, desaturated, mid-dark canvas (not near-black) */
 
-    /* Backgrounds — dark gray (not near-black), cards a step above */
-    --canvas-bg: #23232a;
-    --surface-bg: #2e2e35;
-    --surface-subtle-bg: #27272d;
-    --surface-muted-bg: #393940;
+    /* Backgrounds — dark gray, cards a step above */
+    --canvas-bg: #1c1c20;
+    --surface-bg: #28282e;
+    --surface-subtle-bg: #222227;
+    --surface-muted-bg: #33333a;
 
     /* Text — primary just shy of pure white for comfort */
-    --text-primary: #ededee;
-    --text-secondary: #b0b1b8;
-    --text-muted: #76777f;
+    --text-primary: #f5f5f7;
+    --text-secondary: #c5c6cc;
+    --text-muted: #84858c;
 
     /* Borders — barely visible, just hint at separation */
     --border-primary: #3f3f47;
