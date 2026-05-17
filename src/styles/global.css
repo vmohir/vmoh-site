@@ -53,34 +53,34 @@
   }
 
   [data-theme="dark"] {
-    /* Linear-inspired: slightly cool, desaturated, low-contrast surfaces */
+    /* Linear-inspired: slightly cool, desaturated, mid-dark canvas (not near-black) */
 
-    /* Backgrounds */
-    --canvas-bg: #0a0a0c;
-    --surface-bg: #131316;
-    --surface-subtle-bg: #17171b;
-    --surface-muted-bg: #1f1f25;
+    /* Backgrounds — dark gray (not near-black), cards a step above */
+    --canvas-bg: #23232a;
+    --surface-bg: #2e2e35;
+    --surface-subtle-bg: #27272d;
+    --surface-muted-bg: #393940;
 
     /* Text — primary just shy of pure white for comfort */
     --text-primary: #ededee;
-    --text-secondary: #a8a9b0;
-    --text-muted: #6e6f78;
+    --text-secondary: #b0b1b8;
+    --text-muted: #76777f;
 
     /* Borders — barely visible, just hint at separation */
-    --border-primary: #2c2c33;
-    --border-subtle: #222227;
+    --border-primary: #3f3f47;
+    --border-subtle: #33333a;
 
     /* Status — softer, less neon than the default palettes */
-    --status-success: #4dc28f;
-    --status-success-bg: #0d2218;
+    --status-success: #5ec391;
+    --status-success-bg: #14291e;
     --status-error: #f17979;
-    --status-error-bg: #2a1417;
+    --status-error-bg: #2f191d;
     --status-warning: #e5b048;
-    --status-warning-bg: #251b0a;
+    --status-warning-bg: #2a2010;
 
     /* Interactive */
-    --interactive-hover-bg: #1d1d22;
-    --interactive-active-bg: #26262d;
+    --interactive-hover-bg: #32323a;
+    --interactive-active-bg: #3d3d45;
   }
 
   html,
