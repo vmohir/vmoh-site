@@ -7,25 +7,25 @@ import {
   people,
 } from "../../state/billState.ts";
 import { CurrencySelector } from "../currencies/CurrencySelector.tsx";
-import { PaidBySelector } from "../../receiptItems/PaidBySelector.tsx";
+import { SharedBySelector } from "../../receiptItems/SharedBySelector.tsx";
 import styles from "./AddItemForm.module.css";
 
 export function AddItemForm() {
   const [nameInput, setNameInput] = useState("");
   const [priceInput, setPriceInput] = useState("");
   const [currencyInput, setCurrencyInput] = useState<Currency | null>(null);
-  const [paidByDraft, setPaidByDraft] = useState<Set<string>>(new Set());
+  const [sharedByDraft, setSharedByDraft] = useState<Set<string>>(new Set());
 
   const effectiveCurrency = currencyInput ?? baseCurrency.value;
 
   const handleAdd = () => {
     const price = parseFloat(priceInput);
     if (nameInput.trim() && !isNaN(price) && price >= 0) {
-      addItem(nameInput, price, effectiveCurrency, [...paidByDraft]);
+      addItem(nameInput, price, effectiveCurrency, [...sharedByDraft]);
       setNameInput("");
       setPriceInput("");
       setCurrencyInput(null);
-      setPaidByDraft(new Set());
+      setSharedByDraft(new Set());
     }
   };
 
@@ -62,10 +62,10 @@ export function AddItemForm() {
       )}
 
       {people.value.length > 0 && (
-        <PaidBySelector
+        <SharedBySelector
           people={people.value}
-          selected={paidByDraft}
-          onChange={setPaidByDraft}
+          selected={sharedByDraft}
+          onChange={setSharedByDraft}
         />
       )}
 

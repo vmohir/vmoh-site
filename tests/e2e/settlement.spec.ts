@@ -19,7 +19,7 @@ test("two people sharing one item — paid by one — settles to a single transf
     .locator("section")
     .filter({ has: page.getByRole("heading", { name: "Results" }) });
 
-  // Advanced mode unlocks multi-select on the Paid-by control.
+  // Advanced mode unlocks multi-select on the Shared-by control.
   await page.getByRole("switch", { name: "Advanced" }).click();
 
   // Add a second person and rename both deterministically.
@@ -36,8 +36,8 @@ test("two people sharing one item — paid by one — settles to a single transf
   await page.getByPlaceholder("Price").fill("20");
   await page.getByPlaceholder("Price").press("Enter");
 
-  // The item card's Paid-by trigger (Add Item form has its own — take the last).
-  await itemsSection.getByRole("button", { name: "Paid by" }).last().click();
+  // The item card's Shared-by trigger (Add Item form has its own — take the last).
+  await itemsSection.getByRole("button", { name: "Shared by" }).last().click();
   await page.getByRole("checkbox", { name: "Alice" }).check();
   await page.getByRole("checkbox", { name: "Bob" }).check();
 
@@ -56,7 +56,7 @@ test("basic mode auto-pays the single assignee", async ({ page }) => {
   await page.getByPlaceholder("Price").press("Enter");
 
   const itemCardPaidBy = itemsSection
-    .getByRole("button", { name: "Paid by" })
+    .getByRole("button", { name: "Shared by" })
     .last();
   await itemCardPaidBy.click();
   await page.getByRole("checkbox", { name: "You" }).check();

@@ -9,7 +9,7 @@ import {
 } from "state/billState.ts";
 import EditableText from "ui/EditableText";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
-import { PaidBySelector } from "./PaidBySelector.tsx";
+import { SharedBySelector } from "./SharedBySelector.tsx";
 import { ItemPayers } from "./ItemPayers.tsx";
 import styles from "./ItemCard.module.css";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
@@ -66,7 +66,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         </div>
 
         {people.length > 0 && (
-          <PaidBySelector
+          <SharedBySelector
             people={people}
             selected={item.usedBy}
             onChange={(next) => setItemAssignees(item.id, [...next])}
