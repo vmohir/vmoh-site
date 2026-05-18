@@ -10,15 +10,17 @@ interface PeoplePickerProps {
   people: Person[];
   selected: Set<string>;
   onChange: (next: Set<string>) => void;
+  // When true, multi-select is allowed regardless of mode. Default: basic = single, advanced = multi.
+  alwaysMulti?: boolean;
 }
 
 // Multi/single-select dropdown of people for an item.
-// Behaviour follows isAdvancedMode: advanced toggles, basic replaces.
 export function PeoplePicker({
   label,
   people,
   selected,
   onChange,
+  alwaysMulti = false,
 }: PeoplePickerProps) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -43,9 +45,10 @@ export function PeoplePicker({
 
   const selectedPeople = people.filter((p) => selected.has(p.id));
 
+  const multi = alwaysMulti || isAdvancedMode.value;
   const handlePick = (personId: string) => {
     const next = new Set(selected);
-    if (isAdvancedMode.value) {
+    if (multi) {
       if (next.has(personId)) next.delete(personId);
       else next.add(personId);
     } else if (next.has(personId) && next.size === 1) {

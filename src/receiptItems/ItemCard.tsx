@@ -75,6 +75,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
               people={people}
               selected={item.usedBy}
               onChange={(next) => setItemAssignees(item.id, [...next])}
+              alwaysMulti
             />
             <PeoplePicker
               label="Paid by"

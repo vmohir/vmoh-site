@@ -72,6 +72,7 @@ export function AddItemForm() {
             people={people.value}
             selected={sharedByDraft}
             onChange={setSharedByDraft}
+            alwaysMulti
           />
           <PeoplePicker
             label="Paid by"
