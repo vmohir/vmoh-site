@@ -22,7 +22,7 @@ export default function PersonItem({ person, onRemove }: PersonItemProps) {
       {onRemove && (
         <button
           onClick={() => onRemove(person.id)}
-          class="btn btn-danger ml-auto"
+          class="btn btn-icon btn-danger ml-auto"
           aria-label="Remove"
           title="Remove"
         >

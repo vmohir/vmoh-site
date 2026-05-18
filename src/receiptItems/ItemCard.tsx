@@ -75,7 +75,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
 
         <button
           onClick={() => onRemove(item.id)}
-          class="btn btn-sm btn-danger"
+          class="btn btn-sm btn-icon btn-danger"
           aria-label="Remove"
           title="Remove"
         >

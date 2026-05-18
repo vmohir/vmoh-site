@@ -84,7 +84,7 @@ export default function AdjustmentCard({ adjustment }: AdjustmentCardProps) {
 
         <div class={styles.actions}>
           <button
-            class="btn btn-sm"
+            class="btn btn-sm btn-icon"
             onClick={() => duplicateAdjustment(adjustment.id)}
             aria-label="Duplicate"
             title="Duplicate"
@@ -92,7 +92,7 @@ export default function AdjustmentCard({ adjustment }: AdjustmentCardProps) {
             <Copy size={14} aria-hidden="true" />
           </button>
           <button
-            class="btn btn-sm btn-danger"
+            class="btn btn-sm btn-icon btn-danger"
             onClick={() => removeAdjustment(adjustment.id)}
             aria-label="Remove"
             title="Remove"
