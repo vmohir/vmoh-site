@@ -3,21 +3,23 @@ import { ChevronDown } from "lucide-preact";
 import type { Person } from "../splitApp/split.types.ts";
 import { isAdvancedMode } from "state/billState.ts";
 import { PersonAvatar } from "ui/PersonAvatar.tsx";
-import styles from "./SharedBySelector.module.css";
+import styles from "./PeoplePicker.module.css";
 
-interface SharedBySelectorProps {
+interface PeoplePickerProps {
+  label: string;
   people: Person[];
   selected: Set<string>;
   onChange: (next: Set<string>) => void;
 }
 
-// Multi/single-select dropdown of people who share/consume an item.
+// Multi/single-select dropdown of people for an item.
 // Behaviour follows isAdvancedMode: advanced toggles, basic replaces.
-export function SharedBySelector({
+export function PeoplePicker({
+  label,
   people,
   selected,
   onChange,
-}: SharedBySelectorProps) {
+}: PeoplePickerProps) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -60,13 +62,13 @@ export function SharedBySelector({
       <button
         type="button"
         class={styles.trigger}
-        aria-label="Shared by"
+        aria-label={label}
         aria-expanded={open}
         aria-haspopup="listbox"
         onClick={() => setOpen((v) => !v)}
       >
         {selectedPeople.length === 0 ? (
-          <span class={styles.placeholder}>Shared by</span>
+          <span class={styles.placeholder}>{label}</span>
         ) : (
           <span class={styles.avatars}>
             {selectedPeople.map((p) => (

@@ -7,7 +7,7 @@ import {
   people,
 } from "../../state/billState.ts";
 import { CurrencySelector } from "../currencies/CurrencySelector.tsx";
-import { SharedBySelector } from "../../receiptItems/SharedBySelector.tsx";
+import { PeoplePicker } from "../../receiptItems/PeoplePicker.tsx";
 import styles from "./AddItemForm.module.css";
 
 export function AddItemForm() {
@@ -15,17 +15,21 @@ export function AddItemForm() {
   const [priceInput, setPriceInput] = useState("");
   const [currencyInput, setCurrencyInput] = useState<Currency | null>(null);
   const [sharedByDraft, setSharedByDraft] = useState<Set<string>>(new Set());
+  const [paidByDraft, setPaidByDraft] = useState<Set<string>>(new Set());
 
   const effectiveCurrency = currencyInput ?? baseCurrency.value;
 
   const handleAdd = () => {
     const price = parseFloat(priceInput);
     if (nameInput.trim() && !isNaN(price) && price >= 0) {
-      addItem(nameInput, price, effectiveCurrency, [...sharedByDraft]);
+      addItem(nameInput, price, effectiveCurrency, [...sharedByDraft], [
+        ...paidByDraft,
+      ]);
       setNameInput("");
       setPriceInput("");
       setCurrencyInput(null);
       setSharedByDraft(new Set());
+      setPaidByDraft(new Set());
     }
   };
 
@@ -62,11 +66,20 @@ export function AddItemForm() {
       )}
 
       {people.value.length > 0 && (
-        <SharedBySelector
-          people={people.value}
-          selected={sharedByDraft}
-          onChange={setSharedByDraft}
-        />
+        <>
+          <PeoplePicker
+            label="Shared by"
+            people={people.value}
+            selected={sharedByDraft}
+            onChange={setSharedByDraft}
+          />
+          <PeoplePicker
+            label="Paid by"
+            people={people.value}
+            selected={paidByDraft}
+            onChange={setPaidByDraft}
+          />
+        </>
       )}
 
       <button onClick={handleAdd}>Add</button>

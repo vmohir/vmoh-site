@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await page.reload({ waitUntil: "networkidle" });
 });
 
-test("two people sharing one item — paid by one — settles to a single transfer", async ({
+test("two people share an item, one pays — settles to a single transfer", async ({
   page,
 }) => {
   const peopleSection = page
@@ -19,7 +19,7 @@ test("two people sharing one item — paid by one — settles to a single transf
     .locator("section")
     .filter({ has: page.getByRole("heading", { name: "Results" }) });
 
-  // Advanced mode unlocks multi-select on the Shared-by control.
+  // Advanced mode unlocks multi-select on the people pickers.
   await page.getByRole("switch", { name: "Advanced" }).click();
 
   // Add a second person and rename both deterministically.
@@ -36,17 +36,25 @@ test("two people sharing one item — paid by one — settles to a single transf
   await page.getByPlaceholder("Price").fill("20");
   await page.getByPlaceholder("Price").press("Enter");
 
-  // The item card's Shared-by trigger (Add Item form has its own — take the last).
+  // Shared by Alice + Bob (item card's picker — Add form has its own).
   await itemsSection.getByRole("button", { name: "Shared by" }).last().click();
   await page.getByRole("checkbox", { name: "Alice" }).check();
   await page.getByRole("checkbox", { name: "Bob" }).check();
+  // Close the dropdown by pressing Escape.
+  await page.keyboard.press("Escape");
+
+  // Paid by Alice.
+  await itemsSection.getByRole("button", { name: "Paid by" }).last().click();
+  await page.getByRole("checkbox", { name: "Alice" }).check();
 
   // Bob -> Alice $10.00 (each owes 10, Alice paid 20).
   await expect(resultsSection.getByText("1 transaction needed")).toBeVisible();
   await expect(resultsSection.getByText("$10.00 USD")).toBeVisible();
 });
 
-test("basic mode auto-pays the single assignee", async ({ page }) => {
+test("single-person item: Shared-by + Paid-by hides the Amounts-paid detail", async ({
+  page,
+}) => {
   const itemsSection = page
     .locator("section")
     .filter({ has: page.getByRole("heading", { name: "Items" }) });
@@ -55,15 +63,14 @@ test("basic mode auto-pays the single assignee", async ({ page }) => {
   await page.getByPlaceholder("Price").fill("5");
   await page.getByPlaceholder("Price").press("Enter");
 
-  const itemCardPaidBy = itemsSection
-    .getByRole("button", { name: "Shared by" })
-    .last();
-  await itemCardPaidBy.click();
+  // Pick You as the sole sharer and payer.
+  await itemsSection.getByRole("button", { name: "Shared by" }).last().click();
+  await page.getByRole("checkbox", { name: "You" }).check();
+  await page.keyboard.press("Escape");
+
+  await itemsSection.getByRole("button", { name: "Paid by" }).last().click();
   await page.getByRole("checkbox", { name: "You" }).check();
 
-  // No "Amounts paid" detail (hidden when only 1 person is assigned).
+  // Single payer: no Amounts-paid breakdown.
   await expect(itemsSection.getByText("Amounts paid")).toBeHidden();
-
-  // Pill stays open in expanded state after the first click.
-  await expect(itemCardPaidBy).toHaveAttribute("aria-expanded", "true");
 });

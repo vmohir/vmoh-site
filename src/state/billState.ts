@@ -163,24 +163,17 @@ export function addItem(
   price: number,
   currency: Currency = baseCurrency.value,
   assignees: string[] = [],
+  payers: string[] = [],
 ): void {
   if (!name.trim() || price < 0) return;
-
-  const usedBy = new Set<string>(assignees);
-  const paidBy =
-    usedBy.size === 1
-      ? new Map<string, ItemPayer>([
-          [assignees[0]!, { personId: assignees[0]!, amount: price, currency }],
-        ])
-      : new Map<string, ItemPayer>();
 
   const newItem: Item = {
     id: crypto.randomUUID(),
     name: name.trim(),
     price,
     currency,
-    usedBy,
-    paidBy,
+    usedBy: new Set<string>(assignees),
+    paidBy: distributePayment(price, currency, payers),
   };
 
   items.value = [...items.value, newItem];
@@ -203,7 +196,7 @@ export function updateItemPrice(id: string, newPrice: number): void {
 
   items.value = items.value.map((item) => {
     if (item.id !== id) return item;
-    return { ...item, price: newPrice, paidBy: autoPaidBy(item, item.usedBy, newPrice) };
+    return { ...item, price: newPrice, paidBy: rescalePayments(item.paidBy, item.price, newPrice) };
   });
 }
 
@@ -218,33 +211,61 @@ export function toggleItemAssignment(itemId: string, personId: string): void {
       newAssignedTo.add(personId);
     }
 
-    return { ...item, usedBy: newAssignedTo, paidBy: autoPaidBy(item, newAssignedTo) };
+    return { ...item, usedBy: newAssignedTo };
   });
 }
 
 export function setItemAssignees(itemId: string, personIds: string[]): void {
   items.value = items.value.map((item) => {
     if (item.id !== itemId) return item;
-    const newAssignedTo = new Set(personIds);
-    return { ...item, usedBy: newAssignedTo, paidBy: autoPaidBy(item, newAssignedTo) };
+    return { ...item, usedBy: new Set(personIds) };
   });
 }
 
-// When exactly one person is assigned, they automatically pay the full amount.
-// When nobody is assigned, clear payments. Otherwise leave them alone (user picks in advanced mode).
-function autoPaidBy(
-  item: Item,
-  usedBy: Set<string>,
-  price = item.price,
+// Set the list of payers for an item; the item price is split equally across them.
+// Pass [] to clear all payers.
+export function setItemPayers(itemId: string, personIds: string[]): void {
+  items.value = items.value.map((item) => {
+    if (item.id !== itemId) return item;
+    return {
+      ...item,
+      paidBy: distributePayment(item.price, item.currency, personIds),
+    };
+  });
+}
+
+function distributePayment(
+  price: number,
+  currency: Currency,
+  personIds: string[],
 ): Map<string, ItemPayer> {
-  if (usedBy.size === 1) {
-    const only = usedBy.values().next().value!;
-    return new Map([[only, { personId: only, amount: price, currency: item.currency }]]);
+  if (personIds.length === 0) return new Map();
+  const amount = price / personIds.length;
+  return new Map(
+    personIds.map((id) => [id, { personId: id, amount, currency }]),
+  );
+}
+
+// Scale existing per-person payment amounts proportionally when the item price changes.
+function rescalePayments(
+  paidBy: Map<string, ItemPayer>,
+  oldPrice: number,
+  newPrice: number,
+): Map<string, ItemPayer> {
+  if (paidBy.size === 0) return paidBy;
+  if (oldPrice === 0) {
+    // No prior amounts to scale from — split the new price equally.
+    const ids = [...paidBy.keys()];
+    const currency = paidBy.values().next().value!.currency;
+    return distributePayment(newPrice, currency, ids);
   }
-  if (usedBy.size === 0) {
-    return new Map();
-  }
-  return item.paidBy;
+  const ratio = newPrice / oldPrice;
+  return new Map(
+    [...paidBy.entries()].map(([id, p]) => [
+      id,
+      { ...p, amount: p.amount * ratio },
+    ]),
+  );
 }
 
 // Adjustment operations

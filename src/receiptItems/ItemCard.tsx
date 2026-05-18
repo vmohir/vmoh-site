@@ -5,11 +5,12 @@ import {
   updateItemName,
   updateItemPrice,
   setItemAssignees,
+  setItemPayers,
   isAdvancedMode,
 } from "state/billState.ts";
 import EditableText from "ui/EditableText";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
-import { SharedBySelector } from "./SharedBySelector.tsx";
+import { PeoplePicker } from "./PeoplePicker.tsx";
 import { ItemPayers } from "./ItemPayers.tsx";
 import styles from "./ItemCard.module.css";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
@@ -36,6 +37,8 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
     const price = parseFloat(value);
     return !isNaN(price) && price >= 0;
   };
+
+  const paidByIds = new Set(item.paidBy.keys());
 
   return (
     <div class={styles.itemCard}>
@@ -66,11 +69,20 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         </div>
 
         {people.length > 0 && (
-          <SharedBySelector
-            people={people}
-            selected={item.usedBy}
-            onChange={(next) => setItemAssignees(item.id, [...next])}
-          />
+          <>
+            <PeoplePicker
+              label="Shared by"
+              people={people}
+              selected={item.usedBy}
+              onChange={(next) => setItemAssignees(item.id, [...next])}
+            />
+            <PeoplePicker
+              label="Paid by"
+              people={people}
+              selected={paidByIds}
+              onChange={(next) => setItemPayers(item.id, [...next])}
+            />
+          </>
         )}
 
         <button
@@ -83,7 +95,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         </button>
       </div>
 
-      {isAdvancedMode.value && item.usedBy.size > 1 && (
+      {isAdvancedMode.value && item.paidBy.size > 1 && (
         <ItemPayers item={item} people={people} />
       )}
     </div>
