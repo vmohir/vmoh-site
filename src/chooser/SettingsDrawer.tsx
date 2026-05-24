@@ -1,15 +1,11 @@
-import { X } from "lucide-preact";
+import { X, Minus, Plus } from "lucide-preact";
 import {
   mode,
   teamCount,
-  holdSeconds,
   setMode,
   setTeamCount,
-  setHoldSeconds,
   MIN_TEAMS,
   MAX_TEAMS,
-  MIN_HOLD,
-  MAX_HOLD,
 } from "../state/chooserState";
 import type { Mode } from "./types";
 import styles from "./SettingsDrawer.module.css";
@@ -18,8 +14,16 @@ interface Props {
   onClose: () => void;
 }
 
-const MODE_OPTIONS: ReadonlyArray<{ value: Mode; label: string; desc: string }> = [
-  { value: "winner", label: "One winner", desc: "Pick a single random finger." },
+const MODE_OPTIONS: ReadonlyArray<{
+  value: Mode;
+  label: string;
+  desc: string;
+}> = [
+  {
+    value: "winner",
+    label: "One winner",
+    desc: "Pick a single random finger.",
+  },
   { value: "teams", label: "Split teams", desc: "Divide fingers into teams." },
   { value: "order", label: "Order", desc: "Assign each finger a position." },
 ];
@@ -27,7 +31,6 @@ const MODE_OPTIONS: ReadonlyArray<{ value: Mode; label: string; desc: string }> 
 export default function SettingsDrawer({ onClose }: Props) {
   const currentMode = mode.value;
   const teams = teamCount.value;
-  const hold = holdSeconds.value;
 
   return (
     <div class={styles.backdrop} onClick={onClose}>
@@ -69,51 +72,30 @@ export default function SettingsDrawer({ onClose }: Props) {
 
         {currentMode === "teams" && (
           <section class={styles.section}>
-            <div class={styles.row}>
-              <label for="team-count" class={styles.sectionLabel}>
-                Number of teams
-              </label>
-              <span class={styles.value}>{teams}</span>
+            <label class={styles.sectionLabel}>Number of teams</label>
+            <div class={styles.counter}>
+              <button
+                type="button"
+                class="btn btn-icon"
+                aria-label="Fewer teams"
+                disabled={teams <= MIN_TEAMS}
+                onClick={() => setTeamCount(teams - 1)}
+              >
+                <Minus size={18} />
+              </button>
+              <span class={styles.counterValue}>{teams}</span>
+              <button
+                type="button"
+                class="btn btn-icon"
+                aria-label="More teams"
+                disabled={teams >= MAX_TEAMS}
+                onClick={() => setTeamCount(teams + 1)}
+              >
+                <Plus size={18} />
+              </button>
             </div>
-            <input
-              id="team-count"
-              type="range"
-              min={MIN_TEAMS}
-              max={MAX_TEAMS}
-              step={1}
-              value={teams}
-              onInput={(e) =>
-                setTeamCount(Number((e.currentTarget as HTMLInputElement).value))
-              }
-              class={styles.slider}
-            />
           </section>
         )}
-
-        <section class={styles.section}>
-          <div class={styles.row}>
-            <label for="hold-seconds" class={styles.sectionLabel}>
-              Hold time
-            </label>
-            <span class={styles.value}>{hold}s</span>
-          </div>
-          <input
-            id="hold-seconds"
-            type="range"
-            min={MIN_HOLD}
-            max={MAX_HOLD}
-            step={1}
-            value={hold}
-            onInput={(e) =>
-              setHoldSeconds(Number((e.currentTarget as HTMLInputElement).value))
-            }
-            class={styles.slider}
-          />
-        </section>
-
-        <p class={styles.tip}>
-          Place 2 or more fingers on the screen and hold for {hold} second{hold === 1 ? "" : "s"}.
-        </p>
       </div>
     </div>
   );

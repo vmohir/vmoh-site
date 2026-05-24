@@ -72,7 +72,9 @@
 .ringWinner .ringInner {
   border-width: 10px;
   background: color-mix(in srgb, var(--ring-color) 30%, transparent);
-  animation: winnerPulse 2s ease-in-out infinite;
+  box-shadow:
+    0 0 64px color-mix(in srgb, var(--ring-color) 80%, transparent),
+    inset 0 0 32px color-mix(in srgb, var(--ring-color) 50%, transparent);
 }
 
 @keyframes winnerPop {
@@ -87,21 +89,6 @@
   100% {
     transform: scale(1);
     opacity: 1;
-  }
-}
-
-@keyframes winnerPulse {
-  0%,
-  100% {
-    box-shadow:
-      0 0 48px color-mix(in srgb, var(--ring-color) 70%, transparent),
-      inset 0 0 28px color-mix(in srgb, var(--ring-color) 45%, transparent);
-  }
-  50% {
-    box-shadow:
-      0 0 96px color-mix(in srgb, var(--ring-color) 95%, transparent),
-      0 0 160px color-mix(in srgb, var(--ring-color) 40%, transparent),
-      inset 0 0 38px color-mix(in srgb, var(--ring-color) 60%, transparent);
   }
 }
 

@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { Settings as SettingsIcon } from "lucide-preact";
-import {
-  mode,
-  teamCount,
-  holdSeconds,
-  settingsOpen,
-} from "../state/chooserState";
-import { FINGER_COLORS, colorForIndex } from "./colors";
+import { mode, teamCount } from "../state/chooserState";
+import { FINGER_COLORS } from "./colors";
 import { pickResult } from "./selection";
 import type { ChoiceResult, Finger } from "./types";
 import SettingsDrawer from "./SettingsDrawer";
@@ -15,11 +10,11 @@ import styles from "./ChooserApp.module.css";
 type Phase = "idle" | "countdown" | "result";
 
 const RING_RADIUS = 56;
+const HOLD_SECONDS = 3;
 
 export default function ChooserApp() {
-  // Fingers are stored in a ref and we force a render via `tick`, because
-  // pointermove fires at frame-rate and re-allocating a new Map per event
-  // would thrash GC.
+  // Fingers live in a ref so frame-rate pointermove doesn't re-allocate a Map
+  // per event. A separate tick state drives re-renders.
   const fingersRef = useRef<Map<number, Finger>>(new Map());
   const [, setTick] = useState(0);
   const rerender = () => setTick((t) => (t + 1) % 1_000_000);
@@ -27,61 +22,14 @@ export default function ChooserApp() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [result, setResult] = useState<ChoiceResult | null>(null);
   const [countdownProgress, setCountdownProgress] = useState(0);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const countdownStartRef = useRef<number | null>(null);
-  const rafRef = useRef<number | null>(null);
 
-  // Subscribe to settings signals
   const currentMode = mode.value;
   const currentTeamCount = teamCount.value;
-  const currentHold = holdSeconds.value;
-  const isSettingsOpen = settingsOpen.value;
 
-  // RAF loop drives the countdown ring + triggers the pick
-  useEffect(() => {
-    if (phase !== "countdown") return;
-    let cancelled = false;
-
-    const loop = (now: number) => {
-      if (cancelled) return;
-      const start = countdownStartRef.current;
-      if (start == null) return;
-      const elapsed = (now - start) / 1000;
-      const progress = Math.min(1, elapsed / currentHold);
-      setCountdownProgress(progress);
-      if (progress >= 1) {
-        const fingers = Array.from(fingersRef.current.values());
-        const r = pickResult(currentMode, fingers, currentTeamCount);
-        if (r) {
-          setResult(r);
-          setPhase("result");
-        } else {
-          countdownStartRef.current = null;
-          setPhase("idle");
-          setCountdownProgress(0);
-        }
-        return;
-      }
-      rafRef.current = requestAnimationFrame(loop);
-    };
-    rafRef.current = requestAnimationFrame(loop);
-    return () => {
-      cancelled = true;
-      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
-    };
-  }, [phase, currentMode, currentTeamCount, currentHold]);
-
-  // If settings change while in countdown, restart the countdown so the
-  // new mode/teams setting takes effect on the next pick.
-  useEffect(() => {
-    if (phase === "countdown" && fingersRef.current.size >= 2) {
-      countdownStartRef.current = performance.now();
-      setCountdownProgress(0);
-    }
-  }, [currentMode, currentTeamCount, currentHold]);
-
-  function resetToIdle() {
-    setResult(null);
+  function refreshPhase() {
     if (fingersRef.current.size >= 2) {
       countdownStartRef.current = performance.now();
       setCountdownProgress(0);
@@ -93,15 +41,53 @@ export default function ChooserApp() {
     }
   }
 
+  // RAF loop runs the countdown ring and triggers the pick.
+  useEffect(() => {
+    if (phase !== "countdown") return;
+    let raf = 0;
+    const loop = (now: number) => {
+      const start = countdownStartRef.current;
+      if (start == null) return;
+      const progress = Math.min(1, (now - start) / 1000 / HOLD_SECONDS);
+      setCountdownProgress(progress);
+      if (progress >= 1) {
+        const r = pickResult(
+          currentMode,
+          Array.from(fingersRef.current.values()),
+          currentTeamCount,
+        );
+        if (r) {
+          setResult(r);
+          setPhase("result");
+        } else {
+          refreshPhase();
+        }
+        return;
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [phase, currentMode, currentTeamCount]);
+
+  // Restart the countdown if the mode/team setting changes mid-hold so the
+  // user gets a full hold under the new settings.
+  useEffect(() => {
+    if (phase === "countdown") {
+      countdownStartRef.current = performance.now();
+      setCountdownProgress(0);
+    }
+  }, [currentMode, currentTeamCount]);
+
   function nextColor(): string {
-    const existing = new Set(
+    const used = new Set(
       Array.from(fingersRef.current.values()).map((f) => f.color),
     );
-    for (let i = 0; i < FINGER_COLORS.length; i++) {
-      const c = colorForIndex(i);
-      if (!existing.has(c)) return c;
-    }
-    return colorForIndex(fingersRef.current.size);
+    return (
+      FINGER_COLORS.find((c) => !used.has(c)) ??
+      FINGER_COLORS[fingersRef.current.size % FINGER_COLORS.length] ??
+      "#f5f5f7"
+    );
   }
 
   function onPointerDown(e: PointerEvent) {
@@ -109,10 +95,10 @@ export default function ChooserApp() {
     try {
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     } catch {
-      /* setPointerCapture can throw for synthetic / inactive pointers — safe to ignore */
+      /* synthetic / inactive pointers — safe to ignore */
     }
 
-    // If a result is showing, fresh touches start a new round
+    // A new touch after a result is showing starts a fresh round.
     if (phase === "result") {
       setResult(null);
       fingersRef.current.clear();
@@ -125,14 +111,7 @@ export default function ChooserApp() {
       joinedAt: performance.now(),
       color: nextColor(),
     });
-
-    if (fingersRef.current.size >= 2) {
-      countdownStartRef.current = performance.now();
-      setCountdownProgress(0);
-      setPhase("countdown");
-    } else {
-      setPhase("idle");
-    }
+    refreshPhase();
     rerender();
   }
 
@@ -147,25 +126,19 @@ export default function ChooserApp() {
   function onPointerEnd(e: PointerEvent) {
     if (!fingersRef.current.has(e.pointerId)) return;
 
-    // Once a result is being shown, leave every ring frozen on screen so the
-    // outcome stays visible after fingers are lifted. The rings clear when
-    // the user taps "Tap to play again".
+    // Keep rings frozen on screen once a result is showing.
     if (phase === "result") return;
 
     fingersRef.current.delete(e.pointerId);
-    if (fingersRef.current.size >= 2) {
-      countdownStartRef.current = performance.now();
-      setCountdownProgress(0);
-      setPhase("countdown");
-    } else {
-      countdownStartRef.current = null;
-      setCountdownProgress(0);
-      setPhase("idle");
-    }
+    refreshPhase();
     rerender();
   }
 
   const liveFingers = Array.from(fingersRef.current.values());
+  const winner =
+    phase === "result" && result?.kind === "winner"
+      ? liveFingers.find((f) => f.id === result.winnerId)
+      : undefined;
 
   return (
     <div
@@ -188,15 +161,9 @@ export default function ChooserApp() {
         </div>
       )}
 
-      {phase === "result" &&
-        result?.kind === "winner" &&
-        (() => {
-          const winner = liveFingers.find((f) => f.id === result.winnerId);
-          if (!winner) return null;
-          return (
-            <WinnerReveal x={winner.x} y={winner.y} color={winner.color} />
-          );
-        })()}
+      {winner && (
+        <WinnerReveal x={winner.x} y={winner.y} color={winner.color} />
+      )}
 
       {liveFingers.map((f) => (
         <Ring
@@ -212,7 +179,8 @@ export default function ChooserApp() {
         type="button"
         class={`${styles.settingsBtn} btn btn-ghost btn-icon`}
         aria-label="Settings"
-        onClick={() => (settingsOpen.value = true)}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={() => setSettingsOpen(true)}
       >
         <SettingsIcon size={20} />
       </button>
@@ -221,14 +189,20 @@ export default function ChooserApp() {
         <button
           type="button"
           class={`${styles.resetBtn} btn btn-primary`}
-          onClick={resetToIdle}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={() => {
+            setResult(null);
+            fingersRef.current.clear();
+            refreshPhase();
+            rerender();
+          }}
         >
           Tap to play again
         </button>
       )}
 
-      {isSettingsOpen && (
-        <SettingsDrawer onClose={() => (settingsOpen.value = false)} />
+      {settingsOpen && (
+        <SettingsDrawer onClose={() => setSettingsOpen(false)} />
       )}
     </div>
   );
@@ -302,18 +276,18 @@ interface WinnerRevealProps {
 }
 
 function WinnerReveal({ x, y, color }: WinnerRevealProps) {
-  const vignetteStyle: Record<string, string> = {
-    background: `radial-gradient(circle at ${x}px ${y}px, transparent 80px, rgba(0,0,0,0.55) 240px, rgba(0,0,0,0.78) 100%)`,
-  };
-  const rippleStyle: Record<string, string> = {
-    left: `${x}px`,
-    top: `${y}px`,
-    "--ring-color": color,
-  };
   return (
     <>
-      <div class={styles.vignette} style={vignetteStyle} />
-      <div class={styles.ripples} style={rippleStyle}>
+      <div
+        class={styles.vignette}
+        style={{
+          background: `radial-gradient(circle at ${x}px ${y}px, transparent 80px, rgba(0,0,0,0.55) 240px, rgba(0,0,0,0.78) 100%)`,
+        }}
+      />
+      <div
+        class={styles.ripples}
+        style={{ left: `${x}px`, top: `${y}px`, "--ring-color": color }}
+      >
         <span class={styles.ripple} />
       </div>
     </>
