@@ -16,6 +16,7 @@
     "@tailwindcss/vite": "^4.1.18",
     "@vite-pwa/astro": "^1.2.0",
     "astro": "^5.16.6",
+    "lucide-preact": "^1.16.0",
     "preact": "^10.28.1",
     "tailwindcss": "^4.1.18"
   },

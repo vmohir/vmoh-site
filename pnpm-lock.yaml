@@ -23,6 +23,9 @@ importers:
       astro:
         specifier: ^5.16.6
         version: 5.18.1(@netlify/blobs@10.1.0)(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.4)(terser@5.48.0)(typescript@5.9.3)(yaml@2.9.0)
+      lucide-preact:
+        specifier: ^1.16.0
+        version: 1.16.0(preact@10.29.2)
       preact:
         specifier: ^10.28.1
         version: 10.29.2
@@ -4683,6 +4686,11 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
+
+  lucide-preact@1.16.0:
+    resolution: {integrity: sha512-Sa1XSig6iWCFhdrqS+vT1EFJH4Yos2Q7H/EMawql1K+D9qjNRzjMutPySak0iMYto6PneHYAWoxnDBBlryjngw==}
+    peerDependencies:
+      preact: ^10.27.2
 
   luxon@3.7.2:
     resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
@@ -12039,6 +12047,10 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+
+  lucide-preact@1.16.0(preact@10.29.2):
+    dependencies:
+      preact: 10.29.2
 
   luxon@3.7.2: {}
 
