@@ -19,6 +19,22 @@ import "styles/global.css";
     <link rel="apple-touch-icon" href="/icon-192.png" />
     <meta name="generator" content={Astro.generator} />
     <title>Chooser</title>
+    <script is:inline>
+      // When a new service worker takes over an existing client, reload the
+      // page so the user gets the new assets immediately instead of having to
+      // close + reopen the PWA. Skips the first-ever install (no prior
+      // controller) so users don't see a confusing reload on their first
+      // visit.
+      if ("serviceWorker" in navigator) {
+        const firstActivation = !navigator.serviceWorker.controller;
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (firstActivation || refreshing) return;
+          refreshing = true;
+          location.reload();
+        });
+      }
+    </script>
   </head>
   <body>
     <slot />
