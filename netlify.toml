@@ -1,3 +1,11 @@
 [build]
   command = "pnpm run build"
   publish = "dist"
+
+# Override Netlify's default Permissions-Policy header — it lists several ad-
+# tech features that current Chromium versions no longer recognise, which
+# produces noisy console warnings.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
