@@ -1,4 +1,4 @@
-import { X } from "lucide-preact";
+import { ArrowRight, Users, Wallet, X } from "lucide-preact";
 import type { Item, Person } from "../splitApp/split.types.ts";
 import {
   updateItemCurrency,
@@ -75,13 +75,16 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
               people={people}
               selected={item.usedBy}
               onChange={(next) => setItemAssignees(item.id, [...next])}
+              leading={<Users size={14} />}
               alwaysMulti
             />
+            <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
             <PeoplePicker
               label="Paid by"
               people={people}
               selected={paidByIds}
               onChange={(next) => setItemPayers(item.id, [...next])}
+              leading={<Wallet size={14} />}
             />
           </>
         )}

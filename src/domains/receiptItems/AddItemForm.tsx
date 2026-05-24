@@ -1,4 +1,5 @@
 import { useState } from "preact/hooks";
+import { ArrowRight, Users, Wallet } from "lucide-preact";
 import type { Currency } from "../../splitApp/split.types.ts";
 import {
   addItem,
@@ -22,9 +23,13 @@ export function AddItemForm() {
   const handleAdd = () => {
     const price = parseFloat(priceInput);
     if (nameInput.trim() && !isNaN(price) && price >= 0) {
-      addItem(nameInput, price, effectiveCurrency, [...sharedByDraft], [
-        ...paidByDraft,
-      ]);
+      addItem(
+        nameInput,
+        price,
+        effectiveCurrency,
+        [...sharedByDraft],
+        [...paidByDraft],
+      );
       setNameInput("");
       setPriceInput("");
       setCurrencyInput(null);
@@ -72,13 +77,16 @@ export function AddItemForm() {
             people={people.value}
             selected={sharedByDraft}
             onChange={setSharedByDraft}
+            leading={<Users size={14} />}
             alwaysMulti
           />
+          <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
           <PeoplePicker
             label="Paid by"
             people={people.value}
             selected={paidByDraft}
             onChange={setPaidByDraft}
+            leading={<Wallet size={14} />}
           />
         </>
       )}

@@ -37,6 +37,11 @@
   min-width: 0;
 }
 
+.flowArrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
 .inputGroup select {
   padding: 0.375rem 0.25rem;
   background: transparent;

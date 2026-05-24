@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
+import type { VNode } from "preact";
 import { ChevronDown } from "lucide-preact";
 import type { Person } from "../splitApp/split.types.ts";
 import { isAdvancedMode } from "state/billState.ts";
@@ -10,6 +11,8 @@ interface PeoplePickerProps {
   people: Person[];
   selected: Set<string>;
   onChange: (next: Set<string>) => void;
+  // Small icon rendered before the placeholder / avatar stack inside the pill.
+  leading?: VNode;
   // When true, multi-select is allowed regardless of mode. Default: basic = single, advanced = multi.
   alwaysMulti?: boolean;
 }
@@ -20,6 +23,7 @@ export function PeoplePicker({
   people,
   selected,
   onChange,
+  leading,
   alwaysMulti = false,
 }: PeoplePickerProps) {
   const [open, setOpen] = useState(false);
@@ -70,6 +74,11 @@ export function PeoplePicker({
         aria-haspopup="listbox"
         onClick={() => setOpen((v) => !v)}
       >
+        {leading && (
+          <span class={styles.leading} aria-hidden="true">
+            {leading}
+          </span>
+        )}
         {selectedPeople.length === 0 ? (
           <span class={styles.placeholder}>{label}</span>
         ) : (
