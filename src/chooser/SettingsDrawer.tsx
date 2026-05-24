@@ -1,4 +1,4 @@
-import { X, Minus, Plus } from "lucide-preact";
+import { CloseIcon, MinusIcon, PlusIcon } from "./icons";
 import {
   mode,
   teamCount,
@@ -52,7 +52,7 @@ export default function SettingsDrawer({ onClose }: Props) {
             aria-label="Close settings"
             onClick={onClose}
           >
-            <X size={18} />
+            <CloseIcon size={18} />
           </button>
         </header>
 
@@ -85,7 +85,7 @@ export default function SettingsDrawer({ onClose }: Props) {
                 disabled={teams <= MIN_TEAMS}
                 onClick={() => setTeamCount(teams - 1)}
               >
-                <Minus size={18} />
+                <MinusIcon size={18} />
               </button>
               <span class={styles.counterValue}>{teams}</span>
               <button
@@ -95,7 +95,7 @@ export default function SettingsDrawer({ onClose }: Props) {
                 disabled={teams >= MAX_TEAMS}
                 onClick={() => setTeamCount(teams + 1)}
               >
-                <Plus size={18} />
+                <PlusIcon size={18} />
               </button>
             </div>
           </section>

@@ -19,8 +19,3 @@ export const TEAM_COLORS = [
   "#a855f7",
   "#06b6d4",
 ];
-
-export function colorForIndex(i: number, palette: readonly string[] = FINGER_COLORS): string {
-  const safe = palette.length > 0 ? palette : FINGER_COLORS;
-  return safe[i % safe.length] ?? "#f5f5f7";
-}

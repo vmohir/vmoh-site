@@ -1,5 +1,5 @@
 import type { ChoiceResult, Finger, Mode } from "./types";
-import { TEAM_COLORS, colorForIndex } from "./colors";
+import { TEAM_COLORS } from "./colors";
 
 function shuffle<T>(arr: readonly T[]): T[] {
   const out = arr.slice();
@@ -31,12 +31,18 @@ export function pickResult(
 
   if (mode === "teams") {
     const t = Math.max(2, Math.min(teamCount, fingers.length));
-    const shuffled = shuffle(fingers);
+    const shuffledFingers = shuffle(fingers);
+    // Also shuffle team-label assignment so which team gets the "extra" finger
+    // (when fingers don't divide evenly) is random, not always team 1.
+    const teamOrder = shuffle(Array.from({ length: t }, (_, i) => i));
     const teamByFinger: Record<number, number> = {};
-    shuffled.forEach((f, i) => {
-      teamByFinger[f.id] = i % t;
+    shuffledFingers.forEach((f, i) => {
+      teamByFinger[f.id] = teamOrder[i % t] ?? 0;
     });
-    const teamColors = Array.from({ length: t }, (_, i) => colorForIndex(i, TEAM_COLORS));
+    const teamColors = Array.from(
+      { length: t },
+      (_, i) => TEAM_COLORS[i % TEAM_COLORS.length] ?? "#f5f5f7",
+    );
     return { kind: "teams", teamCount: t, teamColors, teamByFinger };
   }
 
