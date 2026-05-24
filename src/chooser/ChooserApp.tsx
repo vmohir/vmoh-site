@@ -146,13 +146,13 @@ export default function ChooserApp() {
 
   function onPointerEnd(e: PointerEvent) {
     if (!fingersRef.current.has(e.pointerId)) return;
+
+    // Once a result is being shown, leave every ring frozen on screen so the
+    // outcome stays visible after fingers are lifted. The rings clear when
+    // the user taps "Tap to play again".
+    if (phase === "result") return;
+
     fingersRef.current.delete(e.pointerId);
-
-    if (phase === "result") {
-      rerender();
-      return;
-    }
-
     if (fingersRef.current.size >= 2) {
       countdownStartRef.current = performance.now();
       setCountdownProgress(0);
@@ -187,6 +187,16 @@ export default function ChooserApp() {
           </p>
         </div>
       )}
+
+      {phase === "result" &&
+        result?.kind === "winner" &&
+        (() => {
+          const winner = liveFingers.find((f) => f.id === result.winnerId);
+          if (!winner) return null;
+          return (
+            <WinnerReveal x={winner.x} y={winner.y} color={winner.color} />
+          );
+        })()}
 
       {liveFingers.map((f) => (
         <Ring
@@ -261,19 +271,18 @@ function Ring({ finger, phase, result, progress }: RingProps) {
   const radius = RING_RADIUS * scaleResult;
   const size = radius * 2;
 
-  const pulse =
-    phase === "countdown"
-      ? 1 + 0.06 * Math.sin(progress * Math.PI * 8) + progress * 0.1
-      : 1;
-
   const ringStyle: Record<string, string> = {
     left: `${finger.x - radius}px`,
     top: `${finger.y - radius}px`,
     width: `${size}px`,
     height: `${size}px`,
     "--ring-color": color,
-    transform: `scale(${pulse})`,
   };
+
+  if (phase === "countdown") {
+    const pulse = 1 + 0.06 * Math.sin(progress * Math.PI * 8) + progress * 0.1;
+    ringStyle.transform = `scale(${pulse})`;
+  }
 
   return (
     <div
@@ -283,5 +292,32 @@ function Ring({ finger, phase, result, progress }: RingProps) {
       <div class={styles.ringInner} />
       {label !== null && <span class={styles.ringLabel}>{label}</span>}
     </div>
+  );
+}
+
+interface WinnerRevealProps {
+  x: number;
+  y: number;
+  color: string;
+}
+
+function WinnerReveal({ x, y, color }: WinnerRevealProps) {
+  const vignetteStyle: Record<string, string> = {
+    background: `radial-gradient(circle at ${x}px ${y}px, transparent 80px, rgba(0,0,0,0.55) 240px, rgba(0,0,0,0.78) 100%)`,
+  };
+  const rippleStyle: Record<string, string> = {
+    left: `${x}px`,
+    top: `${y}px`,
+    "--ring-color": color,
+  };
+  return (
+    <>
+      <div class={styles.vignette} style={vignetteStyle} />
+      <div class={styles.ripples} style={rippleStyle}>
+        <span class={styles.ripple} />
+        <span class={styles.ripple} style={{ animationDelay: "0.55s" }} />
+        <span class={styles.ripple} style={{ animationDelay: "1.1s" }} />
+      </div>
+    </>
   );
 }
