@@ -13,14 +13,11 @@ export default function AppHeader() {
       <h1 class={styles.title}>Split Bill</h1>
 
       <div class={styles.actions}>
-        <label class={styles.baseCurrency}>
-          <span class={styles.baseCurrencyLabel}>Currency</span>
-          <CurrencySelector
-            class={styles.currencySelect}
-            value={baseCurrency.value}
-            onChange={updateBaseCurrency}
-          />
-        </label>
+        <CurrencySelector
+          class={styles.currencySelect}
+          value={baseCurrency.value}
+          onChange={updateBaseCurrency}
+        />
 
         <button
           type="button"

@@ -71,7 +71,7 @@ export function AddItemForm() {
       )}
 
       {people.value.length > 0 && (
-        <>
+        <div class={styles.flow}>
           <PeoplePicker
             label="Shared by"
             people={people.value}
@@ -88,10 +88,12 @@ export function AddItemForm() {
             onChange={setPaidByDraft}
             leading={<Wallet size={14} />}
           />
-        </>
+        </div>
       )}
 
-      <button onClick={handleAdd}>Add</button>
+      <button class={styles.addBtn} onClick={handleAdd}>
+        Add
+      </button>
     </div>
   );
 }

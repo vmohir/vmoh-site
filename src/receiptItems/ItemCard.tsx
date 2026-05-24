@@ -69,7 +69,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         </div>
 
         {people.length > 0 && (
-          <>
+          <div class={styles.flow}>
             <PeoplePicker
               label="Shared by"
               people={people}
@@ -86,12 +86,12 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
               onChange={(next) => setItemPayers(item.id, [...next])}
               leading={<Wallet size={14} />}
             />
-          </>
+          </div>
         )}
 
         <button
           onClick={() => onRemove(item.id)}
-          class="btn btn-sm btn-icon btn-danger"
+          class={`btn btn-sm btn-icon btn-danger ${styles.removeBtn}`}
           aria-label="Remove"
           title="Remove"
         >

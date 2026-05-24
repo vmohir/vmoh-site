@@ -32,9 +32,21 @@
   flex-shrink: 0;
 }
 
+.flow {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
 .flowArrow {
   color: var(--text-muted);
   flex-shrink: 0;
+}
+
+.removeBtn {
+  margin-left: auto;
 }
 
 .priceGroup > :nth-child(2) {
