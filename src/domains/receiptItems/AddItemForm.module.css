@@ -66,7 +66,7 @@
   outline: none;
 }
 
-.inputGroup button {
+.addBtn {
   padding: 0.375rem 0.875rem;
   background: var(--text-primary);
   border: none;
@@ -78,6 +78,15 @@
   transition: background var(--transition);
 }
 
-.inputGroup button:hover {
+.addBtn:hover {
   background: var(--text-secondary);
+}
+
+[data-theme="dark"] .addBtn {
+  background: var(--surface-muted-bg);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .addBtn:hover {
+  background: var(--interactive-active-bg);
 }

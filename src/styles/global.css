@@ -22,6 +22,8 @@
 
 @layer base {
   :root {
+    color-scheme: light;
+
     /* Backgrounds */
     --canvas-bg: theme(colors.neutral.50);
     --surface-bg: theme(colors.white);
@@ -53,6 +55,8 @@
   }
 
   [data-theme="dark"] {
+    color-scheme: dark;
+
     /* Linear-inspired: slightly cool, desaturated, mid-dark canvas (not near-black) */
 
     /* Backgrounds — dark gray, cards a step above */
