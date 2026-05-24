@@ -315,8 +315,6 @@ function WinnerReveal({ x, y, color }: WinnerRevealProps) {
       <div class={styles.vignette} style={vignetteStyle} />
       <div class={styles.ripples} style={rippleStyle}>
         <span class={styles.ripple} />
-        <span class={styles.ripple} style={{ animationDelay: "0.55s" }} />
-        <span class={styles.ripple} style={{ animationDelay: "1.1s" }} />
       </div>
     </>
   );

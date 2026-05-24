@@ -136,24 +136,24 @@
   width: 0;
   height: 0;
   border-radius: 9999px;
-  border: 3px solid var(--ring-color);
+  border: 10px solid var(--ring-color);
   transform: translate(-50%, -50%);
   opacity: 0;
-  animation: ripple 1.8s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+  animation: ripple 700ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }
 
 @keyframes ripple {
   0% {
     width: 80px;
     height: 80px;
-    opacity: 0.55;
-    border-width: 4px;
+    opacity: 0.85;
+    border-width: 12px;
   }
   100% {
-    width: 540px;
-    height: 540px;
+    width: 600px;
+    height: 600px;
     opacity: 0;
-    border-width: 1px;
+    border-width: 2px;
   }
 }
 
