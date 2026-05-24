@@ -49,7 +49,8 @@ test("two people share an item, one pays — settles to a single transfer", asyn
 
   // Bob -> Alice $10.00 (each owes 10, Alice paid 20).
   await expect(resultsSection.getByText("1 transaction needed")).toBeVisible();
-  await expect(resultsSection.getByText("$10.00 USD")).toBeVisible();
+  await expect(resultsSection.getByText("Owes $10.00")).toBeVisible();
+  await expect(resultsSection.getByText("Should receive $10.00")).toBeVisible();
 });
 
 test("single-person item: Shared-by + Paid-by hides the Amounts-paid detail", async ({

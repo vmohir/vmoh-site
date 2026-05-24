@@ -5,6 +5,7 @@ import {
   updateSettlementAlgorithm,
 } from "../state/billState";
 import { getAvailableAlgorithms } from "../utils/settlementAlgorithms";
+import { getCurrencySymbol } from "../utils/currency.utils.ts";
 import styles from "./ResultsSection.module.css";
 
 export default function ResultsSection() {
@@ -34,7 +35,8 @@ export default function ResultsSection() {
                   <ul>
                     {personTotal.assignedItems.map((item, index) => (
                       <li key={index}>
-                        {item.name}: {item.share.toFixed(2)} {item.currency}
+                        {item.name}: {getCurrencySymbol(item.currency)}
+                        {item.share.toFixed(2)}
                       </li>
                     ))}
                   </ul>
@@ -48,7 +50,8 @@ export default function ResultsSection() {
                   <ul>
                     {personTotal.paidItems.map((item, index) => (
                       <li key={index}>
-                        {item.name}: {item.amount.toFixed(2)} {item.currency}
+                        {item.name}: {getCurrencySymbol(item.currency)}
+                        {item.amount.toFixed(2)}
                       </li>
                     ))}
                   </ul>
@@ -149,7 +152,8 @@ export default function ResultsSection() {
                 <span class={styles.arrow}>→</span>
                 <span class={styles.to}>{transfer.toPersonName}</span>
                 <span class={styles.amount}>
-                  ${transfer.amount.toFixed(2)} {transfer.currency}
+                  {getCurrencySymbol(transfer.currency)}
+                  {transfer.amount.toFixed(2)}
                 </span>
               </div>
             ))}
