@@ -33,9 +33,37 @@
   min-width: 0;
 }
 
-.priceInput {
+.priceField {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
   flex: 1 1 5rem;
   min-width: 0;
+  padding-left: 0.5rem;
+  background: var(--surface-subtle-bg);
+  border-radius: 0.375rem;
+}
+
+.priceSymbol {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.priceInputInner {
+  flex: 1;
+  min-width: 0;
+  padding: 0.375rem 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  outline: none;
+}
+
+.priceInputInner::placeholder {
+  color: var(--text-muted);
 }
 
 .flow {

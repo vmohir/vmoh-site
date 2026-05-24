@@ -9,6 +9,7 @@ import {
 } from "../../state/billState.ts";
 import { CurrencySelector } from "../currencies/CurrencySelector.tsx";
 import { PeoplePicker } from "../../receiptItems/PeoplePicker.tsx";
+import { getCurrencySymbol } from "../../utils/currency.utils.ts";
 import styles from "./AddItemForm.module.css";
 
 export function AddItemForm() {
@@ -54,15 +55,20 @@ export function AddItemForm() {
         onKeyPress={handleKeyPress}
         placeholder="Item name"
       />
-      <input
-        type="text"
-        inputMode="decimal"
-        class={styles.priceInput}
-        value={priceInput}
-        onInput={(e) => setPriceInput((e.target as HTMLInputElement).value)}
-        onKeyPress={handleKeyPress}
-        placeholder="Price"
-      />
+      <label class={styles.priceField}>
+        <span class={styles.priceSymbol} aria-hidden="true">
+          {getCurrencySymbol(effectiveCurrency)}
+        </span>
+        <input
+          type="text"
+          inputMode="decimal"
+          class={styles.priceInputInner}
+          value={priceInput}
+          onInput={(e) => setPriceInput((e.target as HTMLInputElement).value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Price"
+        />
+      </label>
       {isAdvancedMode.value && (
         <CurrencySelector
           value={effectiveCurrency}
