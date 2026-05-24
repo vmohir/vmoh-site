@@ -42,7 +42,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
 
   return (
     <div class={styles.itemCard}>
-      <div class={styles.itemHeader}>
+      <div class={styles.titleRow}>
         <EditableText
           className={styles.itemName}
           value={item.name}
@@ -67,7 +67,9 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
             />
           )}
         </div>
+      </div>
 
+      <div class={styles.controlsRow}>
         {people.length > 0 && (
           <div class={styles.flow}>
             <PeoplePicker

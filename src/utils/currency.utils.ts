@@ -15,9 +15,10 @@ export function getCurrencyFromLocale(): Currency {
 }
 
 export const getCurrencySymbol = (currency: Currency) => {
-  const formatter = new Intl.NumberFormat(undefined, {
+  const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: currency,
+    currency,
+    currencyDisplay: "narrowSymbol",
   });
   return formatter
     .formatToParts(0)
@@ -27,9 +28,10 @@ export const getCurrencySymbol = (currency: Currency) => {
 };
 
 export const formatCurrency = (amount: number, currency: Currency) => {
-  const formatter = new Intl.NumberFormat(undefined, {
+  const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: currency,
+    currency,
+    currencyDisplay: "narrowSymbol",
   });
   return formatter.format(amount);
 };

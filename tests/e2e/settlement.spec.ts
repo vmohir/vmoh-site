@@ -69,7 +69,8 @@ test("single-person item: Shared-by + Paid-by hides the Amounts-paid detail", as
   await page.keyboard.press("Escape");
 
   await itemsSection.getByRole("button", { name: "Payer" }).last().click();
-  await page.getByRole("checkbox", { name: "You" }).check();
+  // Basic-mode Payer is single-select → renders as a radio, not checkbox.
+  await page.getByRole("radio", { name: "You" }).check();
 
   // Single payer: no Amounts-paid breakdown.
   await expect(itemsSection.getByText("Amounts paid")).toBeHidden();

@@ -65,9 +65,9 @@
 .dropdown {
   position: absolute;
   top: calc(100% + 0.375rem);
-  right: 0;
   z-index: 10;
   min-width: 200px;
+  max-width: calc(100vw - 1rem);
   max-height: 240px;
   overflow-y: auto;
   background: var(--surface-bg);
@@ -77,6 +77,16 @@
     0 8px 16px -4px rgba(0, 0, 0, 0.08),
     0 4px 8px -2px rgba(0, 0, 0, 0.05);
   padding: 0.25rem;
+}
+
+.alignStart {
+  left: 0;
+  right: auto;
+}
+
+.alignEnd {
+  left: auto;
+  right: 0;
 }
 
 .option {

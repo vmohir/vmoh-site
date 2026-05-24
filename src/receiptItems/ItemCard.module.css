@@ -1,7 +1,7 @@
 .itemCard {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: 0.5rem;
   padding: 0.875rem 1rem;
   border-radius: var(--border-radius);
   background: var(--surface-bg);
@@ -13,7 +13,13 @@
   border-color: var(--border-primary);
 }
 
-.itemHeader {
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.controlsRow {
   display: flex;
   align-items: center;
   gap: 0.625rem;
@@ -21,7 +27,7 @@
 }
 
 .itemName {
-  flex: 1 1 8rem;
+  flex: 1;
   min-width: 0;
 }
 

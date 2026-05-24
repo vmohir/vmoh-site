@@ -20,7 +20,7 @@
   border: none;
   border-radius: 0.375rem;
   color: var(--text-primary);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   outline: none;
 }
 
@@ -58,7 +58,7 @@
   background: transparent;
   border: none;
   color: var(--text-primary);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   outline: none;
 }
 

@@ -4,7 +4,7 @@
   border: none;
   border-bottom: 1px dashed transparent;
   color: var(--text-primary);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   outline: none;
   transition: border-color var(--transition);
   min-width: 0;

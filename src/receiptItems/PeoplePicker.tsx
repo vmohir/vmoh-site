@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import type { VNode } from "preact";
 import { ChevronDown } from "lucide-preact";
 import type { Person } from "../splitApp/split.types.ts";
@@ -27,7 +27,9 @@ export function PeoplePicker({
   alwaysMulti = false,
 }: PeoplePickerProps) {
   const [open, setOpen] = useState(false);
+  const [alignEnd, setAlignEnd] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -45,6 +47,16 @@ export function PeoplePicker({
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("keydown", handleKey);
     };
+  }, [open]);
+
+  // Pick the side that keeps the menu in the viewport. If the trigger sits
+  // closer to the right edge, align the menu's right edge to it; otherwise
+  // align its left edge.
+  useLayoutEffect(() => {
+    if (!open || !triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const triggerCenter = (rect.left + rect.right) / 2;
+    setAlignEnd(triggerCenter > window.innerWidth / 2);
   }, [open]);
 
   const selectedPeople = people.filter((p) => selected.has(p.id));
@@ -67,6 +79,7 @@ export function PeoplePicker({
   return (
     <div class={styles.wrap} ref={wrapRef}>
       <button
+        ref={triggerRef}
         type="button"
         class={styles.trigger}
         aria-label={label}
@@ -92,11 +105,14 @@ export function PeoplePicker({
       </button>
 
       {open && (
-        <div class={styles.dropdown} role="listbox">
+        <div
+          class={`${styles.dropdown} ${alignEnd ? styles.alignEnd : styles.alignStart}`}
+          role="listbox"
+        >
           {people.map((person) => (
             <label key={person.id} class={styles.option}>
               <input
-                type="checkbox"
+                type={multi ? "checkbox" : "radio"}
                 checked={selected.has(person.id)}
                 onChange={() => handlePick(person.id)}
               />
