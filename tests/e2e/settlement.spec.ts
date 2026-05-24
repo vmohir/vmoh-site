@@ -37,17 +37,14 @@ test("two people share an item, one pays — settles to a single transfer", asyn
   await page.getByPlaceholder("Price").press("Enter");
 
   // Shared by Alice + Bob (item card's picker — Add form has its own).
-  await itemsSection
-    .getByRole("button", { name: "Shared with" })
-    .last()
-    .click();
+  await itemsSection.getByRole("button", { name: "Split" }).last().click();
   await page.getByRole("checkbox", { name: "Alice" }).check();
   await page.getByRole("checkbox", { name: "Bob" }).check();
   // Close the dropdown by pressing Escape.
   await page.keyboard.press("Escape");
 
   // Paid by Alice.
-  await itemsSection.getByRole("button", { name: "Paid by" }).last().click();
+  await itemsSection.getByRole("button", { name: "Payer" }).last().click();
   await page.getByRole("checkbox", { name: "Alice" }).check();
 
   // Bob -> Alice $10.00 (each owes 10, Alice paid 20).
@@ -67,14 +64,11 @@ test("single-person item: Shared-by + Paid-by hides the Amounts-paid detail", as
   await page.getByPlaceholder("Price").press("Enter");
 
   // Pick You as the sole sharer and payer.
-  await itemsSection
-    .getByRole("button", { name: "Shared with" })
-    .last()
-    .click();
+  await itemsSection.getByRole("button", { name: "Split" }).last().click();
   await page.getByRole("checkbox", { name: "You" }).check();
   await page.keyboard.press("Escape");
 
-  await itemsSection.getByRole("button", { name: "Paid by" }).last().click();
+  await itemsSection.getByRole("button", { name: "Payer" }).last().click();
   await page.getByRole("checkbox", { name: "You" }).check();
 
   // Single payer: no Amounts-paid breakdown.

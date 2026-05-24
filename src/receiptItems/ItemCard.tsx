@@ -71,7 +71,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         {people.length > 0 && (
           <div class={styles.flow}>
             <PeoplePicker
-              label="Paid by"
+              label="Payer"
               people={people}
               selected={paidByIds}
               onChange={(next) => setItemPayers(item.id, [...next])}
@@ -79,7 +79,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
             />
             <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
             <PeoplePicker
-              label="Shared with"
+              label="Split"
               people={people}
               selected={item.usedBy}
               onChange={(next) => setItemAssignees(item.id, [...next])}

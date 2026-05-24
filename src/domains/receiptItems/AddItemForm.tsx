@@ -73,7 +73,7 @@ export function AddItemForm() {
       {people.value.length > 0 && (
         <div class={styles.flow}>
           <PeoplePicker
-            label="Paid by"
+            label="Payer"
             people={people.value}
             selected={paidByDraft}
             onChange={setPaidByDraft}
@@ -81,7 +81,7 @@ export function AddItemForm() {
           />
           <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
           <PeoplePicker
-            label="Shared with"
+            label="Split"
             people={people.value}
             selected={sharedByDraft}
             onChange={setSharedByDraft}
