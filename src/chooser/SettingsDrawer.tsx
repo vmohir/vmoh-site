@@ -33,7 +33,11 @@ export default function SettingsDrawer({ onClose }: Props) {
   const teams = teamCount.value;
 
   return (
-    <div class={styles.backdrop} onClick={onClose}>
+    <div
+      class={styles.backdrop}
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={onClose}
+    >
       <div
         class={styles.sheet}
         role="dialog"
