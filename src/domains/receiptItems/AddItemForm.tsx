@@ -73,20 +73,20 @@ export function AddItemForm() {
       {people.value.length > 0 && (
         <div class={styles.flow}>
           <PeoplePicker
-            label="Shared by"
-            people={people.value}
-            selected={sharedByDraft}
-            onChange={setSharedByDraft}
-            leading={<Users size={14} />}
-            alwaysMulti
-          />
-          <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
-          <PeoplePicker
             label="Paid by"
             people={people.value}
             selected={paidByDraft}
             onChange={setPaidByDraft}
             leading={<Wallet size={14} />}
+          />
+          <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
+          <PeoplePicker
+            label="Shared with"
+            people={people.value}
+            selected={sharedByDraft}
+            onChange={setSharedByDraft}
+            leading={<Users size={14} />}
+            alwaysMulti
           />
         </div>
       )}

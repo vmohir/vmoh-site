@@ -16,8 +16,9 @@
 
 .inputGroup input {
   padding: 0.375rem 0.5rem;
-  background: transparent;
+  background: var(--surface-subtle-bg);
   border: none;
+  border-radius: 0.375rem;
   color: var(--text-primary);
   font-size: 0.9375rem;
   outline: none;
@@ -55,9 +56,10 @@
 }
 
 .inputGroup select {
-  padding: 0.375rem 0.25rem;
-  background: transparent;
+  padding: 0.375rem 0.5rem;
+  background: var(--surface-subtle-bg);
   border: none;
+  border-radius: 0.375rem;
   color: var(--text-secondary);
   font-size: 0.875rem;
   cursor: pointer;

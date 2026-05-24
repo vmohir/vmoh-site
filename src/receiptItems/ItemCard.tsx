@@ -71,20 +71,20 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         {people.length > 0 && (
           <div class={styles.flow}>
             <PeoplePicker
-              label="Shared by"
-              people={people}
-              selected={item.usedBy}
-              onChange={(next) => setItemAssignees(item.id, [...next])}
-              leading={<Users size={14} />}
-              alwaysMulti
-            />
-            <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
-            <PeoplePicker
               label="Paid by"
               people={people}
               selected={paidByIds}
               onChange={(next) => setItemPayers(item.id, [...next])}
               leading={<Wallet size={14} />}
+            />
+            <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
+            <PeoplePicker
+              label="Shared with"
+              people={people}
+              selected={item.usedBy}
+              onChange={(next) => setItemAssignees(item.id, [...next])}
+              leading={<Users size={14} />}
+              alwaysMulti
             />
           </div>
         )}
