@@ -130,16 +130,11 @@
   margin: 0;
 }
 
-.algorithmSelector {
+.settlementHeader {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   justify-content: space-between;
-}
-
-.algorithmSelector > span {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
+  gap: 0.5rem;
 }
 
 .algorithmDescription {

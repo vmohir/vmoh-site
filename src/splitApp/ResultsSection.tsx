@@ -1,6 +1,6 @@
 import { calculatedTotals, calculatedSettlement } from "../state/billState";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
-import AlgorithmPicker from "./AlgorithmPicker.tsx";
+import SettlementSettings from "./SettlementSettings.tsx";
 import styles from "./ResultsSection.module.css";
 
 export default function ResultsSection() {
@@ -106,11 +106,9 @@ export default function ResultsSection() {
 
       {/* Settlement section */}
       <div class={styles.settlementSection}>
-        <h3>Payment Settlement</h3>
-
-        <div class={styles.algorithmSelector}>
-          <span>Method:</span>
-          <AlgorithmPicker />
+        <div class={styles.settlementHeader}>
+          <h3>Payment Settlement</h3>
+          <SettlementSettings />
         </div>
 
         {settlement.transfers.length > 0 ? (

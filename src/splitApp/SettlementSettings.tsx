@@ -1,18 +1,16 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { ChevronDown } from "lucide-preact";
-import type { SettlementAlgorithm } from "./split.types.ts";
+import { Check, Settings } from "lucide-preact";
 import {
   settlementAlgorithm,
   updateSettlementAlgorithm,
 } from "../state/billState";
 import { getAvailableAlgorithms } from "../utils/settlementAlgorithms";
-import styles from "./AlgorithmPicker.module.css";
+import styles from "./SettlementSettings.module.css";
 
-export default function AlgorithmPicker() {
+export default function SettlementSettings() {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const algorithms = getAvailableAlgorithms();
-  const current = algorithms.find((a) => a.id === settlementAlgorithm.value);
 
   useEffect(() => {
     if (!open) return;
@@ -32,39 +30,47 @@ export default function AlgorithmPicker() {
     };
   }, [open]);
 
-  const handlePick = (id: SettlementAlgorithm) => {
-    updateSettlementAlgorithm(id);
-    setOpen(false);
-  };
-
   return (
     <div class={styles.wrap} ref={wrapRef}>
       <button
         type="button"
         class={styles.trigger}
-        aria-haspopup="listbox"
+        aria-label="Settlement settings"
         aria-expanded={open}
+        aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
       >
-        <span class={styles.triggerName}>{current?.name}</span>
-        <ChevronDown class={styles.caret} size={14} aria-hidden="true" />
+        <Settings size={16} aria-hidden="true" />
       </button>
 
       {open && (
-        <div class={styles.menu} role="listbox">
+        <div class={styles.menu} role="menu">
+          <div class={styles.sectionLabel}>Method</div>
           {algorithms.map((alg) => {
             const isSelected = alg.id === settlementAlgorithm.value;
             return (
               <button
                 key={alg.id}
                 type="button"
-                role="option"
-                aria-selected={isSelected}
+                role="menuitemradio"
+                aria-checked={isSelected}
                 class={`${styles.option} ${isSelected ? styles.optionSelected : ""}`}
-                onClick={() => handlePick(alg.id)}
+                onClick={() => {
+                  updateSettlementAlgorithm(alg.id);
+                  setOpen(false);
+                }}
               >
-                <span class={styles.optionName}>{alg.name}</span>
-                <span class={styles.optionDesc}>{alg.description}</span>
+                <span class={styles.optionText}>
+                  <span class={styles.optionName}>{alg.name}</span>
+                  <span class={styles.optionDesc}>{alg.description}</span>
+                </span>
+                {isSelected && (
+                  <Check
+                    size={14}
+                    class={styles.checkIcon}
+                    aria-hidden="true"
+                  />
+                )}
               </button>
             );
           })}
