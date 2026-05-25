@@ -29,6 +29,21 @@ const PREFERS_REDUCED_MOTION =
   typeof window.matchMedia === "function" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+function vibrate(pattern: number | number[]): void {
+  if (PREFERS_REDUCED_MOTION) return;
+  if (
+    typeof navigator === "undefined" ||
+    typeof navigator.vibrate !== "function"
+  ) {
+    return;
+  }
+  try {
+    navigator.vibrate(pattern);
+  } catch {
+    /* some browsers throw if called too early or in cross-origin frames */
+  }
+}
+
 export default function ChooserApp() {
   const fingersRef = useRef<Map<number, Finger>>(new Map());
   const [, setTick] = useState(0);
@@ -108,6 +123,9 @@ export default function ChooserApp() {
     if (r) {
       setResult(r);
       setPhase("result");
+      // Winner gets a celebratory two-pulse buzz; teams and order get a
+      // single satisfying tap. Silent on iOS — no JS haptics there.
+      vibrate(r.kind === "winner" ? [120, 60, 220] : 150);
     } else {
       refreshPhase();
     }
@@ -243,6 +261,7 @@ export default function ChooserApp() {
     });
     if (hit) {
       fingersRef.current.delete(hit.id);
+      vibrate(15);
       rerender();
       return;
     }
@@ -257,6 +276,7 @@ export default function ChooserApp() {
       joinedAt: performance.now(),
       color: nextColor(),
     });
+    vibrate(25);
     rerender();
   }
 
