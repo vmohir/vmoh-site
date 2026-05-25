@@ -191,3 +191,34 @@
   transform: translateX(-50%);
   z-index: 10;
 }
+
+.touchLimit {
+  position: fixed;
+  bottom: max(env(safe-area-inset-bottom), 1.25rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  max-width: min(90vw, 22rem);
+  padding: 0.625rem 0.875rem;
+  background: rgba(24, 24, 31, 0.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.625rem;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  text-align: center;
+  line-height: 1.4;
+  pointer-events: none;
+  animation: touchLimitFade 220ms ease both;
+}
+
+@keyframes touchLimitFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

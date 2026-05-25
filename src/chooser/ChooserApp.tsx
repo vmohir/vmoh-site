@@ -11,6 +11,11 @@ type Phase = "idle" | "countdown" | "result";
 
 const RING_RADIUS = 56;
 const HOLD_SECONDS = 3;
+// 0 on non-touch devices (mouse-only desktop).
+const MAX_TOUCH_POINTS =
+  typeof navigator !== "undefined" && navigator.maxTouchPoints > 0
+    ? navigator.maxTouchPoints
+    : 0;
 
 export default function ChooserApp() {
   // Fingers live in a ref so frame-rate pointermove doesn't re-allocate a Map
@@ -174,6 +179,15 @@ export default function ChooserApp() {
           progress={countdownProgress}
         />
       ))}
+
+      {MAX_TOUCH_POINTS > 0 &&
+        liveFingers.length >= MAX_TOUCH_POINTS &&
+        phase !== "result" && (
+          <div class={styles.touchLimit}>
+            {MAX_TOUCH_POINTS} fingers is your device's max — pick in groups for
+            bigger gatherings.
+          </div>
+        )}
 
       <button
         type="button"
