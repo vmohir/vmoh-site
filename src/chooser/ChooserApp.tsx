@@ -28,6 +28,13 @@ export default function ChooserApp() {
   const [countdownProgress, setCountdownProgress] = useState(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [inputMode, setInputMode] = useState<InputMode>("touch");
+  // Touch-mode-only: surfaces a "max N fingers / try tap-to-add mode" bar
+  // when the user hits the device's touch-point ceiling. Stays visible long
+  // enough that if a sixth finger collapses tracking and the count drops to
+  // 0, the user still sees the hint.
+  const [showLimitHint, setShowLimitHint] = useState(false);
+  const reachedMaxRef = useRef(false);
+  const limitHintTimerRef = useRef<number | null>(null);
 
   const countdownStartRef = useRef<number | null>(null);
   // Synthetic ids for tap-to-add markers — negative so they never collide
@@ -110,13 +117,53 @@ export default function ChooserApp() {
     setPhase("idle");
   }
 
+  function clearLimitHint() {
+    setShowLimitHint(false);
+    reachedMaxRef.current = false;
+    if (limitHintTimerRef.current != null) {
+      clearTimeout(limitHintTimerRef.current);
+      limitHintTimerRef.current = null;
+    }
+  }
+
   function switchInputMode(next: InputMode) {
     if (next === inputMode) return;
     clearAll();
+    clearLimitHint();
     setInputMode(next);
   }
 
   // -- Touch-mode pointer handlers -------------------------------------------
+
+  function scheduleHintHide(delayMs = 3000) {
+    if (limitHintTimerRef.current != null) {
+      clearTimeout(limitHintTimerRef.current);
+    }
+    limitHintTimerRef.current = window.setTimeout(() => {
+      setShowLimitHint(false);
+      reachedMaxRef.current = false;
+      limitHintTimerRef.current = null;
+    }, delayMs);
+  }
+
+  function maybeUpdateLimitHint() {
+    if (MAX_TOUCH_POINTS === 0) return;
+    const count = fingersRef.current.size;
+    if (count >= MAX_TOUCH_POINTS) {
+      // At the device's ceiling — show the hint and start a fade timer. If
+      // the user sustains all fingers down, the hint fades after 3s. A 6th
+      // finger collapsing tracking will land us in the count===0 branch
+      // below, which keeps the hint up a little longer.
+      reachedMaxRef.current = true;
+      setShowLimitHint(true);
+      scheduleHintHide(3000);
+    } else if (count === 0 && reachedMaxRef.current) {
+      // Just dropped from max to zero — could be a normal release, could be
+      // a 6th touch wiping tracking. Either way, keep the hint visible a
+      // little longer so the user can react.
+      scheduleHintHide(3000);
+    }
+  }
 
   function onPointerDownTouch(e: PointerEvent) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
@@ -139,6 +186,7 @@ export default function ChooserApp() {
       color: nextColor(),
     });
     refreshPhase();
+    maybeUpdateLimitHint();
     rerender();
   }
 
@@ -155,6 +203,7 @@ export default function ChooserApp() {
     if (phase === "result") return; // keep rings frozen
     fingersRef.current.delete(e.pointerId);
     refreshPhase();
+    maybeUpdateLimitHint();
     rerender();
   }
 
@@ -264,23 +313,25 @@ export default function ChooserApp() {
           Tap to play again
         </button>
       ) : inputMode === "touch" ? (
-        <div
-          class={styles.bottomBar}
-          onPointerDown={(e) => e.stopPropagation()}
-        >
-          <span class={styles.bottomHint}>
-            {MAX_TOUCH_POINTS > 0
-              ? `Max ${MAX_TOUCH_POINTS} fingers on this device`
-              : "More than touch can do?"}
-          </span>
-          <button
-            type="button"
-            class={`${styles.bottomBtn} btn`}
-            onClick={() => switchInputMode("tap")}
+        showLimitHint && (
+          <div
+            class={styles.bottomBar}
+            onPointerDown={(e) => e.stopPropagation()}
           >
-            Tap-to-add mode
-          </button>
-        </div>
+            <span class={styles.bottomHint}>
+              {MAX_TOUCH_POINTS > 0
+                ? `Max ${MAX_TOUCH_POINTS} fingers on this device.`
+                : "More than touch can do?"}
+            </span>
+            <button
+              type="button"
+              class={`${styles.bottomBtn} btn`}
+              onClick={() => switchInputMode("tap")}
+            >
+              Tap-to-add mode
+            </button>
+          </div>
+        )
       ) : (
         <div
           class={styles.bottomBar}
