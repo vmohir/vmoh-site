@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import type { VNode } from "preact";
-import { ChevronDown } from "lucide-preact";
+import { Check, ChevronDown } from "lucide-preact";
 import type { Person } from "../splitApp/split.types.ts";
 import { isAdvancedMode } from "state/billState.ts";
 import { PersonAvatar } from "ui/PersonAvatar.tsx";
@@ -74,6 +74,8 @@ export function PeoplePicker({
       next.add(personId);
     }
     onChange(next);
+    // Single-select: close immediately on pick.
+    if (!multi) setOpen(false);
   };
 
   return (
@@ -107,19 +109,41 @@ export function PeoplePicker({
       {open && (
         <div
           class={`${styles.dropdown} ${alignEnd ? styles.alignEnd : styles.alignStart}`}
-          role="listbox"
+          role={multi ? "listbox" : "menu"}
         >
-          {people.map((person) => (
-            <label key={person.id} class={styles.option}>
-              <input
-                type={multi ? "checkbox" : "radio"}
-                checked={selected.has(person.id)}
-                onChange={() => handlePick(person.id)}
-              />
-              <PersonAvatar person={person} />
-              <span class={styles.optionName}>{person.name}</span>
-            </label>
-          ))}
+          {people.map((person) => {
+            const isSelected = selected.has(person.id);
+            return multi ? (
+              <label key={person.id} class={styles.option}>
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => handlePick(person.id)}
+                />
+                <PersonAvatar person={person} />
+                <span class={styles.optionName}>{person.name}</span>
+              </label>
+            ) : (
+              <button
+                key={person.id}
+                type="button"
+                class={`${styles.option} ${isSelected ? styles.optionSelected : ""}`}
+                role="menuitemradio"
+                aria-checked={isSelected}
+                onClick={() => handlePick(person.id)}
+              >
+                <PersonAvatar person={person} />
+                <span class={styles.optionName}>{person.name}</span>
+                {isSelected && (
+                  <Check
+                    size={14}
+                    class={styles.checkIcon}
+                    aria-hidden="true"
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

@@ -93,11 +93,15 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
   padding: 0.375rem 0.5rem;
+  border: none;
+  background: transparent;
   border-radius: 0.375rem;
   cursor: pointer;
   font-size: 0.875rem;
   color: var(--text-primary);
+  text-align: left;
 }
 
 .option:hover {
@@ -110,4 +114,9 @@
 
 .optionName {
   flex: 1;
+}
+
+.checkIcon {
+  color: var(--text-primary);
+  flex-shrink: 0;
 }
