@@ -151,7 +151,7 @@ export default function ChooserApp() {
     >
       {liveFingers.length === 0 && phase !== "result" && (
         <div class={styles.hint}>
-          <h1 class={styles.hintTitle}>Place 2+ fingers</h1>
+          <h1 class={styles.hintTitle}>Tap with 2 or more fingers</h1>
           <p class={styles.hintSub}>
             {currentMode === "winner" && "One will be picked."}
             {currentMode === "teams" &&
