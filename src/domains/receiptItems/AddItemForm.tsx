@@ -21,7 +21,8 @@ export function AddItemForm() {
 
   const effectiveCurrency = currencyInput ?? baseCurrency.value;
 
-  const handleAdd = () => {
+  const handleSubmit = (e: Event) => {
+    e.preventDefault();
     const price = parseFloat(priceInput);
     if (nameInput.trim() && !isNaN(price) && price >= 0) {
       addItem(
@@ -39,21 +40,16 @@ export function AddItemForm() {
     }
   };
 
-  const handleKeyPress = (e: KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleAdd();
-    }
-  };
-
   return (
-    <div className={styles.inputGroup}>
+    <form className={styles.inputGroup} onSubmit={handleSubmit}>
       <input
         type="text"
         class={styles.nameInput}
         value={nameInput}
         onInput={(e) => setNameInput((e.target as HTMLInputElement).value)}
-        onKeyPress={handleKeyPress}
         placeholder="Item name"
+        autoComplete="off"
+        enterKeyHint="next"
       />
       <label class={styles.priceField}>
         <span class={styles.priceSymbol} aria-hidden="true">
@@ -65,8 +61,9 @@ export function AddItemForm() {
           class={styles.priceInputInner}
           value={priceInput}
           onInput={(e) => setPriceInput((e.target as HTMLInputElement).value)}
-          onKeyPress={handleKeyPress}
           placeholder="Price"
+          autoComplete="off"
+          enterKeyHint="done"
         />
       </label>
       {isAdvancedMode.value && (
@@ -97,9 +94,9 @@ export function AddItemForm() {
         </div>
       )}
 
-      <button class={styles.addBtn} onClick={handleAdd}>
+      <button type="submit" class={styles.addBtn}>
         Add
       </button>
-    </div>
+    </form>
   );
 }
