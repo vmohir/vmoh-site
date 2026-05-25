@@ -109,7 +109,7 @@
   display: inline-block;
   width: 28px;
   height: 16px;
-  background: var(--surface-muted-bg);
+  background: var(--canvas-bg);
   border: 1px solid var(--border-subtle);
   border-radius: 999px;
   transition: background var(--transition);
