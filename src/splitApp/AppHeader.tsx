@@ -1,4 +1,4 @@
-import { RotateCcw, Settings } from "lucide-preact";
+import { Moon, RotateCcw, Settings, Sun } from "lucide-preact";
 import {
   baseCurrency,
   updateBaseCurrency,
@@ -6,6 +6,7 @@ import {
   resetAll,
   toggleAdvancedMode,
 } from "../state/billState";
+import { theme, toggleTheme } from "../state/theme";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
 import { Popover } from "../ui/Popover.tsx";
 import { useDropdown } from "../ui/useDropdown.ts";
@@ -34,6 +35,25 @@ function AdvancedToggle() {
         <span class={styles.toggleThumb} />
       </span>
       <span class={styles.toggleLabel}>Advanced</span>
+    </button>
+  );
+}
+
+function ThemeToggle() {
+  const isDark = theme.value === "dark";
+  return (
+    <button
+      type="button"
+      class={styles.themeToggle}
+      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      onClick={toggleTheme}
+    >
+      {isDark ? (
+        <Sun size={16} aria-hidden="true" />
+      ) : (
+        <Moon size={16} aria-hidden="true" />
+      )}
+      <span>{isDark ? "Light mode" : "Dark mode"}</span>
     </button>
   );
 }
@@ -97,6 +117,9 @@ export default function AppHeader() {
               </div>
               <div class={styles.menuItem}>
                 <AdvancedToggle />
+              </div>
+              <div class={styles.menuItem}>
+                <ThemeToggle />
               </div>
             </Popover>
           )}

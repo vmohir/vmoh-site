@@ -7,8 +7,14 @@
 		<meta name="generator" content={Astro.generator} />
 		<title>Split Bill App</title>
 		<script is:inline>
-			// Set theme before page renders to avoid flash
-			const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+			// Set theme before page renders to avoid flash. Stored user choice
+			// wins over system preference.
+			const stored = (() => {
+				try { return localStorage.getItem('split-bill-theme'); } catch { return null; }
+			})();
+			const theme = stored === 'light' || stored === 'dark'
+				? stored
+				: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 			document.documentElement.setAttribute('data-theme', theme);
 		</script>
 	</head>

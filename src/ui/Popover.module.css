@@ -18,6 +18,14 @@
   gap: 0.125rem;
 }
 
+[data-theme="dark"] .popover {
+  background: var(--surface-muted-bg);
+  border-color: var(--border-primary);
+  box-shadow:
+    0 12px 28px -6px rgba(0, 0, 0, 0.55),
+    0 4px 10px -2px rgba(0, 0, 0, 0.35);
+}
+
 .alignStart {
   left: 0;
   right: auto;
