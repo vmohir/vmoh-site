@@ -19,30 +19,36 @@
   align-items: center;
 }
 
-.labelInput {
-  flex: 1;
-  font-weight: 500;
+.labelInput,
+.valueField,
+.typeSelector,
+.unitSelector {
+  height: 2.25rem;
   padding: 0.375rem 0.5rem;
   background: var(--surface-subtle-bg);
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
   border-radius: 0.375rem;
+  font-size: 1rem;
+  line-height: 1.25;
   transition: border-color var(--transition);
+  box-sizing: border-box;
 }
 
-.labelInput:focus-visible {
+.labelInput {
+  flex: 1;
+  font-weight: 500;
+}
+
+.labelInput:focus-visible,
+.valueField:focus-visible {
   outline: none;
   border-color: var(--text-primary);
 }
 
 .typeSelector {
   min-width: 90px;
-  padding: 0.375rem 0.5rem;
-  background: var(--surface-subtle-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: 0.375rem;
   color: var(--text-secondary);
-  font-size: 0.8125rem;
 }
 
 .cardBody {
@@ -60,27 +66,11 @@
 
 .valueField {
   width: 72px;
-  padding: 0.375rem 0.5rem;
-  background: var(--surface-subtle-bg);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
-  border-radius: 0.375rem;
-  transition: border-color var(--transition);
-}
-
-.valueField:focus-visible {
-  outline: none;
-  border-color: var(--text-primary);
 }
 
 .unitSelector {
   min-width: 54px;
-  padding: 0.375rem 0.5rem;
-  background: var(--surface-subtle-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: 0.375rem;
   color: var(--text-secondary);
-  font-size: 0.8125rem;
 }
 
 .actions {

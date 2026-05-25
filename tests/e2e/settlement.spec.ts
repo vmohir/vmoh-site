@@ -34,7 +34,7 @@ test("two people share an item, one pays — settles to a single transfer", asyn
   // Add a $20 item.
   await page.getByPlaceholder("Item name").fill("Dinner");
   await page.getByPlaceholder("Price").fill("20");
-  await page.getByPlaceholder("Price").press("Enter");
+  await page.getByRole("button", { name: "Add", exact: true }).click();
 
   // Shared by Alice + Bob (item card's picker — Add form has its own).
   await itemsSection.getByRole("button", { name: "Split" }).last().click();
@@ -62,7 +62,7 @@ test("single-person item: Shared-by + Paid-by hides the Amounts-paid detail", as
 
   await page.getByPlaceholder("Item name").fill("Coffee");
   await page.getByPlaceholder("Price").fill("5");
-  await page.getByPlaceholder("Price").press("Enter");
+  await page.getByRole("button", { name: "Add", exact: true }).click();
 
   // Pick You as the sole sharer and payer.
   await itemsSection.getByRole("button", { name: "Split" }).last().click();

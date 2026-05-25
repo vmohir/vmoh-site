@@ -1,4 +1,4 @@
-import { useRef, useState } from "preact/hooks";
+import { useState } from "preact/hooks";
 import { ArrowRight, Users, Wallet } from "lucide-preact";
 import type { Currency } from "../../splitApp/split.types.ts";
 import {
@@ -10,6 +10,7 @@ import {
 import { CurrencySelector } from "../currencies/CurrencySelector.tsx";
 import { PeoplePicker } from "../../receiptItems/PeoplePicker.tsx";
 import { getCurrencySymbol } from "../../utils/currency.utils.ts";
+import { focusNextInput } from "../../utils/focusNextInput.ts";
 import styles from "./AddItemForm.module.css";
 
 export function AddItemForm() {
@@ -18,7 +19,6 @@ export function AddItemForm() {
   const [currencyInput, setCurrencyInput] = useState<Currency | null>(null);
   const [sharedByDraft, setSharedByDraft] = useState<Set<string>>(new Set());
   const [paidByDraft, setPaidByDraft] = useState<Set<string>>(new Set());
-  const priceInputRef = useRef<HTMLInputElement>(null);
 
   const effectiveCurrency = currencyInput ?? baseCurrency.value;
 
@@ -50,8 +50,7 @@ export function AddItemForm() {
         onInput={(e) => setNameInput((e.target as HTMLInputElement).value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            e.preventDefault();
-            priceInputRef.current?.focus();
+            if (focusNextInput(e.currentTarget)) e.preventDefault();
           }
         }}
         placeholder="Item name"
@@ -63,15 +62,19 @@ export function AddItemForm() {
           {getCurrencySymbol(effectiveCurrency)}
         </span>
         <input
-          ref={priceInputRef}
           type="text"
           inputMode="decimal"
           class={styles.priceInputInner}
           value={priceInput}
           onInput={(e) => setPriceInput((e.target as HTMLInputElement).value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              if (focusNextInput(e.currentTarget)) e.preventDefault();
+            }
+          }}
           placeholder="Price"
           autoComplete="off"
-          enterKeyHint="done"
+          enterKeyHint="next"
         />
       </label>
       {isAdvancedMode.value && (

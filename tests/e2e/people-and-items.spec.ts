@@ -7,9 +7,13 @@ test.beforeEach(async ({ page }) => {
 });
 
 const peopleSection = (page: Page) =>
-  page.locator("section").filter({ has: page.getByRole("heading", { name: "People" }) });
+  page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "People" }) });
 const itemsSection = (page: Page) =>
-  page.locator("section").filter({ has: page.getByRole("heading", { name: "Items" }) });
+  page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "Items" }) });
 
 test("default state shows one person and no items", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Split Bill" })).toBeVisible();
@@ -21,7 +25,9 @@ test("add and remove a person", async ({ page }) => {
   await page.getByRole("button", { name: "Add Person" }).click();
 
   // With 2 people, both rows show a Remove button.
-  const peopleRemove = peopleSection(page).getByRole("button", { name: "Remove" });
+  const peopleRemove = peopleSection(page).getByRole("button", {
+    name: "Remove",
+  });
   await expect(peopleRemove).toHaveCount(2);
 
   await peopleRemove.nth(1).click();
@@ -33,7 +39,7 @@ test("add and remove a person", async ({ page }) => {
 test("add an item without advanced mode", async ({ page }) => {
   await page.getByPlaceholder("Item name").fill("Pizza");
   await page.getByPlaceholder("Price").fill("24");
-  await page.getByPlaceholder("Price").press("Enter");
+  await page.getByRole("button", { name: "Add", exact: true }).click();
 
   await expect(page.getByText("No items added yet")).toBeHidden();
   // Textboxes in the section: [Add name, Add price, Item name, Item price]. Both cleared on submit.
@@ -57,9 +63,11 @@ test("advanced mode shows the per-item currency selector", async ({ page }) => {
 test("state survives a reload", async ({ page }) => {
   await page.getByPlaceholder("Item name").fill("Coffee");
   await page.getByPlaceholder("Price").fill("4.5");
-  await page.getByPlaceholder("Price").press("Enter");
+  await page.getByRole("button", { name: "Add", exact: true }).click();
 
-  await expect(itemsSection(page).getByRole("textbox").nth(2)).toHaveValue("Coffee");
+  await expect(itemsSection(page).getByRole("textbox").nth(2)).toHaveValue(
+    "Coffee",
+  );
 
   await page.reload({ waitUntil: "networkidle" });
 

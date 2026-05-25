@@ -1,5 +1,6 @@
 import styles from "./EditableText.module.css";
 import { useState, useEffect, useRef } from "preact/hooks";
+import { focusNextInput } from "../utils/focusNextInput.ts";
 
 interface EditableTextProps {
   value: string;
@@ -55,9 +56,14 @@ export default function EditableText({
 
   const handleKeyPress = (e: KeyboardEvent) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       handleSave();
+      if (!focusNextInput(inputRef.current!)) {
+        inputRef.current?.blur();
+      }
     } else if (e.key === "Escape") {
       handleCancel();
+      inputRef.current?.blur();
     }
   };
 
@@ -70,6 +76,7 @@ export default function EditableText({
       onInput={(e) => setEditValue((e.target as HTMLInputElement).value)}
       onBlur={handleSave}
       onKeyDown={handleKeyPress}
+      enterKeyHint="next"
       class={`${className} ${styles.editableText}`}
     />
   );
