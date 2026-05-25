@@ -17,14 +17,14 @@ import "styles/global.css";
     <meta name="apple-mobile-web-app-title" content="Chooser" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="generator" content={Astro.generator} />
     <title>Chooser</title>
     <script is:inline>
-      // When a new service worker takes over an existing client, reload the
-      // page so the user gets the new assets immediately instead of having to
-      // close + reopen the PWA. Skips the first-ever install (no prior
-      // controller) so users don't see a confusing reload on their first
-      // visit.
+      // Register the service worker (the PWA integration generates sw.js
+      // but doesn't auto-wire it in Astro) and auto-reload when a new SW
+      // takes over an existing client. The first-ever install is skipped
+      // so a fresh visitor doesn't see a confusing reload.
       if ("serviceWorker" in navigator) {
         const firstActivation = !navigator.serviceWorker.controller;
         let refreshing = false;
@@ -32,6 +32,11 @@ import "styles/global.css";
           if (firstActivation || refreshing) return;
           refreshing = true;
           location.reload();
+        });
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js", { scope: "/" })
+            .catch((err) => console.error("SW registration failed:", err));
         });
       }
     </script>
