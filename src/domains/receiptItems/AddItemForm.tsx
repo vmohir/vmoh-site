@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useRef, useState } from "preact/hooks";
 import { ArrowRight, Users, Wallet } from "lucide-preact";
 import type { Currency } from "../../splitApp/split.types.ts";
 import {
@@ -18,6 +18,7 @@ export function AddItemForm() {
   const [currencyInput, setCurrencyInput] = useState<Currency | null>(null);
   const [sharedByDraft, setSharedByDraft] = useState<Set<string>>(new Set());
   const [paidByDraft, setPaidByDraft] = useState<Set<string>>(new Set());
+  const priceInputRef = useRef<HTMLInputElement>(null);
 
   const effectiveCurrency = currencyInput ?? baseCurrency.value;
 
@@ -47,6 +48,12 @@ export function AddItemForm() {
         class={styles.nameInput}
         value={nameInput}
         onInput={(e) => setNameInput((e.target as HTMLInputElement).value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            priceInputRef.current?.focus();
+          }
+        }}
         placeholder="Item name"
         autoComplete="off"
         enterKeyHint="next"
@@ -56,6 +63,7 @@ export function AddItemForm() {
           {getCurrencySymbol(effectiveCurrency)}
         </span>
         <input
+          ref={priceInputRef}
           type="text"
           inputMode="decimal"
           class={styles.priceInputInner}
