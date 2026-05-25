@@ -182,7 +182,7 @@ export default function ChooserApp() {
         onPointerDown={(e) => e.stopPropagation()}
         onClick={() => setSettingsOpen(true)}
       >
-        <SettingsIcon size={20} />
+        <SettingsIcon size={28} />
       </button>
 
       {phase === "result" && (
