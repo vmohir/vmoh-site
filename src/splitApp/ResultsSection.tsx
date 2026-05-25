@@ -109,7 +109,7 @@ export default function ResultsSection() {
         <h3>Payment Settlement</h3>
 
         <div class={styles.algorithmSelector}>
-          <span>Settlement method:</span>
+          <span>Method:</span>
           <AlgorithmPicker />
         </div>
 
