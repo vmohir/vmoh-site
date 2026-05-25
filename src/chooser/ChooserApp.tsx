@@ -24,6 +24,10 @@ const MAX_TOUCH_POINTS =
   typeof navigator !== "undefined" && navigator.maxTouchPoints > 0
     ? navigator.maxTouchPoints
     : 0;
+const PREFERS_REDUCED_MOTION =
+  typeof window !== "undefined" &&
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 export default function ChooserApp() {
   const fingersRef = useRef<Map<number, Finger>>(new Map());
@@ -298,15 +302,23 @@ export default function ChooserApp() {
         <WinnerReveal x={winner.x} y={winner.y} color={winner.color} />
       )}
 
-      {liveFingers.map((f) => (
+      {liveFingers.map((f, idx) => (
         <Ring
           key={f.id}
           finger={f}
           phase={phase}
           result={result}
           progress={countdownProgress}
+          reducedMotion={PREFERS_REDUCED_MOTION}
+          markerNumber={inputMode === "tap" ? idx + 1 : undefined}
         />
       ))}
+
+      <div role="status" aria-live="polite" class={styles.srOnly}>
+        {phase === "result" && result
+          ? describeResult(result, liveFingers)
+          : ""}
+      </div>
 
       <button
         type="button"
@@ -393,9 +405,18 @@ interface RingProps {
   phase: Phase;
   result: ChoiceResult | null;
   progress: number;
+  reducedMotion: boolean;
+  markerNumber?: number;
 }
 
-function Ring({ finger, phase, result, progress }: RingProps) {
+function Ring({
+  finger,
+  phase,
+  result,
+  progress,
+  reducedMotion,
+  markerNumber,
+}: RingProps) {
   let color = finger.color;
   let label: string | null = null;
   let isWinner = false;
@@ -420,6 +441,10 @@ function Ring({ finger, phase, result, progress }: RingProps) {
       const n = result.orderByFinger[finger.id];
       if (n !== undefined) label = String(n);
     }
+  } else if (markerNumber != null) {
+    // Tap-to-add marker — label helps color-blind users distinguish them
+    // and acts as the screen-reader identity for each marker.
+    label = String(markerNumber);
   }
 
   const radius = RING_RADIUS * scaleResult;
@@ -433,7 +458,7 @@ function Ring({ finger, phase, result, progress }: RingProps) {
     "--ring-color": color,
   };
 
-  if (phase === "countdown") {
+  if (phase === "countdown" && !reducedMotion) {
     const pulse = 1 + 0.06 * Math.sin(progress * Math.PI * 8) + progress * 0.1;
     ringStyle.transform = `scale(${pulse})`;
   }
@@ -442,11 +467,41 @@ function Ring({ finger, phase, result, progress }: RingProps) {
     <div
       class={`${styles.ring} ${isLoser ? styles.ringFaded : ""} ${isWinner ? styles.ringWinner : ""}`}
       style={ringStyle}
+      role="img"
+      aria-label={
+        isWinner
+          ? `Winner${label ? ` (marker ${label})` : ""}`
+          : label
+            ? `Marker ${label}`
+            : "Finger"
+      }
     >
       <div class={styles.ringInner} />
       {label !== null && <span class={styles.ringLabel}>{label}</span>}
     </div>
   );
+}
+
+function describeResult(
+  result: ChoiceResult,
+  fingers: readonly Finger[],
+): string {
+  if (result.kind === "winner") {
+    const winnerIdx = fingers.findIndex((f) => f.id === result.winnerId);
+    return winnerIdx >= 0
+      ? `Winner picked: marker ${winnerIdx + 1} of ${fingers.length}.`
+      : "Winner picked.";
+  }
+  if (result.kind === "teams") {
+    const sizes = new Array<number>(result.teamCount).fill(0);
+    for (const t of Object.values(result.teamByFinger)) {
+      if (t >= 0 && t < sizes.length) sizes[t] = (sizes[t] ?? 0) + 1;
+    }
+    return `Split into ${result.teamCount} teams: ${sizes
+      .map((n, i) => `team ${i + 1} has ${n}`)
+      .join(", ")}.`;
+  }
+  return `Order assigned to ${fingers.length} fingers.`;
 }
 
 interface WinnerRevealProps {

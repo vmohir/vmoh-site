@@ -45,6 +45,13 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .sheet {
+    animation: none;
+  }
+}
+
 .header {
   display: flex;
   align-items: center;
