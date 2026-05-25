@@ -183,7 +183,7 @@ export function getAvailableAlgorithms(): Array<{
     {
       id: "minimize-transactions",
       name: "Minimize Transactions",
-      description: "Reduces the number of transfers needed (greedy algorithm)",
+      description: "Reduces the number of transfers needed",
     },
     {
       id: "simple-pairwise",

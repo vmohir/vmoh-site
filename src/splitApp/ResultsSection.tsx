@@ -127,17 +127,11 @@ export default function ResultsSection() {
             >
               {algorithms.map((alg) => (
                 <option key={alg.id} value={alg.id}>
-                  {alg.name}
+                  {alg.name} — {alg.description}
                 </option>
               ))}
             </select>
           </label>
-          <p class={styles.algorithmDescription}>
-            {
-              algorithms.find((a) => a.id === settlementAlgorithm.value)
-                ?.description
-            }
-          </p>
         </div>
 
         {settlement.transfers.length > 0 ? (
