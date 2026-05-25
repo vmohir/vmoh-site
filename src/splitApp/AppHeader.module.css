@@ -16,6 +16,13 @@
   white-space: nowrap;
 }
 
+.rightCluster {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
 .actionsInline {
   display: flex;
   align-items: center;

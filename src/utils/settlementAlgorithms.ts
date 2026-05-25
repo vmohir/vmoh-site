@@ -182,13 +182,13 @@ export function getAvailableAlgorithms(): Array<{
   return [
     {
       id: "minimize-transactions",
-      name: "Minimize Transactions",
-      description: "Reduces the number of transfers needed",
+      name: "Fewest transactions",
+      description: "Fewer transfers overall",
     },
     {
       id: "simple-pairwise",
-      name: "Simple Pairwise",
-      description: "Direct settlement between each pair of people",
+      name: "Direct pairs",
+      description: "Each debtor pays each creditor",
     },
   ];
 }

@@ -73,43 +73,45 @@ export default function AppHeader() {
     <header class={styles.header}>
       <h1 class={styles.title}>Split Bill</h1>
 
-      <div class={styles.actionsInline}>
-        <CurrencyControl />
-        <AdvancedToggle />
-      </div>
+      <div class={styles.rightCluster}>
+        <div class={styles.actionsInline}>
+          <CurrencyControl />
+          <AdvancedToggle />
+        </div>
 
-      <button
-        type="button"
-        class={styles.iconButton}
-        aria-label="Reset all"
-        title="Reset all"
-        onClick={handleReset}
-      >
-        <RotateCcw size={16} aria-hidden="true" />
-      </button>
-
-      <div class={styles.menuWrap} ref={menuRef}>
         <button
           type="button"
-          class={`${styles.menuTrigger} ${styles.iconButton}`}
-          aria-label="Settings"
-          aria-expanded={menuOpen}
-          aria-haspopup="menu"
-          onClick={() => setMenuOpen((v) => !v)}
+          class={styles.iconButton}
+          aria-label="Reset all"
+          title="Reset all"
+          onClick={handleReset}
         >
-          <Settings size={18} aria-hidden="true" />
+          <RotateCcw size={16} aria-hidden="true" />
         </button>
-        {menuOpen && (
-          <div class={styles.menu} role="menu">
-            <div class={styles.menuItem}>
-              <span class={styles.menuLabel}>Currency</span>
-              <CurrencyControl />
+
+        <div class={styles.menuWrap} ref={menuRef}>
+          <button
+            type="button"
+            class={`${styles.menuTrigger} ${styles.iconButton}`}
+            aria-label="Settings"
+            aria-expanded={menuOpen}
+            aria-haspopup="menu"
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <Settings size={18} aria-hidden="true" />
+          </button>
+          {menuOpen && (
+            <div class={styles.menu} role="menu">
+              <div class={styles.menuItem}>
+                <span class={styles.menuLabel}>Currency</span>
+                <CurrencyControl />
+              </div>
+              <div class={styles.menuItem}>
+                <AdvancedToggle />
+              </div>
             </div>
-            <div class={styles.menuItem}>
-              <AdvancedToggle />
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </header>
   );

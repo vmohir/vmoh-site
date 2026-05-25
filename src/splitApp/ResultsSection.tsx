@@ -1,17 +1,11 @@
-import {
-  calculatedTotals,
-  calculatedSettlement,
-  settlementAlgorithm,
-  updateSettlementAlgorithm,
-} from "../state/billState";
-import { getAvailableAlgorithms } from "../utils/settlementAlgorithms";
+import { calculatedTotals, calculatedSettlement } from "../state/billState";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
+import AlgorithmPicker from "./AlgorithmPicker.tsx";
 import styles from "./ResultsSection.module.css";
 
 export default function ResultsSection() {
   const totals = calculatedTotals.value;
   const settlement = calculatedSettlement.value;
-  const algorithms = getAvailableAlgorithms();
 
   if (totals.length === 0) {
     return (
@@ -115,23 +109,8 @@ export default function ResultsSection() {
         <h3>Payment Settlement</h3>
 
         <div class={styles.algorithmSelector}>
-          <label>
-            <span>Settlement method:</span>
-            <select
-              value={settlementAlgorithm.value}
-              onChange={(e) =>
-                updateSettlementAlgorithm(
-                  (e.target as HTMLSelectElement).value as any,
-                )
-              }
-            >
-              {algorithms.map((alg) => (
-                <option key={alg.id} value={alg.id}>
-                  {alg.name} — {alg.description}
-                </option>
-              ))}
-            </select>
-          </label>
+          <span>Settlement method:</span>
+          <AlgorithmPicker />
         </div>
 
         {settlement.transfers.length > 0 ? (
