@@ -64,6 +64,7 @@
   right: 0;
   z-index: 20;
   min-width: 180px;
+  max-width: calc(100vw - 1rem);
   padding: 0.375rem;
   background: var(--surface-bg);
   border: 1px solid var(--border-subtle);
