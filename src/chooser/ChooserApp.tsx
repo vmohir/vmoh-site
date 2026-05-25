@@ -8,6 +8,7 @@ import SettingsDrawer from "./SettingsDrawer";
 import styles from "./ChooserApp.module.css";
 
 type Phase = "idle" | "countdown" | "result";
+type InputMode = "touch" | "tap";
 
 const RING_RADIUS = 56;
 const HOLD_SECONDS = 3;
@@ -18,8 +19,6 @@ const MAX_TOUCH_POINTS =
     : 0;
 
 export default function ChooserApp() {
-  // Fingers live in a ref so frame-rate pointermove doesn't re-allocate a Map
-  // per event. A separate tick state drives re-renders.
   const fingersRef = useRef<Map<number, Finger>>(new Map());
   const [, setTick] = useState(0);
   const rerender = () => setTick((t) => (t + 1) % 1_000_000);
@@ -28,8 +27,12 @@ export default function ChooserApp() {
   const [result, setResult] = useState<ChoiceResult | null>(null);
   const [countdownProgress, setCountdownProgress] = useState(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [inputMode, setInputMode] = useState<InputMode>("touch");
 
   const countdownStartRef = useRef<number | null>(null);
+  // Synthetic ids for tap-to-add markers — negative so they never collide
+  // with real PointerEvent ids.
+  const markerIdRef = useRef(-1);
 
   const currentMode = mode.value;
   const currentTeamCount = teamCount.value;
@@ -46,9 +49,10 @@ export default function ChooserApp() {
     }
   }
 
-  // RAF loop runs the countdown ring and triggers the pick.
+  // RAF loop runs the countdown ring and triggers the pick. Only used in
+  // touch mode; tap mode picks via the explicit button.
   useEffect(() => {
-    if (phase !== "countdown") return;
+    if (phase !== "countdown" || inputMode !== "touch") return;
     let raf = 0;
     const loop = (now: number) => {
       const start = countdownStartRef.current;
@@ -56,33 +60,36 @@ export default function ChooserApp() {
       const progress = Math.min(1, (now - start) / 1000 / HOLD_SECONDS);
       setCountdownProgress(progress);
       if (progress >= 1) {
-        const r = pickResult(
-          currentMode,
-          Array.from(fingersRef.current.values()),
-          currentTeamCount,
-        );
-        if (r) {
-          setResult(r);
-          setPhase("result");
-        } else {
-          refreshPhase();
-        }
+        runPick();
         return;
       }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [phase, currentMode, currentTeamCount]);
+  }, [phase, currentMode, currentTeamCount, inputMode]);
 
-  // Restart the countdown if the mode/team setting changes mid-hold so the
-  // user gets a full hold under the new settings.
+  // Restart the countdown if mode/team count changes mid-hold.
   useEffect(() => {
-    if (phase === "countdown") {
+    if (phase === "countdown" && inputMode === "touch") {
       countdownStartRef.current = performance.now();
       setCountdownProgress(0);
     }
   }, [currentMode, currentTeamCount]);
+
+  function runPick() {
+    const r = pickResult(
+      currentMode,
+      Array.from(fingersRef.current.values()),
+      currentTeamCount,
+    );
+    if (r) {
+      setResult(r);
+      setPhase("result");
+    } else {
+      refreshPhase();
+    }
+  }
 
   function nextColor(): string {
     const used = new Set(
@@ -95,7 +102,23 @@ export default function ChooserApp() {
     );
   }
 
-  function onPointerDown(e: PointerEvent) {
+  function clearAll() {
+    fingersRef.current.clear();
+    setResult(null);
+    countdownStartRef.current = null;
+    setCountdownProgress(0);
+    setPhase("idle");
+  }
+
+  function switchInputMode(next: InputMode) {
+    if (next === inputMode) return;
+    clearAll();
+    setInputMode(next);
+  }
+
+  // -- Touch-mode pointer handlers -------------------------------------------
+
+  function onPointerDownTouch(e: PointerEvent) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
     try {
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -103,7 +126,6 @@ export default function ChooserApp() {
       /* synthetic / inactive pointers — safe to ignore */
     }
 
-    // A new touch after a result is showing starts a fresh round.
     if (phase === "result") {
       setResult(null);
       fingersRef.current.clear();
@@ -120,7 +142,7 @@ export default function ChooserApp() {
     rerender();
   }
 
-  function onPointerMove(e: PointerEvent) {
+  function onPointerMoveTouch(e: PointerEvent) {
     const f = fingersRef.current.get(e.pointerId);
     if (!f) return;
     f.x = e.clientX;
@@ -128,16 +150,46 @@ export default function ChooserApp() {
     rerender();
   }
 
-  function onPointerEnd(e: PointerEvent) {
+  function onPointerEndTouch(e: PointerEvent) {
     if (!fingersRef.current.has(e.pointerId)) return;
-
-    // Keep rings frozen on screen once a result is showing.
-    if (phase === "result") return;
-
+    if (phase === "result") return; // keep rings frozen
     fingersRef.current.delete(e.pointerId);
     refreshPhase();
     rerender();
   }
+
+  // -- Tap-to-add-mode pointer handlers --------------------------------------
+
+  function onPointerDownTap(e: PointerEvent) {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    if (phase === "result") return; // ignore until reset
+
+    // If the tap is on an existing marker, remove it.
+    const hit = Array.from(fingersRef.current.values()).find((f) => {
+      const dx = f.x - e.clientX;
+      const dy = f.y - e.clientY;
+      return Math.hypot(dx, dy) <= RING_RADIUS;
+    });
+    if (hit) {
+      fingersRef.current.delete(hit.id);
+      rerender();
+      return;
+    }
+
+    // Otherwise add a new marker.
+    const id = markerIdRef.current;
+    markerIdRef.current -= 1;
+    fingersRef.current.set(id, {
+      id,
+      x: e.clientX,
+      y: e.clientY,
+      joinedAt: performance.now(),
+      color: nextColor(),
+    });
+    rerender();
+  }
+
+  // -- Render ----------------------------------------------------------------
 
   const liveFingers = Array.from(fingersRef.current.values());
   const winner =
@@ -145,24 +197,33 @@ export default function ChooserApp() {
       ? liveFingers.find((f) => f.id === result.winnerId)
       : undefined;
 
+  const showIdleHint = liveFingers.length === 0 && phase !== "result";
+  const idleTitle =
+    inputMode === "touch" ? "Tap with 2 or more fingers" : "Tap to add markers";
+  const idleSub =
+    inputMode === "tap"
+      ? "Tap a marker again to remove it."
+      : currentMode === "winner"
+        ? "One will be picked."
+        : currentMode === "teams"
+          ? `Will split into ${currentTeamCount} teams.`
+          : "An order will be assigned.";
+
   return (
     <div
       class={styles.surface}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerEnd}
-      onPointerCancel={onPointerEnd}
-      onPointerLeave={onPointerEnd}
+      onPointerDown={
+        inputMode === "touch" ? onPointerDownTouch : onPointerDownTap
+      }
+      onPointerMove={inputMode === "touch" ? onPointerMoveTouch : undefined}
+      onPointerUp={inputMode === "touch" ? onPointerEndTouch : undefined}
+      onPointerCancel={inputMode === "touch" ? onPointerEndTouch : undefined}
+      onPointerLeave={inputMode === "touch" ? onPointerEndTouch : undefined}
     >
-      {liveFingers.length === 0 && phase !== "result" && (
+      {showIdleHint && (
         <div class={styles.hint}>
-          <h1 class={styles.hintTitle}>Tap with 2 or more fingers</h1>
-          <p class={styles.hintSub}>
-            {currentMode === "winner" && "One will be picked."}
-            {currentMode === "teams" &&
-              `Will split into ${currentTeamCount} teams.`}
-            {currentMode === "order" && "An order will be assigned."}
-          </p>
+          <h1 class={styles.hintTitle}>{idleTitle}</h1>
+          <p class={styles.hintSub}>{idleSub}</p>
         </div>
       )}
 
@@ -180,15 +241,6 @@ export default function ChooserApp() {
         />
       ))}
 
-      {MAX_TOUCH_POINTS > 0 &&
-        liveFingers.length >= MAX_TOUCH_POINTS &&
-        phase !== "result" && (
-          <div class={styles.touchLimit}>
-            {MAX_TOUCH_POINTS} fingers is your device's max — pick in groups for
-            bigger gatherings.
-          </div>
-        )}
-
       <button
         type="button"
         class={`${styles.settingsBtn} btn btn-ghost btn-icon`}
@@ -199,20 +251,64 @@ export default function ChooserApp() {
         <SettingsIcon size={28} />
       </button>
 
-      {phase === "result" && (
+      {/* Bottom bar — content depends on phase and input mode */}
+      {phase === "result" ? (
         <button
           type="button"
           class={`${styles.resetBtn} btn btn-primary`}
           onPointerDown={(e) => e.stopPropagation()}
           onClick={() => {
-            setResult(null);
-            fingersRef.current.clear();
-            refreshPhase();
-            rerender();
+            clearAll();
           }}
         >
           Tap to play again
         </button>
+      ) : inputMode === "touch" ? (
+        <div
+          class={styles.bottomBar}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <span class={styles.bottomHint}>
+            {MAX_TOUCH_POINTS > 0
+              ? `Max ${MAX_TOUCH_POINTS} fingers on this device`
+              : "More than touch can do?"}
+          </span>
+          <button
+            type="button"
+            class={`${styles.bottomBtn} btn`}
+            onClick={() => switchInputMode("tap")}
+          >
+            Tap-to-add mode
+          </button>
+        </div>
+      ) : (
+        <div
+          class={styles.bottomBar}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            class={`${styles.bottomBtn} btn`}
+            onClick={() => switchInputMode("touch")}
+          >
+            Back to fingers
+          </button>
+          <span class={styles.bottomHint}>
+            {liveFingers.length === 0
+              ? "0 markers"
+              : liveFingers.length === 1
+                ? "1 marker"
+                : `${liveFingers.length} markers`}
+          </span>
+          <button
+            type="button"
+            class={`${styles.bottomBtn} btn btn-primary`}
+            disabled={liveFingers.length < 2}
+            onClick={runPick}
+          >
+            Pick
+          </button>
+        </div>
       )}
 
       {settingsOpen && (
