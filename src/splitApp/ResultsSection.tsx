@@ -23,91 +23,91 @@ export default function ResultsSection() {
     <div class={styles.resultsSection}>
       <div class={styles.personResults}>
         <h3>Per-Person Breakdown</h3>
-        {totals.map((personTotal) => (
-          <div key={personTotal.personId} class={styles.personResult}>
-            <h4>{personTotal.personName}</h4>
+        {totals.map((personTotal) => {
+          const balanceState =
+            personTotal.balance > 0.01
+              ? "underpaid"
+              : personTotal.balance < -0.01
+                ? "overpaid"
+                : "settled";
+          const balanceText =
+            balanceState === "underpaid"
+              ? `Owes $${personTotal.balance.toFixed(2)}`
+              : balanceState === "overpaid"
+                ? `Should receive $${Math.abs(personTotal.balance).toFixed(2)}`
+                : "Settled";
 
-            <div class={styles.breakdown}>
-              {/* Consumed items */}
-              {personTotal.assignedItems.length > 0 && (
-                <div class={styles.breakdownSection}>
-                  <strong>Consumed Items:</strong>
-                  <ul>
-                    {personTotal.assignedItems.map((item, index) => (
-                      <li key={index}>
-                        {item.name}: {getCurrencySymbol(item.currency)}
-                        {item.share.toFixed(2)}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Paid items */}
-              {personTotal.paidItems.length > 0 && (
-                <div class={styles.breakdownSection}>
-                  <strong>Paid Items:</strong>
-                  <ul>
-                    {personTotal.paidItems.map((item, index) => (
-                      <li key={index}>
-                        {item.name}: {getCurrencySymbol(item.currency)}
-                        {item.amount.toFixed(2)}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <div class={styles.breakdownRow}>
-                <span>Subtotal (owed):</span>
-                <span>${personTotal.itemsSubtotal.toFixed(2)}</span>
-              </div>
-
-              {/* Dynamic adjustments breakdown */}
-              {personTotal.adjustments.map((adj) => (
-                <div
-                  key={adj.id}
-                  class={`${styles.breakdownRow} ${styles[`adjustment-${adj.type}`]}`}
+          return (
+            <details key={personTotal.personId} class={styles.personResult}>
+              <summary class={styles.personSummary}>
+                <span class={styles.personName}>{personTotal.personName}</span>
+                <span
+                  class={`${styles.summaryBalance} ${styles[balanceState]}`}
                 >
-                  <span>{adj.label}:</span>
-                  <span>
-                    {adj.type === "discount" ? "-" : ""}$
-                    {Math.abs(adj.amount).toFixed(2)}
-                  </span>
+                  {balanceText}
+                </span>
+              </summary>
+
+              <div class={styles.breakdown}>
+                {personTotal.assignedItems.length > 0 && (
+                  <div class={styles.breakdownSection}>
+                    <span class={styles.sectionLabel}>Consumed Items</span>
+                    <ul>
+                      {personTotal.assignedItems.map((item, index) => (
+                        <li key={index}>
+                          {item.name}: {getCurrencySymbol(item.currency)}
+                          {item.share.toFixed(2)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {personTotal.paidItems.length > 0 && (
+                  <div class={styles.breakdownSection}>
+                    <span class={styles.sectionLabel}>Paid Items</span>
+                    <ul>
+                      {personTotal.paidItems.map((item, index) => (
+                        <li key={index}>
+                          {item.name}: {getCurrencySymbol(item.currency)}
+                          {item.amount.toFixed(2)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div class={styles.breakdownRow}>
+                  <span>Subtotal (owed)</span>
+                  <span>${personTotal.itemsSubtotal.toFixed(2)}</span>
                 </div>
-              ))}
 
-              <div class={styles.breakdownRow}>
-                <strong>Total Owed:</strong>
-                <strong>${personTotal.total.toFixed(2)}</strong>
-              </div>
+                {personTotal.adjustments.map((adj) => (
+                  <div
+                    key={adj.id}
+                    class={`${styles.breakdownRow} ${styles[`adjustment-${adj.type}`]}`}
+                  >
+                    <span>{adj.label}</span>
+                    <span>
+                      {adj.type === "discount" ? "-" : ""}$
+                      {Math.abs(adj.amount).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
 
-              <div class={styles.breakdownRow}>
-                <strong>Total Paid:</strong>
-                <strong>${personTotal.totalPaid.toFixed(2)}</strong>
-              </div>
+                <div class={styles.breakdownRow}>
+                  <span>Total owed</span>
+                  <span>${personTotal.total.toFixed(2)}</span>
+                </div>
 
-              <div
-                class={`${styles.breakdownRow} ${styles.balance} ${
-                  personTotal.balance < 0
-                    ? styles.overpaid
-                    : personTotal.balance > 0
-                      ? styles.underpaid
-                      : styles.settled
-                }`}
-              >
-                <strong>Balance:</strong>
-                <strong>
-                  {personTotal.balance > 0.01
-                    ? `Owes $${personTotal.balance.toFixed(2)}`
-                    : personTotal.balance < -0.01
-                      ? `Should receive $${Math.abs(personTotal.balance).toFixed(2)}`
-                      : "Settled"}
-                </strong>
+                <div class={styles.breakdownRow}>
+                  <span>Total paid</span>
+                  <span>${personTotal.totalPaid.toFixed(2)}</span>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
+            </details>
+          );
+        })}
       </div>
 
       {/* Settlement section */}
