@@ -1,19 +1,23 @@
 import type { Currency } from "../../splitApp/split.types.ts";
+import { Select } from "../../ui/Select.tsx";
 import { CURRENCY_LIST } from "./currency-list.contant.ts";
 
 interface CurrencySelectorProps {
   value: Currency;
   onChange: (currency: Currency) => void;
+  variant?: "default" | "ghost";
   class?: string;
 }
 
 export function CurrencySelector({
   value,
   onChange,
+  variant,
   class: className,
 }: CurrencySelectorProps) {
   return (
-    <select
+    <Select
+      variant={variant}
       class={className}
       value={value}
       onChange={(e) =>
@@ -25,6 +29,6 @@ export function CurrencySelector({
           {currency.code}
         </option>
       ))}
-    </select>
+    </Select>
   );
 }

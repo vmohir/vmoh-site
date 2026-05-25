@@ -9,6 +9,7 @@ import {
 } from "../../state/billState.ts";
 import { CurrencySelector } from "../currencies/CurrencySelector.tsx";
 import { PeoplePicker } from "../../receiptItems/PeoplePicker.tsx";
+import { Input } from "../../ui/Input.tsx";
 import { getCurrencySymbol } from "../../utils/currency.utils.ts";
 import { focusNextInput } from "../../utils/focusNextInput.ts";
 import styles from "./AddItemForm.module.css";
@@ -43,40 +44,38 @@ export function AddItemForm() {
 
   return (
     <form className={styles.inputGroup} onSubmit={handleSubmit}>
-      <input
+      <Input
         type="text"
         class={styles.nameInput}
         value={nameInput}
         onInput={(e) => setNameInput((e.target as HTMLInputElement).value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            if (focusNextInput(e.currentTarget)) e.preventDefault();
+            if (focusNextInput(e.currentTarget as HTMLInputElement))
+              e.preventDefault();
           }
         }}
         placeholder="Item name"
         autoComplete="off"
         enterKeyHint="next"
       />
-      <label class={styles.priceField}>
-        <span class={styles.priceSymbol} aria-hidden="true">
-          {getCurrencySymbol(effectiveCurrency)}
-        </span>
-        <input
-          type="text"
-          inputMode="decimal"
-          class={styles.priceInputInner}
-          value={priceInput}
-          onInput={(e) => setPriceInput((e.target as HTMLInputElement).value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              if (focusNextInput(e.currentTarget)) e.preventDefault();
-            }
-          }}
-          placeholder="Price"
-          autoComplete="off"
-          enterKeyHint="next"
-        />
-      </label>
+      <Input
+        type="text"
+        inputMode="decimal"
+        class={styles.priceInput}
+        value={priceInput}
+        onInput={(e) => setPriceInput((e.target as HTMLInputElement).value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            if (focusNextInput(e.currentTarget as HTMLInputElement))
+              e.preventDefault();
+          }
+        }}
+        placeholder="Price"
+        autoComplete="off"
+        enterKeyHint="next"
+        prefix={getCurrencySymbol(effectiveCurrency)}
+      />
       {isAdvancedMode.value && (
         <CurrencySelector
           value={effectiveCurrency}

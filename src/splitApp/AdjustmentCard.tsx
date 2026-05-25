@@ -6,6 +6,7 @@ import {
   duplicateAdjustment,
 } from "../state/billState";
 import EditableText from "../ui/EditableText";
+import { Select } from "../ui/Select.tsx";
 import styles from "./AdjustmentCard.module.css";
 
 interface AdjustmentCardProps {
@@ -49,7 +50,7 @@ export default function AdjustmentCard({ adjustment }: AdjustmentCardProps) {
           autoFocus={false}
         />
 
-        <select
+        <Select
           class={styles.typeSelector}
           value={adjustment.type}
           onChange={handleTypeChange}
@@ -57,7 +58,7 @@ export default function AdjustmentCard({ adjustment }: AdjustmentCardProps) {
           <option value="tip">Tip</option>
           <option value="tax">Tax</option>
           <option value="discount">Discount</option>
-        </select>
+        </Select>
       </div>
 
       <div class={styles.cardBody}>
@@ -72,14 +73,14 @@ export default function AdjustmentCard({ adjustment }: AdjustmentCardProps) {
             autoFocus={false}
           />
 
-          <select
+          <Select
             class={styles.unitSelector}
             value={adjustment.isPercent ? "percent" : "fixed"}
             onChange={handleUnitChange}
           >
             <option value="percent">%</option>
             <option value="fixed">$</option>
-          </select>
+          </Select>
         </div>
 
         <div class={styles.actions}>

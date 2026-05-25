@@ -1,34 +1,16 @@
-import { useEffect, useRef, useState } from "preact/hooks";
 import { Check, Settings } from "lucide-preact";
 import {
   settlementAlgorithm,
   updateSettlementAlgorithm,
 } from "../state/billState";
 import { getAvailableAlgorithms } from "../utils/settlementAlgorithms";
+import { Popover } from "../ui/Popover.tsx";
+import { useDropdown } from "../ui/useDropdown.ts";
 import styles from "./SettlementSettings.module.css";
 
 export default function SettlementSettings() {
-  const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const { open, toggle, close, wrapRef } = useDropdown();
   const algorithms = getAvailableAlgorithms();
-
-  useEffect(() => {
-    if (!open) return;
-    const handleMouseDown = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("keydown", handleKey);
-    };
-  }, [open]);
 
   return (
     <div class={styles.wrap} ref={wrapRef}>
@@ -38,13 +20,13 @@ export default function SettlementSettings() {
         aria-label="Settlement settings"
         aria-expanded={open}
         aria-haspopup="menu"
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggle}
       >
         <Settings size={16} aria-hidden="true" />
       </button>
 
       {open && (
-        <div class={styles.menu} role="menu">
+        <Popover align="end" role="menu">
           <div class={styles.sectionLabel}>Method</div>
           {algorithms.map((alg) => {
             const isSelected = alg.id === settlementAlgorithm.value;
@@ -57,7 +39,7 @@ export default function SettlementSettings() {
                 class={`${styles.option} ${isSelected ? styles.optionSelected : ""}`}
                 onClick={() => {
                   updateSettlementAlgorithm(alg.id);
-                  setOpen(false);
+                  close();
                 }}
               >
                 <span class={styles.optionText}>
@@ -74,7 +56,7 @@ export default function SettlementSettings() {
               </button>
             );
           })}
-        </div>
+        </Popover>
       )}
     </div>
   );

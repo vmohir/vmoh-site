@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "preact/hooks";
 import { RotateCcw, Settings } from "lucide-preact";
 import {
   baseCurrency,
@@ -8,12 +7,14 @@ import {
   toggleAdvancedMode,
 } from "../state/billState";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
+import { Popover } from "../ui/Popover.tsx";
+import { useDropdown } from "../ui/useDropdown.ts";
 import styles from "./AppHeader.module.css";
 
 function CurrencyControl() {
   return (
     <CurrencySelector
-      class={styles.currencySelect}
+      variant="ghost"
       value={baseCurrency.value}
       onChange={updateBaseCurrency}
     />
@@ -38,26 +39,7 @@ function AdvancedToggle() {
 }
 
 export default function AppHeader() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handleMouseDown = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
-    };
-    document.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("keydown", handleKey);
-    };
-  }, [menuOpen]);
+  const { open: menuOpen, toggle: toggleMenu, wrapRef } = useDropdown();
 
   const handleReset = () => {
     if (
@@ -89,19 +71,19 @@ export default function AppHeader() {
           <RotateCcw size={16} aria-hidden="true" />
         </button>
 
-        <div class={styles.menuWrap} ref={menuRef}>
+        <div class={styles.menuWrap} ref={wrapRef}>
           <button
             type="button"
-            class={`${styles.menuTrigger} ${styles.iconButton}`}
+            class={styles.iconButton}
             aria-label="Settings"
             aria-expanded={menuOpen}
             aria-haspopup="menu"
-            onClick={() => setMenuOpen((v) => !v)}
+            onClick={toggleMenu}
           >
             <Settings size={18} aria-hidden="true" />
           </button>
           {menuOpen && (
-            <div class={styles.menu} role="menu">
+            <Popover align="end" role="menu">
               <div class={styles.menuItem}>
                 <span class={styles.menuLabel}>Currency</span>
                 <CurrencyControl />
@@ -109,7 +91,7 @@ export default function AppHeader() {
               <div class={styles.menuItem}>
                 <AdvancedToggle />
               </div>
-            </div>
+            </Popover>
           )}
         </div>
       </div>

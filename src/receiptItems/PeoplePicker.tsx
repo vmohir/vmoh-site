@@ -1,9 +1,10 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import type { VNode } from "preact";
 import { Check, ChevronDown } from "lucide-preact";
 import type { Person } from "../splitApp/split.types.ts";
 import { isAdvancedMode } from "state/billState.ts";
 import { PersonAvatar } from "ui/PersonAvatar.tsx";
+import { Popover } from "ui/Popover.tsx";
+import { useDropdown } from "ui/useDropdown.ts";
 import styles from "./PeoplePicker.module.css";
 
 interface PeoplePickerProps {
@@ -26,38 +27,8 @@ export function PeoplePicker({
   leading,
   alwaysMulti = false,
 }: PeoplePickerProps) {
-  const [open, setOpen] = useState(false);
-  const [alignEnd, setAlignEnd] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handleMouseDown = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("keydown", handleKey);
-    };
-  }, [open]);
-
-  // Pick the side that keeps the menu in the viewport. If the trigger sits
-  // closer to the right edge, align the menu's right edge to it; otherwise
-  // align its left edge.
-  useLayoutEffect(() => {
-    if (!open || !triggerRef.current) return;
-    const rect = triggerRef.current.getBoundingClientRect();
-    const triggerCenter = (rect.left + rect.right) / 2;
-    setAlignEnd(triggerCenter > window.innerWidth / 2);
-  }, [open]);
+  const { open, toggle, close, wrapRef, triggerRef, alignEnd } =
+    useDropdown<HTMLButtonElement>({ alignByViewport: true });
 
   const selectedPeople = people.filter((p) => selected.has(p.id));
 
@@ -75,7 +46,7 @@ export function PeoplePicker({
     }
     onChange(next);
     // Single-select: close immediately on pick.
-    if (!multi) setOpen(false);
+    if (!multi) close();
   };
 
   return (
@@ -86,8 +57,8 @@ export function PeoplePicker({
         class={styles.trigger}
         aria-label={label}
         aria-expanded={open}
-        aria-haspopup="listbox"
-        onClick={() => setOpen((v) => !v)}
+        aria-haspopup={multi ? "listbox" : "menu"}
+        onClick={toggle}
       >
         {leading && (
           <span class={styles.leading} aria-hidden="true">
@@ -107,8 +78,8 @@ export function PeoplePicker({
       </button>
 
       {open && (
-        <div
-          class={`${styles.dropdown} ${alignEnd ? styles.alignEnd : styles.alignStart}`}
+        <Popover
+          align={alignEnd ? "end" : "start"}
           role={multi ? "listbox" : "menu"}
         >
           {people.map((person) => {
@@ -144,7 +115,7 @@ export function PeoplePicker({
               </button>
             );
           })}
-        </div>
+        </Popover>
       )}
     </div>
   );
