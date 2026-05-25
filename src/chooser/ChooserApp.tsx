@@ -3,15 +3,18 @@ import { Cog as SettingsIcon } from "lucide-preact";
 import { mode, teamCount } from "../state/chooserState";
 import { FINGER_COLORS } from "./colors";
 import { pickResult } from "./selection";
-import type { ChoiceResult, Finger } from "./types";
+import type { ChoiceResult, Finger, InputMode } from "./types";
 import SettingsDrawer from "./SettingsDrawer";
 import styles from "./ChooserApp.module.css";
 
 type Phase = "idle" | "countdown" | "result";
-type InputMode = "touch" | "tap";
 
 const RING_RADIUS = 56;
 const HOLD_SECONDS = 3;
+// Tap-to-add picks don't need the full hold — they're an explicit press of
+// the Pick button — but we run a quick countdown so the reveal animation
+// matches touch mode.
+const TAP_HOLD_SECONDS = 1;
 // 0 on non-touch devices (mouse-only desktop).
 const MAX_TOUCH_POINTS =
   typeof navigator !== "undefined" && navigator.maxTouchPoints > 0
@@ -56,15 +59,17 @@ export default function ChooserApp() {
     }
   }
 
-  // RAF loop runs the countdown ring and triggers the pick. Only used in
-  // touch mode; tap mode picks via the explicit button.
+  // RAF loop drives the countdown ring and triggers the pick. Runs in both
+  // input modes — touch mode uses the full hold (HOLD_SECONDS), tap mode
+  // uses a shorter buildup so the reveal animation lines up the same.
   useEffect(() => {
-    if (phase !== "countdown" || inputMode !== "touch") return;
+    if (phase !== "countdown") return;
+    const holdSec = inputMode === "touch" ? HOLD_SECONDS : TAP_HOLD_SECONDS;
     let raf = 0;
     const loop = (now: number) => {
       const start = countdownStartRef.current;
       if (start == null) return;
-      const progress = Math.min(1, (now - start) / 1000 / HOLD_SECONDS);
+      const progress = Math.min(1, (now - start) / 1000 / holdSec);
       setCountdownProgress(progress);
       if (progress >= 1) {
         runPick();
@@ -76,7 +81,8 @@ export default function ChooserApp() {
     return () => cancelAnimationFrame(raf);
   }, [phase, currentMode, currentTeamCount, inputMode]);
 
-  // Restart the countdown if mode/team count changes mid-hold.
+  // Restart the countdown if mode/team count changes mid-hold (touch mode
+  // only — in tap mode the user has already pressed Pick).
   useEffect(() => {
     if (phase === "countdown" && inputMode === "touch") {
       countdownStartRef.current = performance.now();
@@ -96,6 +102,12 @@ export default function ChooserApp() {
     } else {
       refreshPhase();
     }
+  }
+
+  function startTapCountdown() {
+    countdownStartRef.current = performance.now();
+    setCountdownProgress(0);
+    setPhase("countdown");
   }
 
   function nextColor(): string {
@@ -211,7 +223,8 @@ export default function ChooserApp() {
 
   function onPointerDownTap(e: PointerEvent) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
-    if (phase === "result") return; // ignore until reset
+    // Ignore taps while the countdown is running or a result is showing.
+    if (phase !== "idle") return;
 
     // If the tap is on an existing marker, remove it.
     const hit = Array.from(fingersRef.current.values()).find((f) => {
@@ -337,16 +350,9 @@ export default function ChooserApp() {
           class={styles.bottomBar}
           onPointerDown={(e) => e.stopPropagation()}
         >
-          <button
-            type="button"
-            class={`${styles.bottomBtn} btn`}
-            onClick={() => switchInputMode("touch")}
-          >
-            Back to fingers
-          </button>
           <span class={styles.bottomHint}>
             {liveFingers.length === 0
-              ? "0 markers"
+              ? "Tap to add markers"
               : liveFingers.length === 1
                 ? "1 marker"
                 : `${liveFingers.length} markers`}
@@ -354,8 +360,8 @@ export default function ChooserApp() {
           <button
             type="button"
             class={`${styles.bottomBtn} btn btn-primary`}
-            disabled={liveFingers.length < 2}
-            onClick={runPick}
+            disabled={liveFingers.length < 2 || phase === "countdown"}
+            onClick={startTapCountdown}
           >
             Pick
           </button>
@@ -363,7 +369,11 @@ export default function ChooserApp() {
       )}
 
       {settingsOpen && (
-        <SettingsDrawer onClose={() => setSettingsOpen(false)} />
+        <SettingsDrawer
+          onClose={() => setSettingsOpen(false)}
+          inputMode={inputMode}
+          onChangeInputMode={switchInputMode}
+        />
       )}
     </div>
   );

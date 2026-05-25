@@ -7,11 +7,13 @@ import {
   MIN_TEAMS,
   MAX_TEAMS,
 } from "../state/chooserState";
-import type { Mode } from "./types";
+import type { InputMode, Mode } from "./types";
 import styles from "./SettingsDrawer.module.css";
 
 interface Props {
   onClose: () => void;
+  inputMode: InputMode;
+  onChangeInputMode: (next: InputMode) => void;
 }
 
 const MODE_OPTIONS: ReadonlyArray<{
@@ -21,16 +23,25 @@ const MODE_OPTIONS: ReadonlyArray<{
 }> = [
   {
     value: "winner",
-    label: "One winner",
+    label: "Pick winner",
     desc: "Pick a single random finger.",
   },
   { value: "teams", label: "Split teams", desc: "Divide fingers into teams." },
-  { value: "order", label: "Order", desc: "Assign each finger a position." },
+  {
+    value: "order",
+    label: "Order fingers",
+    desc: "Assign each finger a position.",
+  },
 ];
 
-export default function SettingsDrawer({ onClose }: Props) {
+export default function SettingsDrawer({
+  onClose,
+  inputMode,
+  onChangeInputMode,
+}: Props) {
   const currentMode = mode.value;
   const teams = teamCount.value;
+  const tapToAddOn = inputMode === "tap";
 
   return (
     <div
@@ -100,6 +111,24 @@ export default function SettingsDrawer({ onClose }: Props) {
             </div>
           </section>
         )}
+
+        <label class={styles.toggle}>
+          <input
+            type="checkbox"
+            checked={tapToAddOn}
+            onChange={(e) =>
+              onChangeInputMode(
+                (e.currentTarget as HTMLInputElement).checked ? "tap" : "touch",
+              )
+            }
+          />
+          <span class={styles.toggleLabel}>
+            <span class={styles.toggleTitle}>Tap-to-add mode</span>
+            <span class={styles.toggleDesc}>
+              Tap to place markers instead of using fingers.
+            </span>
+          </span>
+        </label>
       </div>
     </div>
   );

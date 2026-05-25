@@ -1,5 +1,7 @@
 export type Mode = "winner" | "teams" | "order";
 
+export type InputMode = "touch" | "tap";
+
 export interface Finger {
   id: number;
   x: number;

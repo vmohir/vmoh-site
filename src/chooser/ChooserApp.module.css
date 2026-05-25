@@ -206,7 +206,7 @@
   background: rgba(24, 24, 31, 0.9);
   backdrop-filter: blur(6px);
   border: 1px solid var(--border-subtle);
-  border-radius: 1.25rem;
+  border-radius: 0.5rem;
 }
 
 .bottomHint {
@@ -220,7 +220,7 @@
 .bottomBtn {
   padding: 0.375rem 0.875rem;
   font-size: 0.8125rem;
-  border-radius: 9999px;
+  border-radius: 0.375rem;
   flex: 0 0 auto;
 }
 
