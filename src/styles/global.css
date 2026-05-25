@@ -25,7 +25,7 @@
     color-scheme: light;
 
     /* Backgrounds */
-    --canvas-bg: theme(colors.neutral.50);
+    --canvas-bg: oklch(96.8% 0 0);
     --surface-bg: theme(colors.white);
     --surface-subtle-bg: theme(colors.neutral.50);
     --surface-muted-bg: theme(colors.neutral.100);
