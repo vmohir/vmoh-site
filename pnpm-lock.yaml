@@ -8,12 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@astrojs/preact':
-        specifier: ^4.1.3
-        version: 4.1.3(@babel/core@7.29.0)(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(preact@10.29.2)(rollup@4.60.4)(terser@5.48.0)(yaml@2.9.0)
-      '@preact/signals':
-        specifier: ^2.5.1
-        version: 2.9.0(preact@10.29.2)
+      '@preact/preset-vite':
+        specifier: ^2.10.0
+        version: 2.10.5(@babel/core@7.29.0)(preact@10.29.2)(rollup@4.60.4)(vite@6.4.2(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(yaml@2.9.0))
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.3.0(vite@6.4.2(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(yaml@2.9.0))
@@ -59,12 +56,6 @@ packages:
 
   '@astrojs/markdown-remark@6.3.11':
     resolution: {integrity: sha512-hcaxX/5aC6lQgHeGh1i+aauvSwIT6cfyFjKWvExYSxUhZZBBdvCliOtu06gbQyhbe0pGJNoNmqNlQZ5zYUuIyQ==}
-
-  '@astrojs/preact@4.1.3':
-    resolution: {integrity: sha512-Ph416wbgyumkmYr7erZ83l/d+LXdZethlHRRCbgoKEn8wo3Rkq13shKFp0QYXYSDYxVaA6UBdkdimeowy/lMLQ==}
-    engines: {node: 18.20.8 || ^20.3.0 || >=22.0.0}
-    peerDependencies:
-      preact: ^10.6.5
 
   '@astrojs/prism@3.3.0':
     resolution: {integrity: sha512-q8VwfU/fDZNoDOf+r7jUnMC2//H2l0TuQ6FkGJL8vD8nw/q5KiL3DS1KKBI3QhI9UQhpJ5dc7AtqfbXWuOgLCQ==}
@@ -1977,14 +1968,6 @@ packages:
     peerDependencies:
       '@babel/core': 7.x
       vite: 2.x || 3.x || 4.x || 5.x || 6.x || 7.x || 8.x
-
-  '@preact/signals-core@1.14.2':
-    resolution: {integrity: sha512-RZHdBj9ZF4n40Rp4jS052EHHjBWf96P9oNdXPfhQTovCuWY9iQn3Gq+gOTJSgBO9A/JBuPfMOWsSX/lIU9Pc/A==}
-
-  '@preact/signals@2.9.0':
-    resolution: {integrity: sha512-hYrY0KyUqkDgOl1qba/JGn6y81pXnurn21PMaxfcMwdncdZ3M/oVdmpTvEnsGjh48dIwDVc7bjWHqIsngSjYug==}
-    peerDependencies:
-      preact: '>= 10.25.0 || >=11.0.0-0'
 
   '@prefresh/babel-plugin@0.5.3':
     resolution: {integrity: sha512-57LX2SHs4BX2s1IwCjNzTE2OJeEepRCNf1VTEpbNcUyHfMO68eeOWGDIt4ob9aYlW6PEWZ1SuwNikuoIXANDtQ==}
@@ -5386,11 +5369,6 @@ packages:
     resolution: {integrity: sha512-dM0jVuXJPsDN6DvRpea484tCUaMiXWjuCn++HGTqUWzGDjv5tZkEZldAJ/UMlqRYGFrD/etByo4/xOuC/snX2A==}
     engines: {node: '>=20'}
 
-  preact-render-to-string@6.7.0:
-    resolution: {integrity: sha512-Z4WR8fmLMRpdYqJ9i7vrlXSsSrxVJydwrkEXHapexfARbWfGb7vGcnvNQnIzN0cXciMVOlz/XLoiMCi9gUsy9Q==}
-    peerDependencies:
-      preact: '>=10 || >= 11.0.0-0'
-
   preact@10.29.2:
     resolution: {integrity: sha512-7tNmwg/7mzzAoB/8kSg6Hl37JraAZw3Z3A0JSY7VXlZwo82Xn0G7wKbNNs2qoF4ZEEsQGTwDAroNdqKs1ofJxQ==}
 
@@ -6870,29 +6848,6 @@ snapshots:
       vfile: 6.0.3
     transitivePeerDependencies:
       - supports-color
-
-  '@astrojs/preact@4.1.3(@babel/core@7.29.0)(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(preact@10.29.2)(rollup@4.60.4)(terser@5.48.0)(yaml@2.9.0)':
-    dependencies:
-      '@preact/preset-vite': 2.10.5(@babel/core@7.29.0)(preact@10.29.2)(rollup@4.60.4)(vite@6.4.2(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(yaml@2.9.0))
-      '@preact/signals': 2.9.0(preact@10.29.2)
-      preact: 10.29.2
-      preact-render-to-string: 6.7.0(preact@10.29.2)
-      vite: 6.4.2(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@types/node'
-      - jiti
-      - less
-      - lightningcss
-      - rollup
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
 
   '@astrojs/prism@3.3.0':
     dependencies:
@@ -8884,13 +8839,6 @@ snapshots:
       - preact
       - rollup
       - supports-color
-
-  '@preact/signals-core@1.14.2': {}
-
-  '@preact/signals@2.9.0(preact@10.29.2)':
-    dependencies:
-      '@preact/signals-core': 1.14.2
-      preact: 10.29.2
 
   '@prefresh/babel-plugin@0.5.3': {}
 
@@ -13031,10 +12979,6 @@ snapshots:
       source-map-js: 1.2.1
 
   powershell-utils@0.1.0: {}
-
-  preact-render-to-string@6.7.0(preact@10.29.2):
-    dependencies:
-      preact: 10.29.2
 
   preact@10.29.2: {}
 

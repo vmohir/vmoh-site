@@ -1,12 +1,5 @@
 import { X, Minus, Plus } from "lucide-preact";
-import {
-  mode,
-  teamCount,
-  setMode,
-  setTeamCount,
-  MIN_TEAMS,
-  MAX_TEAMS,
-} from "../state/chooserState";
+import { MIN_TEAMS, MAX_TEAMS } from "../state/chooserState";
 import type { InputMode, Mode } from "./types";
 import styles from "./SettingsDrawer.module.css";
 
@@ -14,6 +7,10 @@ interface Props {
   onClose: () => void;
   inputMode: InputMode;
   onChangeInputMode: (next: InputMode) => void;
+  mode: Mode;
+  onChangeMode: (next: Mode) => void;
+  teamCount: number;
+  onChangeTeamCount: (next: number) => void;
 }
 
 const MODE_OPTIONS: ReadonlyArray<{
@@ -38,9 +35,11 @@ export default function SettingsDrawer({
   onClose,
   inputMode,
   onChangeInputMode,
+  mode,
+  onChangeMode,
+  teamCount,
+  onChangeTeamCount,
 }: Props) {
-  const currentMode = mode.value;
-  const teams = teamCount.value;
   const tapToAddOn = inputMode === "tap";
 
   return (
@@ -75,8 +74,8 @@ export default function SettingsDrawer({
                 key={opt.value}
                 type="button"
                 class={styles.modeOption}
-                data-active={currentMode === opt.value}
-                onClick={() => setMode(opt.value)}
+                data-active={mode === opt.value}
+                onClick={() => onChangeMode(opt.value)}
               >
                 <span class={styles.modeName}>{opt.label}</span>
                 <span class={styles.modeDesc}>{opt.desc}</span>
@@ -85,7 +84,7 @@ export default function SettingsDrawer({
           </div>
         </section>
 
-        {currentMode === "teams" && (
+        {mode === "teams" && (
           <section class={styles.section}>
             <label class={styles.sectionLabel}>Number of teams</label>
             <div class={styles.counter}>
@@ -93,18 +92,18 @@ export default function SettingsDrawer({
                 type="button"
                 class="btn btn-icon"
                 aria-label="Fewer teams"
-                disabled={teams <= MIN_TEAMS}
-                onClick={() => setTeamCount(teams - 1)}
+                disabled={teamCount <= MIN_TEAMS}
+                onClick={() => onChangeTeamCount(teamCount - 1)}
               >
                 <Minus size={18} />
               </button>
-              <span class={styles.counterValue}>{teams}</span>
+              <span class={styles.counterValue}>{teamCount}</span>
               <button
                 type="button"
                 class="btn btn-icon"
                 aria-label="More teams"
-                disabled={teams >= MAX_TEAMS}
-                onClick={() => setTeamCount(teams + 1)}
+                disabled={teamCount >= MAX_TEAMS}
+                onClick={() => onChangeTeamCount(teamCount + 1)}
               >
                 <Plus size={18} />
               </button>

@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { Cog as SettingsIcon } from "lucide-preact";
-import { mode, teamCount } from "../state/chooserState";
+import {
+  DEFAULT_MODE,
+  DEFAULT_TEAM_COUNT,
+  clampTeamCount,
+} from "../state/chooserState";
 import { FINGER_COLORS } from "./colors";
 import { pickResult } from "./selection";
-import type { ChoiceResult, Finger, InputMode } from "./types";
+import type { ChoiceResult, Finger, InputMode, Mode } from "./types";
 import SettingsDrawer from "./SettingsDrawer";
 import styles from "./ChooserApp.module.css";
 
@@ -31,6 +35,10 @@ export default function ChooserApp() {
   const [countdownProgress, setCountdownProgress] = useState(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [inputMode, setInputMode] = useState<InputMode>("touch");
+  const [currentMode, setMode] = useState<Mode>(DEFAULT_MODE);
+  const [currentTeamCount, setTeamCountState] =
+    useState<number>(DEFAULT_TEAM_COUNT);
+  const setTeamCount = (n: number) => setTeamCountState(clampTeamCount(n));
   // Touch-mode-only: surfaces a "max N fingers / try tap-to-add mode" bar
   // when the user hits the device's touch-point ceiling. Stays visible long
   // enough that if a sixth finger collapses tracking and the count drops to
@@ -43,9 +51,6 @@ export default function ChooserApp() {
   // Synthetic ids for tap-to-add markers — negative so they never collide
   // with real PointerEvent ids.
   const markerIdRef = useRef(-1);
-
-  const currentMode = mode.value;
-  const currentTeamCount = teamCount.value;
 
   function refreshPhase() {
     if (fingersRef.current.size >= 2) {
@@ -373,6 +378,10 @@ export default function ChooserApp() {
           onClose={() => setSettingsOpen(false)}
           inputMode={inputMode}
           onChangeInputMode={switchInputMode}
+          mode={currentMode}
+          onChangeMode={setMode}
+          teamCount={currentTeamCount}
+          onChangeTeamCount={setTeamCount}
         />
       )}
     </div>
