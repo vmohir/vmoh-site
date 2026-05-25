@@ -9,12 +9,14 @@ import { useDropdown } from "../ui/useDropdown.ts";
 import styles from "./SettlementSettings.module.css";
 
 export default function SettlementSettings() {
-  const { open, toggle, close, wrapRef } = useDropdown();
+  const { open, toggle, close, wrapRef, triggerRef, alignEnd } =
+    useDropdown<HTMLButtonElement>({ alignByViewport: true });
   const algorithms = getAvailableAlgorithms();
 
   return (
     <div class={styles.wrap} ref={wrapRef}>
       <button
+        ref={triggerRef}
         type="button"
         class={styles.trigger}
         aria-label="Settlement settings"
@@ -26,7 +28,7 @@ export default function SettlementSettings() {
       </button>
 
       {open && (
-        <Popover align="end" role="menu">
+        <Popover align={alignEnd ? "end" : "start"} role="menu">
           <div class={styles.sectionLabel}>Method</div>
           {algorithms.map((alg) => {
             const isSelected = alg.id === settlementAlgorithm.value;

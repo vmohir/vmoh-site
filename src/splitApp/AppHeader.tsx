@@ -39,7 +39,13 @@ function AdvancedToggle() {
 }
 
 export default function AppHeader() {
-  const { open: menuOpen, toggle: toggleMenu, wrapRef } = useDropdown();
+  const {
+    open: menuOpen,
+    toggle: toggleMenu,
+    wrapRef,
+    triggerRef: menuTriggerRef,
+    alignEnd: menuAlignEnd,
+  } = useDropdown<HTMLButtonElement>({ alignByViewport: true });
 
   const handleReset = () => {
     if (
@@ -73,6 +79,7 @@ export default function AppHeader() {
 
         <div class={styles.menuWrap} ref={wrapRef}>
           <button
+            ref={menuTriggerRef}
             type="button"
             class={styles.iconButton}
             aria-label="Settings"
@@ -83,7 +90,7 @@ export default function AppHeader() {
             <Settings size={18} aria-hidden="true" />
           </button>
           {menuOpen && (
-            <Popover align="end" role="menu">
+            <Popover align={menuAlignEnd ? "end" : "start"} role="menu">
               <div class={styles.menuItem}>
                 <span class={styles.menuLabel}>Currency</span>
                 <CurrencyControl />

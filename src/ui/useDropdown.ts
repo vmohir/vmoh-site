@@ -52,8 +52,14 @@ export function useDropdown<T extends HTMLElement = HTMLButtonElement>(
   useLayoutEffect(() => {
     if (!open || !options.alignByViewport || !triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
-    const triggerCenter = (rect.left + rect.right) / 2;
-    setAlignEnd(triggerCenter > window.innerWidth / 2);
+    const vw = window.innerWidth;
+    // Pick whichever alignment leaves more horizontal room for the menu.
+    // alignStart anchors the menu's left edge to the trigger's left → it
+    // grows rightward; alignEnd anchors right edge to trigger's right →
+    // it grows leftward.
+    const spaceIfStart = vw - rect.left;
+    const spaceIfEnd = rect.right;
+    setAlignEnd(spaceIfEnd > spaceIfStart);
   }, [open, options.alignByViewport]);
 
   return {
