@@ -61,6 +61,7 @@
 
 .summaryBalance {
   font-size: 0.875rem;
+  font-weight: 500;
   margin-left: auto;
 }
 
@@ -73,6 +74,7 @@
 }
 
 .summaryBalance.settled {
+  font-weight: 400;
   color: var(--text-muted);
 }
 

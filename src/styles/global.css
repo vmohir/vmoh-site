@@ -27,8 +27,8 @@
     /* Backgrounds */
     --canvas-bg: oklch(96.8% 0 0);
     --surface-bg: theme(colors.white);
-    --surface-subtle-bg: theme(colors.neutral.50);
-    --surface-muted-bg: theme(colors.neutral.100);
+    --surface-subtle-bg: oklch(94.2% 0 0);
+    --surface-muted-bg: theme(colors.neutral.200);
 
     /* Text */
     --text-primary: theme(colors.neutral.900);
