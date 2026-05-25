@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { Settings as SettingsIcon } from "lucide-preact";
+import { Cog as SettingsIcon } from "lucide-preact";
 import { mode, teamCount } from "../state/chooserState";
 import { FINGER_COLORS } from "./colors";
 import { pickResult } from "./selection";
