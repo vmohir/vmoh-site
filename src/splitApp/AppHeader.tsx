@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { Settings } from "lucide-preact";
+import { RotateCcw, Settings } from "lucide-preact";
 import {
   baseCurrency,
   updateBaseCurrency,
   isAdvancedMode,
+  resetAll,
   toggleAdvancedMode,
 } from "../state/billState";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
@@ -58,6 +59,16 @@ export default function AppHeader() {
     };
   }, [menuOpen]);
 
+  const handleReset = () => {
+    if (
+      window.confirm(
+        "Reset all people, items, and adjustments? Preferences (currency, advanced mode) are kept.",
+      )
+    ) {
+      resetAll();
+    }
+  };
+
   return (
     <header class={styles.header}>
       <h1 class={styles.title}>Split Bill</h1>
@@ -67,10 +78,20 @@ export default function AppHeader() {
         <AdvancedToggle />
       </div>
 
+      <button
+        type="button"
+        class={styles.iconButton}
+        aria-label="Reset all"
+        title="Reset all"
+        onClick={handleReset}
+      >
+        <RotateCcw size={16} aria-hidden="true" />
+      </button>
+
       <div class={styles.menuWrap} ref={menuRef}>
         <button
           type="button"
-          class={styles.menuTrigger}
+          class={`${styles.menuTrigger} ${styles.iconButton}`}
           aria-label="Settings"
           aria-expanded={menuOpen}
           aria-haspopup="menu"

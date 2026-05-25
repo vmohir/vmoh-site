@@ -73,8 +73,20 @@ export const items = signal<Item[]>(
 );
 export const adjustments = signal<Adjustment[]>(
   savedState?.adjustments ?? [
-    { id: crypto.randomUUID(), label: "Tax", value: 0, isPercent: true, type: "tax" },
-    { id: crypto.randomUUID(), label: "Tip", value: 0, isPercent: true, type: "tip" },
+    {
+      id: crypto.randomUUID(),
+      label: "Tax",
+      value: 0,
+      isPercent: true,
+      type: "tax",
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "Tip",
+      value: 0,
+      isPercent: true,
+      type: "tip",
+    },
   ],
 );
 export const baseCurrency = signal<Currency>(savedState?.baseCurrency ?? "USD");
@@ -196,7 +208,11 @@ export function updateItemPrice(id: string, newPrice: number): void {
 
   items.value = items.value.map((item) => {
     if (item.id !== id) return item;
-    return { ...item, price: newPrice, paidBy: rescalePayments(item.paidBy, item.price, newPrice) };
+    return {
+      ...item,
+      price: newPrice,
+      paidBy: rescalePayments(item.paidBy, item.price, newPrice),
+    };
   });
 }
 
@@ -297,10 +313,10 @@ export function addAdjustment(
 
 export function updateAdjustment(
   id: string,
-  updates: Partial<Omit<Adjustment, 'id'>>,
+  updates: Partial<Omit<Adjustment, "id">>,
 ): void {
   adjustments.value = adjustments.value.map((adj) =>
-    adj.id === id ? { ...adj, ...updates } : adj
+    adj.id === id ? { ...adj, ...updates } : adj,
   );
 }
 
@@ -382,4 +398,27 @@ export function updateSettlementAlgorithm(
 // Advanced mode
 export function toggleAdvancedMode(): void {
   isAdvancedMode.value = !isAdvancedMode.value;
+}
+
+// Wipe people / items / adjustments back to a fresh starting state. Keeps
+// preferences (base currency, settlement algorithm, advanced mode).
+export function resetAll(): void {
+  people.value = [{ id: crypto.randomUUID(), name: "You" }];
+  items.value = [];
+  adjustments.value = [
+    {
+      id: crypto.randomUUID(),
+      label: "Tax",
+      value: 0,
+      isPercent: true,
+      type: "tax",
+    },
+    {
+      id: crypto.randomUUID(),
+      label: "Tip",
+      value: 0,
+      isPercent: true,
+      type: "tip",
+    },
+  ];
 }
