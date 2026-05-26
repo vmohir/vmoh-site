@@ -1,15 +1,18 @@
 import { Moon, RotateCcw, Settings, Sun } from "lucide-preact";
 import {
   baseCurrency,
-  updateBaseCurrency,
-  isAdvancedMode,
+  hasMultipleCurrencies,
+  hasMultiplePayers,
   resetAll,
-  toggleAdvancedMode,
+  toggleHasMultipleCurrencies,
+  toggleHasMultiplePayers,
+  updateBaseCurrency,
 } from "../state/billState";
 import { theme, toggleTheme } from "../state/theme";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
 import { Popover } from "../ui/Popover.tsx";
 import { useDropdown } from "../ui/useDropdown.ts";
+import type { Signal } from "@preact/signals";
 import styles from "./AppHeader.module.css";
 
 function CurrencyControl() {
@@ -22,19 +25,25 @@ function CurrencyControl() {
   );
 }
 
-function AdvancedToggle() {
+interface SwitchProps {
+  label: string;
+  signal: Signal<boolean>;
+  onToggle: () => void;
+}
+
+function Switch({ label, signal, onToggle }: SwitchProps) {
   return (
     <button
       type="button"
       role="switch"
-      aria-checked={isAdvancedMode.value}
-      class={`${styles.toggle} ${isAdvancedMode.value ? styles.toggleOn : ""}`}
-      onClick={toggleAdvancedMode}
+      aria-checked={signal.value}
+      class={`${styles.toggle} ${signal.value ? styles.toggleOn : ""}`}
+      onClick={onToggle}
     >
       <span class={styles.toggleTrack}>
         <span class={styles.toggleThumb} />
       </span>
-      <span class={styles.toggleLabel}>Advanced</span>
+      <span class={styles.toggleLabel}>{label}</span>
     </button>
   );
 }
@@ -70,7 +79,7 @@ export default function AppHeader() {
   const handleReset = () => {
     if (
       window.confirm(
-        "Reset all people, items, and adjustments? Preferences (currency, advanced mode) are kept.",
+        "Reset all people, items, and adjustments? Preferences are kept.",
       )
     ) {
       resetAll();
@@ -82,11 +91,6 @@ export default function AppHeader() {
       <h1 class={styles.title}>Split Bill</h1>
 
       <div class={styles.rightCluster}>
-        <div class={styles.actionsInline}>
-          <CurrencyControl />
-          <AdvancedToggle />
-        </div>
-
         <button
           type="button"
           class={styles.iconButton}
@@ -116,7 +120,18 @@ export default function AppHeader() {
                 <CurrencyControl />
               </div>
               <div class={styles.menuItem}>
-                <AdvancedToggle />
+                <Switch
+                  label="Multiple currencies"
+                  signal={hasMultipleCurrencies}
+                  onToggle={toggleHasMultipleCurrencies}
+                />
+              </div>
+              <div class={styles.menuItem}>
+                <Switch
+                  label="Multiple payers per item"
+                  signal={hasMultiplePayers}
+                  onToggle={toggleHasMultiplePayers}
+                />
               </div>
               <div class={styles.menuItem}>
                 <ThemeToggle />

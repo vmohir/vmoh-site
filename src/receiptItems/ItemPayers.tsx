@@ -1,5 +1,5 @@
 import type { Item, Person } from "../splitApp/split.types.ts";
-import { setItemPayer } from "state/billState.ts";
+import { baseCurrency, setItemPayer } from "state/billState.ts";
 import { formatCurrency } from "../utils/currency.utils.ts";
 import styles from "./ItemCard.module.css";
 
@@ -14,6 +14,7 @@ export function ItemPayers({ item, people }: ItemPayersProps) {
     0,
   );
   const isBalanced = Math.abs(totalPaid - item.price) < 0.01;
+  const itemCurrency = item.currency ?? baseCurrency.value;
 
   return (
     <div class={styles.itemPayers}>
@@ -35,7 +36,7 @@ export function ItemPayers({ item, people }: ItemPayersProps) {
                 }}
                 placeholder="0.00"
               />
-              <span class={styles.currencyLabel}>{item.currency}</span>
+              <span class={styles.currencyLabel}>{itemCurrency}</span>
             </div>
           );
         })}
@@ -43,8 +44,8 @@ export function ItemPayers({ item, people }: ItemPayersProps) {
       <div
         class={`${styles.paymentSummary} ${isBalanced ? styles.balanced : styles.unbalanced}`}
       >
-        <span>Total paid: {formatCurrency(totalPaid, item.currency)}</span>
-        <span>Item price: {formatCurrency(item.price, item.currency)}</span>
+        <span>Total paid: {formatCurrency(totalPaid, itemCurrency)}</span>
+        <span>Item price: {formatCurrency(item.price, itemCurrency)}</span>
         {!isBalanced && (
           <span class={styles.warning}>
             {totalPaid > item.price ? "Overpaid!" : "Underpaid!"}

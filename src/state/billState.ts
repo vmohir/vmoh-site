@@ -21,7 +21,7 @@ interface SerializedItem {
   id: string;
   name: string;
   price: number;
-  currency: Currency;
+  currency?: Currency;
   usedBy: string[];
   paidBy: [string, ItemPayer][];
 }
@@ -32,7 +32,10 @@ interface SerializedState {
   adjustments: Adjustment[];
   baseCurrency: Currency;
   settlementAlgorithm: SettlementAlgorithm;
-  isAdvancedMode: boolean;
+  hasMultipleCurrencies: boolean;
+  hasMultiplePayers: boolean;
+  // Legacy: pre-split flag. Read on load and migrated to the two new flags.
+  isAdvancedMode?: boolean;
 }
 
 function serializeItems(items: Item[]): SerializedItem[] {
@@ -64,6 +67,7 @@ function loadState(): Partial<SerializedState> | null {
 }
 
 const savedState = loadState();
+const legacyAdvanced = savedState?.isAdvancedMode === true;
 
 // Primary state signals
 export const people = signal<Person[]>(
@@ -96,8 +100,11 @@ export const baseCurrency = signal<Currency>(
 export const settlementAlgorithm = signal<SettlementAlgorithm>(
   savedState?.settlementAlgorithm ?? "minimize-transactions",
 );
-export const isAdvancedMode = signal<boolean>(
-  savedState?.isAdvancedMode ?? false,
+export const hasMultipleCurrencies = signal<boolean>(
+  savedState?.hasMultipleCurrencies ?? legacyAdvanced,
+);
+export const hasMultiplePayers = signal<boolean>(
+  savedState?.hasMultiplePayers ?? legacyAdvanced,
 );
 
 // Persist state to localStorage whenever it changes
@@ -108,7 +115,8 @@ effect(() => {
     adjustments: adjustments.value,
     baseCurrency: baseCurrency.value,
     settlementAlgorithm: settlementAlgorithm.value,
-    isAdvancedMode: isAdvancedMode.value,
+    hasMultipleCurrencies: hasMultipleCurrencies.value,
+    hasMultiplePayers: hasMultiplePayers.value,
   };
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -176,7 +184,7 @@ export function removePerson(id: string): void {
 export function addItem(
   name: string,
   price: number,
-  currency: Currency = baseCurrency.value,
+  currency: Currency | undefined = undefined,
   assignees: string[] = [],
   payers: string[] = [],
 ): void {
@@ -188,7 +196,7 @@ export function addItem(
     price,
     currency,
     usedBy: new Set<string>(assignees),
-    paidBy: distributePayment(price, currency, payers),
+    paidBy: distributePayment(price, payers),
   };
 
   items.value = [...items.value, newItem];
@@ -248,21 +256,18 @@ export function setItemPayers(itemId: string, personIds: string[]): void {
     if (item.id !== itemId) return item;
     return {
       ...item,
-      paidBy: distributePayment(item.price, item.currency, personIds),
+      paidBy: distributePayment(item.price, personIds),
     };
   });
 }
 
 function distributePayment(
   price: number,
-  currency: Currency,
   personIds: string[],
 ): Map<string, ItemPayer> {
   if (personIds.length === 0) return new Map();
   const amount = price / personIds.length;
-  return new Map(
-    personIds.map((id) => [id, { personId: id, amount, currency }]),
-  );
+  return new Map(personIds.map((id) => [id, { personId: id, amount }]));
 }
 
 // Scale existing per-person payment amounts proportionally when the item price changes.
@@ -275,8 +280,7 @@ function rescalePayments(
   if (oldPrice === 0) {
     // No prior amounts to scale from — split the new price equally.
     const ids = [...paidBy.keys()];
-    const currency = paidBy.values().next().value!.currency;
-    return distributePayment(newPrice, currency, ids);
+    return distributePayment(newPrice, ids);
   }
   const ratio = newPrice / oldPrice;
   return new Map(
@@ -360,7 +364,7 @@ export function setItemPayer(
       newPaidBy.set(personId, {
         personId,
         amount,
-        currency: currency || item.currency,
+        currency,
       });
     }
 
@@ -379,16 +383,25 @@ export function removeItemPayer(itemId: string, personId: string): void {
   });
 }
 
-// Currency operations
+// Currency operations. When the user picks a currency equal to the current
+// base currency we store undefined so the item keeps tracking the base if it
+// later changes.
 export function updateItemCurrency(itemId: string, currency: Currency): void {
+  const normalized = currency === baseCurrency.value ? undefined : currency;
   items.value = items.value.map((item) => {
     if (item.id !== itemId) return item;
-    return { ...item, currency };
+    return { ...item, currency: normalized };
   });
 }
 
 export function updateBaseCurrency(currency: Currency): void {
   baseCurrency.value = currency;
+  // In single-currency mode every item already inherits the base currency
+  // (item.currency is undefined). In multi-currency mode, normalise items
+  // whose currency now matches the new base.
+  items.value = items.value.map((item) =>
+    item.currency === currency ? { ...item, currency: undefined } : item,
+  );
 }
 
 // Settlement operations
@@ -398,13 +411,31 @@ export function updateSettlementAlgorithm(
   settlementAlgorithm.value = algorithm;
 }
 
-// Advanced mode
-export function toggleAdvancedMode(): void {
-  isAdvancedMode.value = !isAdvancedMode.value;
+// Feature toggles
+export function setHasMultipleCurrencies(value: boolean): void {
+  if (!value) {
+    // Drop any per-item currency overrides so every item tracks the base.
+    items.value = items.value.map((item) =>
+      item.currency === undefined ? item : { ...item, currency: undefined },
+    );
+  }
+  hasMultipleCurrencies.value = value;
+}
+
+export function toggleHasMultipleCurrencies(): void {
+  setHasMultipleCurrencies(!hasMultipleCurrencies.value);
+}
+
+export function setHasMultiplePayers(value: boolean): void {
+  hasMultiplePayers.value = value;
+}
+
+export function toggleHasMultiplePayers(): void {
+  setHasMultiplePayers(!hasMultiplePayers.value);
 }
 
 // Wipe people / items / adjustments back to a fresh starting state. Keeps
-// preferences (base currency, settlement algorithm, advanced mode).
+// preferences (base currency, settlement algorithm, feature toggles).
 export function resetAll(): void {
   people.value = [{ id: crypto.randomUUID(), name: "You" }];
   items.value = [];

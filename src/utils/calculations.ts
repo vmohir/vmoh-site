@@ -55,6 +55,7 @@ export function calculatePersonTotals(
 
   // Calculate item shares (consumption) and payments
   items.forEach((item) => {
+    const itemCurrency = item.currency ?? baseCurrency;
     const assignedCount = item.usedBy.size;
 
     // Process consumption (assignedTo)
@@ -62,7 +63,7 @@ export function calculatePersonTotals(
       const sharePerPerson = item.price / assignedCount;
       const shareInBaseCurrency = convertCurrency(
         sharePerPerson,
-        item.currency,
+        itemCurrency,
         baseCurrency,
       );
 
@@ -73,7 +74,7 @@ export function calculatePersonTotals(
           data.assignedItems.push({
             name: item.name,
             share: sharePerPerson,
-            currency: item.currency,
+            currency: itemCurrency,
           });
         }
       });
@@ -83,16 +84,17 @@ export function calculatePersonTotals(
     item.paidBy.forEach((payer, personId) => {
       const data = personData.get(personId);
       if (data) {
+        const payerCurrency = payer.currency ?? itemCurrency;
         const paidInBaseCurrency = convertCurrency(
           payer.amount,
-          payer.currency,
+          payerCurrency,
           baseCurrency,
         );
         data.totalPaid += paidInBaseCurrency;
         data.paidItems.push({
           name: item.name,
           amount: payer.amount,
-          currency: payer.currency,
+          currency: payerCurrency,
         });
       }
     });
@@ -100,9 +102,10 @@ export function calculatePersonTotals(
 
   // Calculate total bill subtotal in base currency
   const billSubtotal = items.reduce((sum, item) => {
+    const itemCurrency = item.currency ?? baseCurrency;
     const priceInBaseCurrency = convertCurrency(
       item.price,
-      item.currency,
+      itemCurrency,
       baseCurrency,
     );
     return sum + priceInBaseCurrency;

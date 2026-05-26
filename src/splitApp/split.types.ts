@@ -18,14 +18,18 @@ export interface Person {
 export interface ItemPayer {
   personId: string;
   amount: number;
-  currency: Currency;
+  // Currency the payer paid in. Undefined means inherit from the item.
+  currency?: Currency;
 }
 
 export interface Item {
   id: string;
   name: string;
   price: number;
-  currency: Currency;
+  // Undefined means "use the global base currency". A concrete currency
+  // is only stored when the user explicitly picks one that differs from
+  // the global default and multi-currency mode is on.
+  currency?: Currency;
   usedBy: Set<string>; // person IDs - who consumes the item
   paidBy: Map<string, ItemPayer>; // personId -> ItemPayer - who paid for the item
 }

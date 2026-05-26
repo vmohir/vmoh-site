@@ -48,15 +48,23 @@ test("add an item without advanced mode", async ({ page }) => {
   await expect(itemTextboxes.nth(3)).toHaveValue("24");
 });
 
-test("advanced mode shows the per-item currency selector", async ({ page }) => {
+test("multiple-currencies toggle shows the per-item currency selector", async ({
+  page,
+}) => {
   const items = itemsSection(page);
 
   await expect(items.getByRole("combobox")).toHaveCount(0);
 
-  await page.getByRole("switch", { name: "Advanced" }).click();
+  // The toggle lives in the header settings popover. Scope to the header to
+  // avoid matching the Astro dev toolbar's Settings button.
+  await page
+    .getByRole("banner")
+    .getByRole("button", { name: "Settings", exact: true })
+    .click();
+  await page.getByRole("switch", { name: "Multiple currencies" }).click();
   await expect(items.getByRole("combobox")).toHaveCount(1);
 
-  await page.getByRole("switch", { name: "Advanced" }).click();
+  await page.getByRole("switch", { name: "Multiple currencies" }).click();
   await expect(items.getByRole("combobox")).toHaveCount(0);
 });
 

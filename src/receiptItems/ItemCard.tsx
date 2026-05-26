@@ -1,12 +1,14 @@
 import { ArrowRight, Users, Wallet, X } from "lucide-preact";
 import type { Item, Person } from "../splitApp/split.types.ts";
 import {
+  baseCurrency,
+  hasMultipleCurrencies,
+  hasMultiplePayers,
+  setItemAssignees,
+  setItemPayers,
   updateItemCurrency,
   updateItemName,
   updateItemPrice,
-  setItemAssignees,
-  setItemPayers,
-  isAdvancedMode,
 } from "state/billState.ts";
 import EditableText from "ui/EditableText";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
@@ -39,6 +41,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
   };
 
   const paidByIds = new Set(item.paidBy.keys());
+  const itemCurrency = item.currency ?? baseCurrency.value;
 
   return (
     <div class={styles.itemCard}>
@@ -50,7 +53,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         />
 
         <div class={styles.priceGroup}>
-          {getCurrencySymbol(item.currency)}
+          {getCurrencySymbol(itemCurrency)}
           <EditableText
             value={item.price.toString()}
             onSave={handleSavePrice}
@@ -59,10 +62,10 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
             validate={validatePrice}
             autoFocus={false}
           />
-          {isAdvancedMode.value && (
+          {hasMultipleCurrencies.value && (
             <CurrencySelector
               class={styles.currencySelector}
-              value={item.currency}
+              value={itemCurrency}
               onChange={(currency) => updateItemCurrency(item.id, currency)}
             />
           )}
@@ -78,6 +81,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
               selected={paidByIds}
               onChange={(next) => setItemPayers(item.id, [...next])}
               leading={<Wallet size={14} />}
+              multi={hasMultiplePayers.value}
             />
             <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
             <PeoplePicker
@@ -86,7 +90,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
               selected={item.usedBy}
               onChange={(next) => setItemAssignees(item.id, [...next])}
               leading={<Users size={14} />}
-              alwaysMulti
+              multi
             />
           </div>
         )}
@@ -101,7 +105,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         </button>
       </div>
 
-      {isAdvancedMode.value && item.paidBy.size > 1 && (
+      {hasMultiplePayers.value && item.paidBy.size > 1 && (
         <ItemPayers item={item} people={people} />
       )}
     </div>

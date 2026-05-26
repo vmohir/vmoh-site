@@ -4,7 +4,8 @@ import type { Currency } from "../../splitApp/split.types.ts";
 import {
   addItem,
   baseCurrency,
-  isAdvancedMode,
+  hasMultipleCurrencies,
+  hasMultiplePayers,
   people,
 } from "../../state/billState.ts";
 import { CurrencySelector } from "../currencies/CurrencySelector.tsx";
@@ -27,10 +28,16 @@ export function AddItemForm() {
     e.preventDefault();
     const price = parseFloat(priceInput);
     if (nameInput.trim() && !isNaN(price) && price >= 0) {
+      // Store undefined when the picked currency matches the base — keeps
+      // the item tracking the global currency if it later changes.
+      const currencyToStore =
+        currencyInput && currencyInput !== baseCurrency.value
+          ? currencyInput
+          : undefined;
       addItem(
         nameInput,
         price,
-        effectiveCurrency,
+        currencyToStore,
         [...sharedByDraft],
         [...paidByDraft],
       );
@@ -76,7 +83,7 @@ export function AddItemForm() {
         enterKeyHint="next"
         prefix={getCurrencySymbol(effectiveCurrency)}
       />
-      {isAdvancedMode.value && (
+      {hasMultipleCurrencies.value && (
         <CurrencySelector
           value={effectiveCurrency}
           onChange={setCurrencyInput}
@@ -91,6 +98,7 @@ export function AddItemForm() {
             selected={paidByDraft}
             onChange={setPaidByDraft}
             leading={<Wallet size={14} />}
+            multi={hasMultiplePayers.value}
           />
           <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
           <PeoplePicker
@@ -99,7 +107,7 @@ export function AddItemForm() {
             selected={sharedByDraft}
             onChange={setSharedByDraft}
             leading={<Users size={14} />}
-            alwaysMulti
+            multi
           />
         </div>
       )}

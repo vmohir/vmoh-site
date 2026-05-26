@@ -19,9 +19,6 @@ test("two people share an item, one pays — settles to a single transfer", asyn
     .locator("section")
     .filter({ has: page.getByRole("heading", { name: "Results" }) });
 
-  // Advanced mode unlocks multi-select on the people pickers.
-  await page.getByRole("switch", { name: "Advanced" }).click();
-
   // Add a second person and rename both deterministically.
   await page.getByRole("button", { name: "Add Person" }).click();
   const personInputs = peopleSection.getByRole("textbox");
@@ -43,9 +40,9 @@ test("two people share an item, one pays — settles to a single transfer", asyn
   // Close the dropdown by pressing Escape.
   await page.keyboard.press("Escape");
 
-  // Paid by Alice.
+  // Paid by Alice. Payer is single-select by default → menuitemradio.
   await itemsSection.getByRole("button", { name: "Payer" }).last().click();
-  await page.getByRole("checkbox", { name: "Alice" }).check();
+  await page.getByRole("menuitemradio", { name: "Alice" }).click();
 
   // Bob -> Alice $10.00 (each owes 10, Alice paid 20).
   await expect(resultsSection.getByText("1 transaction needed")).toBeVisible();

@@ -1,7 +1,6 @@
 import type { VNode } from "preact";
 import { Check, ChevronDown } from "lucide-preact";
 import type { Person } from "../splitApp/split.types.ts";
-import { isAdvancedMode } from "state/billState.ts";
 import { PersonAvatar } from "ui/PersonAvatar.tsx";
 import { Popover } from "ui/Popover.tsx";
 import { useDropdown } from "ui/useDropdown.ts";
@@ -14,8 +13,8 @@ interface PeoplePickerProps {
   onChange: (next: Set<string>) => void;
   // Small icon rendered before the placeholder / avatar stack inside the pill.
   leading?: VNode;
-  // When true, multi-select is allowed regardless of mode. Default: basic = single, advanced = multi.
-  alwaysMulti?: boolean;
+  // True → checkbox list, multi-select. False → single-select, closes on pick.
+  multi?: boolean;
 }
 
 // Multi/single-select dropdown of people for an item.
@@ -25,14 +24,12 @@ export function PeoplePicker({
   selected,
   onChange,
   leading,
-  alwaysMulti = false,
+  multi = false,
 }: PeoplePickerProps) {
   const { open, toggle, close, wrapRef, triggerRef, alignEnd } =
     useDropdown<HTMLButtonElement>({ alignByViewport: true });
 
   const selectedPeople = people.filter((p) => selected.has(p.id));
-
-  const multi = alwaysMulti || isAdvancedMode.value;
   const handlePick = (personId: string) => {
     const next = new Set(selected);
     if (multi) {
