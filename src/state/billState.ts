@@ -11,6 +11,7 @@ import type {
   AdjustmentType,
 } from "../splitApp/split.types.ts";
 import { calculatePersonTotals } from "../utils/calculations";
+import { getCurrencyFromLocale } from "../utils/currency.utils.ts";
 import { calculateSettlement } from "../utils/settlementAlgorithms";
 
 const STORAGE_KEY = "split-bill-state";
@@ -89,7 +90,9 @@ export const adjustments = signal<Adjustment[]>(
     },
   ],
 );
-export const baseCurrency = signal<Currency>(savedState?.baseCurrency ?? "USD");
+export const baseCurrency = signal<Currency>(
+  savedState?.baseCurrency ?? getCurrencyFromLocale(),
+);
 export const settlementAlgorithm = signal<SettlementAlgorithm>(
   savedState?.settlementAlgorithm ?? "minimize-transactions",
 );
