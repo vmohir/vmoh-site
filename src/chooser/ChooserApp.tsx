@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { Cog as SettingsIcon } from "lucide-preact";
+import { Cog as SettingsIcon, X } from "lucide-preact";
 import {
   DEFAULT_MODE,
   DEFAULT_TEAM_COUNT,
@@ -170,6 +170,13 @@ export default function ChooserApp() {
     clearAll();
     clearLimitHint();
     setInputMode(next);
+  }
+
+  // Changing pick mode (winner / teams / order) also resets back to touch
+  // input — the spec'd behaviour is "a mode change starts fresh".
+  function handleModeChange(next: Mode) {
+    setMode(next);
+    if (inputMode !== "touch") switchInputMode("touch");
   }
 
   // -- Touch-mode pointer handlers -------------------------------------------
@@ -350,6 +357,20 @@ export default function ChooserApp() {
         <SettingsIcon size={28} />
       </button>
 
+      {inputMode === "tap" && (
+        <div class={styles.modePill} onPointerDown={(e) => e.stopPropagation()}>
+          <span class={styles.modePillLabel}>Tap-to-add</span>
+          <button
+            type="button"
+            class={styles.modePillClose}
+            aria-label="Disable tap-to-add mode"
+            onClick={() => switchInputMode("touch")}
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       {/* Bottom bar — content depends on phase and input mode */}
       {phase === "result" ? (
         <button
@@ -411,7 +432,7 @@ export default function ChooserApp() {
           inputMode={inputMode}
           onChangeInputMode={switchInputMode}
           mode={currentMode}
-          onChangeMode={setMode}
+          onChangeMode={handleModeChange}
           teamCount={currentTeamCount}
           onChangeTeamCount={setTeamCount}
         />
