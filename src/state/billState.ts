@@ -13,6 +13,13 @@ import type {
 import { calculatePersonTotals } from "../utils/calculations";
 import { getCurrencyFromLocale } from "../utils/currency.utils.ts";
 import { calculateSettlement } from "../utils/settlementAlgorithms";
+import {
+  clearHashShare,
+  decodeSharePayload,
+  itemsFromSerialized,
+  readHashShare,
+  type SharePayload,
+} from "../utils/share.ts";
 
 const STORAGE_KEY = "split-bill-state";
 
@@ -118,6 +125,7 @@ effect(() => {
     hasMultipleCurrencies: hasMultipleCurrencies.value,
     hasMultiplePayers: hasMultiplePayers.value,
   };
+  if (typeof window === "undefined") return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
@@ -432,6 +440,63 @@ export function setHasMultiplePayers(value: boolean): void {
 
 export function toggleHasMultiplePayers(): void {
   setHasMultiplePayers(!hasMultiplePayers.value);
+}
+
+// Apply a shared payload to the current signals. Replaces people, items,
+// adjustments, and the preferences embedded in the payload. Callers decide
+// whether to confirm with the user first.
+export function applySharedPayload(payload: SharePayload): void {
+  people.value = payload.people;
+  items.value = itemsFromSerialized(payload.items);
+  adjustments.value = payload.adjustments;
+  baseCurrency.value = payload.baseCurrency;
+  settlementAlgorithm.value = payload.settlementAlgorithm;
+  hasMultipleCurrencies.value = payload.hasMultipleCurrencies;
+  hasMultiplePayers.value = payload.hasMultiplePayers;
+}
+
+// On boot, if the URL carries a #data=... share fragment, decode it and
+// apply. When the local bill already has meaningful state we confirm first
+// so a shared link can't silently overwrite a draft.
+function hasMeaningfulLocalState(): boolean {
+  return (
+    items.value.length > 0 ||
+    people.value.length > 1 ||
+    adjustments.value.some((a) => a.value > 0)
+  );
+}
+
+async function importHashShareIfPresent(): Promise<void> {
+  const encoded = readHashShare();
+  if (!encoded) return;
+  try {
+    const payload = await decodeSharePayload(encoded);
+    if (
+      hasMeaningfulLocalState() &&
+      !window.confirm(
+        "Open this shared bill? It will replace your current people, items, and adjustments.",
+      )
+    ) {
+      clearHashShare();
+      return;
+    }
+    applySharedPayload(payload);
+    clearHashShare();
+  } catch (e) {
+    console.error("Failed to import shared bill:", e);
+  }
+}
+
+if (typeof window !== "undefined") {
+  // Wait until after Preact has hydrated the SSR'd DOM before mutating
+  // signals — otherwise the signal updates race with hydration and cause
+  // DOM-node mismatch errors.
+  const run = () => void importHashShareIfPresent();
+  if (document.readyState === "complete") {
+    queueMicrotask(run);
+  } else {
+    window.addEventListener("load", run, { once: true });
+  }
 }
 
 // Wipe people / items / adjustments back to a fresh starting state. Keeps

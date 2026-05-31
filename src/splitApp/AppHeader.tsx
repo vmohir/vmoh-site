@@ -1,9 +1,14 @@
-import { Moon, RotateCcw, Settings, Sun } from "lucide-preact";
+import { Check, Moon, RotateCcw, Settings, Share2, Sun } from "lucide-preact";
+import { useState } from "preact/hooks";
 import {
+  adjustments,
   baseCurrency,
   hasMultipleCurrencies,
   hasMultiplePayers,
+  items,
+  people,
   resetAll,
+  settlementAlgorithm,
   toggleHasMultipleCurrencies,
   toggleHasMultiplePayers,
   updateBaseCurrency,
@@ -12,6 +17,7 @@ import { theme, toggleTheme } from "../state/theme";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
 import { Popover } from "../ui/Popover.tsx";
 import { useDropdown } from "../ui/useDropdown.ts";
+import { buildSharePayload, buildShareUrl } from "../utils/share.ts";
 import type { Signal } from "@preact/signals";
 import styles from "./AppHeader.module.css";
 
@@ -86,11 +92,60 @@ export default function AppHeader() {
     }
   };
 
+  const [shareState, setShareState] = useState<"idle" | "copied">("idle");
+  const handleShare = async () => {
+    const payload = buildSharePayload({
+      people: people.value,
+      items: items.value,
+      adjustments: adjustments.value,
+      baseCurrency: baseCurrency.value,
+      settlementAlgorithm: settlementAlgorithm.value,
+      hasMultipleCurrencies: hasMultipleCurrencies.value,
+      hasMultiplePayers: hasMultiplePayers.value,
+    });
+    let url: string;
+    try {
+      url = await buildShareUrl(payload);
+    } catch (e) {
+      console.error("Failed to build share URL:", e);
+      return;
+    }
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Split Bill", url });
+        return;
+      } catch {
+        // user dismissed or share failed — fall through to clipboard
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareState("copied");
+      window.setTimeout(() => setShareState("idle"), 1800);
+    } catch (e) {
+      console.error("Failed to copy share URL:", e);
+      window.prompt("Copy this link:", url);
+    }
+  };
+
   return (
     <header class={styles.header}>
       <h1 class={styles.title}>Split Bill</h1>
 
       <div class={styles.rightCluster}>
+        <button
+          type="button"
+          class={styles.iconButton}
+          aria-label={shareState === "copied" ? "Link copied" : "Share bill"}
+          title={shareState === "copied" ? "Link copied" : "Share bill"}
+          onClick={handleShare}
+        >
+          {shareState === "copied" ? (
+            <Check size={16} aria-hidden="true" />
+          ) : (
+            <Share2 size={16} aria-hidden="true" />
+          )}
+        </button>
         <button
           type="button"
           class={styles.iconButton}
