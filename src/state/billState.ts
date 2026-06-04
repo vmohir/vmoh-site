@@ -61,6 +61,28 @@ function deserializeItems(items: SerializedItem[]): Item[] {
   }));
 }
 
+// Strip every currency override — item-level and per-payer — so all amounts
+// are interpreted in the base currency. Used whenever single-currency mode is
+// in effect: an override left behind from a previous multi-currency session
+// (e.g. a payment still tagged "USD" on a GBP bill) would otherwise be silently
+// converted and throw the settlement out of balance. Item references are
+// preserved when nothing changes to avoid needless re-renders.
+function clearItemCurrencyOverrides(items: Item[]): Item[] {
+  return items.map((item) => {
+    let changed = item.currency !== undefined;
+    const paidBy = new Map<string, ItemPayer>();
+    item.paidBy.forEach((payer, id) => {
+      if (payer.currency === undefined) {
+        paidBy.set(id, payer);
+      } else {
+        changed = true;
+        paidBy.set(id, { ...payer, currency: undefined });
+      }
+    });
+    return changed ? { ...item, currency: undefined, paidBy } : item;
+  });
+}
+
 function loadState(): Partial<SerializedState> | null {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -113,6 +135,12 @@ export const hasMultipleCurrencies = signal<boolean>(
 export const hasMultiplePayers = signal<boolean>(
   savedState?.hasMultiplePayers ?? legacyAdvanced,
 );
+
+// Heal bills saved before single-currency switches cleared per-payer currency
+// overrides: in single-currency mode no override should survive on load.
+if (!hasMultipleCurrencies.value) {
+  items.value = clearItemCurrencyOverrides(items.value);
+}
 
 // Persist state to localStorage whenever it changes
 effect(() => {
@@ -405,11 +433,24 @@ export function updateItemCurrency(itemId: string, currency: Currency): void {
 export function updateBaseCurrency(currency: Currency): void {
   baseCurrency.value = currency;
   // In single-currency mode every item already inherits the base currency
-  // (item.currency is undefined). In multi-currency mode, normalise items
-  // whose currency now matches the new base.
-  items.value = items.value.map((item) =>
-    item.currency === currency ? { ...item, currency: undefined } : item,
-  );
+  // (item.currency is undefined). In multi-currency mode, normalise any item
+  // or payer override whose currency now matches the new base so it tracks the
+  // base again rather than being pinned to a now-redundant explicit currency.
+  items.value = items.value.map((item) => {
+    const itemCurrency = item.currency === currency ? undefined : item.currency;
+    let payersChanged = false;
+    const paidBy = new Map<string, ItemPayer>();
+    item.paidBy.forEach((payer, id) => {
+      if (payer.currency === currency) {
+        payersChanged = true;
+        paidBy.set(id, { ...payer, currency: undefined });
+      } else {
+        paidBy.set(id, payer);
+      }
+    });
+    if (itemCurrency === item.currency && !payersChanged) return item;
+    return { ...item, currency: itemCurrency, paidBy };
+  });
 }
 
 // Settlement operations
@@ -422,10 +463,9 @@ export function updateSettlementAlgorithm(
 // Feature toggles
 export function setHasMultipleCurrencies(value: boolean): void {
   if (!value) {
-    // Drop any per-item currency overrides so every item tracks the base.
-    items.value = items.value.map((item) =>
-      item.currency === undefined ? item : { ...item, currency: undefined },
-    );
+    // Drop any item- or payer-level currency overrides so every amount tracks
+    // the base currency.
+    items.value = clearItemCurrencyOverrides(items.value);
   }
   hasMultipleCurrencies.value = value;
 }
@@ -447,7 +487,11 @@ export function toggleHasMultiplePayers(): void {
 // whether to confirm with the user first.
 export function applySharedPayload(payload: SharePayload): void {
   people.value = payload.people;
-  items.value = itemsFromSerialized(payload.items);
+  const loadedItems = itemsFromSerialized(payload.items);
+  // Self-heal a single-currency bill that carries stale currency overrides.
+  items.value = payload.hasMultipleCurrencies
+    ? loadedItems
+    : clearItemCurrencyOverrides(loadedItems);
   adjustments.value = payload.adjustments;
   baseCurrency.value = payload.baseCurrency;
   settlementAlgorithm.value = payload.settlementAlgorithm;
