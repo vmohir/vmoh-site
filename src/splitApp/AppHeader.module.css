@@ -67,9 +67,10 @@
 }
 
 .toggle {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
   padding: 0.25rem 0.5rem;
   background: transparent;
   border: none;
@@ -77,6 +78,7 @@
   color: var(--text-muted);
   font-size: 0.875rem;
   border-radius: 0.375rem;
+  text-align: left;
   transition: color var(--transition);
 }
 
@@ -91,6 +93,7 @@
 .toggleTrack {
   position: relative;
   display: inline-block;
+  flex-shrink: 0;
   width: 28px;
   height: 16px;
   background: var(--canvas-bg);
@@ -120,7 +123,9 @@
 }
 
 .toggleLabel {
+  flex: 1;
   font-weight: 500;
+  text-align: left;
 }
 
 .themeToggle {
