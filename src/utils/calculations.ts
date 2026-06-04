@@ -135,6 +135,15 @@ export function calculatePersonTotals(
     };
   });
 
+  // Net signed total of all adjustments (tips/taxes add, discounts subtract).
+  // This is the money owed on top of the subtotal that must also be "paid" by
+  // someone, otherwise balances can never net to zero.
+  const netAdjustmentTotal = adjustmentResults.reduce(
+    (sum, adj) =>
+      adj.type === "discount" ? sum - adj.totalAmount : sum + adj.totalAmount,
+    0,
+  );
+
   // Build results for each person
   return people.map((person) => {
     const data = personData.get(person.id)!;
@@ -161,8 +170,17 @@ export function calculatePersonTotals(
 
     const totalOwed = data.itemsSubtotal + adjustmentsTotal;
 
+    // Credit each payer with the adjustments riding on the items they paid
+    // for, attributed by the share of the subtotal they fronted. The owed side
+    // already spreads adjustments across consumers (personRatio); mirroring
+    // that on the paid side keeps the two halves in the same universe so
+    // balances net to zero. Without this, tax/tip/discount money is owed but
+    // never paid and the settlement can't reconcile.
+    const paidRatio = billSubtotal > 0 ? data.totalPaid / billSubtotal : 0;
+    const totalPaid = data.totalPaid + netAdjustmentTotal * paidRatio;
+
     // Calculate balance: negative = overpaid (should receive), positive = underpaid (should pay)
-    const balance = totalOwed - data.totalPaid;
+    const balance = totalOwed - totalPaid;
 
     return {
       personId: person.id,
@@ -170,7 +188,7 @@ export function calculatePersonTotals(
       itemsSubtotal: data.itemsSubtotal,
       adjustments: personAdjustments,
       total: totalOwed,
-      totalPaid: data.totalPaid,
+      totalPaid,
       balance,
       assignedItems: data.assignedItems,
       paidItems: data.paidItems,
