@@ -1,22 +1,30 @@
-import { calculatedTotals, calculatedSettlement } from "../state/billState";
+import type { CurrencyLedger } from "./split.types.ts";
+import {
+  calculatedLedgers,
+  hasMultipleCurrencies,
+  useExchangeRates,
+} from "../state/billState";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
+import ExchangeRates from "./ExchangeRates.tsx";
 import SettlementSettings from "./SettlementSettings.tsx";
 import styles from "./ResultsSection.module.css";
 
-export default function ResultsSection() {
-  const totals = calculatedTotals.value;
-  const settlement = calculatedSettlement.value;
-
-  if (totals.length === 0) {
-    return (
-      <p class={styles.emptyMessage}>Add people and items to see results</p>
-    );
-  }
+function LedgerView({
+  ledger,
+  showCurrencyHeading,
+}: {
+  ledger: CurrencyLedger;
+  showCurrencyHeading: boolean;
+}) {
+  const { currency, totals, settlement } = ledger;
+  const symbol = getCurrencySymbol(currency);
 
   return (
-    <div class={styles.resultsSection}>
+    <div class={styles.ledger}>
+      {showCurrencyHeading && <h3 class={styles.ledgerHeading}>{currency}</h3>}
+
       <div class={styles.personResults}>
-        <h3>Per-Person Breakdown</h3>
+        <h4>Per-Person Breakdown</h4>
         {totals.map((personTotal) => {
           const balanceState =
             personTotal.balance > 0.01
@@ -26,9 +34,9 @@ export default function ResultsSection() {
                 : "settled";
           const balanceText =
             balanceState === "underpaid"
-              ? `Owes $${personTotal.balance.toFixed(2)}`
+              ? `Owes ${symbol}${personTotal.balance.toFixed(2)}`
               : balanceState === "overpaid"
-                ? `Should receive $${Math.abs(personTotal.balance).toFixed(2)}`
+                ? `Should receive ${symbol}${Math.abs(personTotal.balance).toFixed(2)}`
                 : "Settled";
 
           return (
@@ -73,7 +81,10 @@ export default function ResultsSection() {
 
                 <div class={styles.breakdownRow}>
                   <span>Subtotal (owed)</span>
-                  <span>${personTotal.itemsSubtotal.toFixed(2)}</span>
+                  <span>
+                    {symbol}
+                    {personTotal.itemsSubtotal.toFixed(2)}
+                  </span>
                 </div>
 
                 {personTotal.adjustments.map((adj) => (
@@ -83,7 +94,8 @@ export default function ResultsSection() {
                   >
                     <span>{adj.label}</span>
                     <span>
-                      {adj.type === "discount" ? "-" : ""}$
+                      {adj.type === "discount" ? "-" : ""}
+                      {symbol}
                       {Math.abs(adj.amount).toFixed(2)}
                     </span>
                   </div>
@@ -91,12 +103,18 @@ export default function ResultsSection() {
 
                 <div class={styles.breakdownRow}>
                   <span>Total owed</span>
-                  <span>${personTotal.total.toFixed(2)}</span>
+                  <span>
+                    {symbol}
+                    {personTotal.total.toFixed(2)}
+                  </span>
                 </div>
 
                 <div class={styles.breakdownRow}>
                   <span>Total paid</span>
-                  <span>${personTotal.totalPaid.toFixed(2)}</span>
+                  <span>
+                    {symbol}
+                    {personTotal.totalPaid.toFixed(2)}
+                  </span>
                 </div>
               </div>
             </details>
@@ -104,11 +122,10 @@ export default function ResultsSection() {
         })}
       </div>
 
-      {/* Settlement section */}
       <div class={styles.settlementSection}>
         <div class={styles.settlementHeader}>
-          <h3>Payment Settlement</h3>
-          <SettlementSettings />
+          <h4>Payment Settlement</h4>
+          {!showCurrencyHeading && <SettlementSettings />}
         </div>
 
         {settlement.transfers.length > 0 ? (
@@ -130,13 +147,11 @@ export default function ResultsSection() {
             ))}
           </div>
         ) : settlement.isBalanced ? (
-          <p class={styles.settledMessage}>All balanced! No transfers needed.</p>
+          <p class={styles.settledMessage}>
+            All balanced! No transfers needed.
+          </p>
         ) : null}
 
-        {/* An unbalanced settlement can also produce zero transfers — e.g. when
-            no one is recorded as a payer, everyone is a debtor with no creditor
-            to pay. Surface the warning in that case too, not just alongside
-            transfers. */}
         {!settlement.isBalanced && (
           <div class={styles.warning}>
             Settlement isn't balanced — the recorded payments don't add up to
@@ -145,6 +160,45 @@ export default function ResultsSection() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+export default function ResultsSection() {
+  const ledgers = calculatedLedgers.value;
+  const hasPeople = ledgers.some((l) => l.totals.length > 0);
+
+  if (!hasPeople) {
+    return (
+      <p class={styles.emptyMessage}>Add people and items to see results</p>
+    );
+  }
+
+  const multipleLedgers = ledgers.length > 1;
+  const showRateEditor = hasMultipleCurrencies.value && useExchangeRates.value;
+
+  return (
+    <div class={styles.resultsSection}>
+      {showRateEditor && <ExchangeRates />}
+
+      {/* With multiple per-currency ledgers the settlement method applies to
+          all of them, so surface the method picker once at the top. */}
+      {multipleLedgers && (
+        <div class={styles.globalSettlementHeader}>
+          <span class={styles.multiCurrencyNote}>
+            Currencies are settled separately
+          </span>
+          <SettlementSettings />
+        </div>
+      )}
+
+      {ledgers.map((ledger) => (
+        <LedgerView
+          key={ledger.currency}
+          ledger={ledger}
+          showCurrencyHeading={multipleLedgers}
+        />
+      ))}
     </div>
   );
 }

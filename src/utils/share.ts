@@ -28,6 +28,10 @@ export interface SharePayload {
   settlementAlgorithm: SettlementAlgorithm;
   hasMultipleCurrencies: boolean;
   hasMultiplePayers: boolean;
+  // Optional for backwards compatibility with links created before exchange
+  // rates existed.
+  useExchangeRates?: boolean;
+  exchangeRates?: Record<Currency, number>;
 }
 
 export function itemsToSerialized(items: Item[]): SerializedItem[] {
@@ -115,6 +119,8 @@ export function buildSharePayload(input: {
   settlementAlgorithm: SettlementAlgorithm;
   hasMultipleCurrencies: boolean;
   hasMultiplePayers: boolean;
+  useExchangeRates: boolean;
+  exchangeRates: Record<Currency, number>;
 }): SharePayload {
   return {
     v: SHARE_VERSION,
@@ -125,6 +131,8 @@ export function buildSharePayload(input: {
     settlementAlgorithm: input.settlementAlgorithm,
     hasMultipleCurrencies: input.hasMultipleCurrencies,
     hasMultiplePayers: input.hasMultiplePayers,
+    useExchangeRates: input.useExchangeRates,
+    exchangeRates: input.exchangeRates,
   };
 }
 

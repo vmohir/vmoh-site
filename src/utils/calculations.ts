@@ -1,49 +1,84 @@
 import type {
   Person,
   Item,
+  ItemPayer,
   PersonTotal,
   Currency,
   Adjustment,
 } from "../splitApp/split.types.ts";
 
-// Currency conversion helper
-function convertCurrency(
-  amount: number,
-  fromCurrency: Currency,
-  toCurrency: Currency,
-): number {
-  // Simple exchange rates (USD base)
-  const rates: Record<Currency, number> = {
-    USD: 1.0,
-    EUR: 0.92,
-    GBP: 0.79,
-    JPY: 149.5,
-    CAD: 1.36,
-    AUD: 1.52,
-  };
+// Default exchange rates expressed as units of the currency per 1 USD. Used to
+// seed the editable rate table and as a fallback. There is no live FX — these
+// are only applied when the user explicitly enables exchange rates.
+export const DEFAULT_RATES: Record<Currency, number> = {
+  USD: 1.0,
+  EUR: 0.92,
+  GBP: 0.79,
+  JPY: 149.5,
+  CAD: 1.36,
+  AUD: 1.52,
+};
 
-  // Convert to USD first, then to target currency
-  const inUSD = amount / rates[fromCurrency];
-  return inUSD * rates[toCurrency];
+// Convert `amount` from one currency to another using a units-per-USD table.
+export function convertWithRates(
+  amount: number,
+  from: Currency,
+  to: Currency,
+  rates: Record<Currency, number>,
+): number {
+  const fromRate = rates[from] ?? DEFAULT_RATES[from] ?? 1;
+  const toRate = rates[to] ?? DEFAULT_RATES[to] ?? 1;
+  return (amount / fromRate) * toRate;
 }
 
-export function calculatePersonTotals(
+// Effective currency of an item / payment. Undefined inherits the base.
+const effItemCurrency = (item: Item, base: Currency): Currency =>
+  item.currency ?? base;
+const effPayerCurrency = (
+  item: Item,
+  payer: ItemPayer,
+  base: Currency,
+): Currency => payer.currency ?? item.currency ?? base;
+
+// How amounts are folded into a single ledger.
+type LedgerMode =
+  // Convert every amount into the ledger currency via the rate table.
+  | { kind: "convert"; rates: Record<Currency, number> }
+  // Keep currencies apart: only amounts already in the ledger currency count.
+  | { kind: "separate" };
+
+interface PersonAccumulator {
+  itemsSubtotal: number;
+  totalPaid: number;
+  assignedItems: PersonTotal["assignedItems"];
+  paidItems: PersonTotal["paidItems"];
+}
+
+/**
+ * Compute per-person totals for a single ledger (one currency).
+ *
+ * In "convert" mode every amount is converted into `ledgerCurrency`; in
+ * "separate" mode only amounts whose effective currency already equals
+ * `ledgerCurrency` are counted (nothing is exchanged).
+ */
+function buildLedgerTotals(
   people: Person[],
   items: Item[],
   adjustments: Adjustment[],
-  baseCurrency: Currency = "USD",
+  ledgerCurrency: Currency,
+  baseCurrency: Currency,
+  mode: LedgerMode,
 ): PersonTotal[] {
-  // Initialize tracking for each person
-  const personData = new Map<
-    string,
-    {
-      itemsSubtotal: number;
-      totalPaid: number;
-      assignedItems: Array<{ name: string; share: number; currency: Currency }>;
-      paidItems: Array<{ name: string; amount: number; currency: Currency }>;
+  // Map an amount in `from` into the ledger currency, or null if it does not
+  // belong to this ledger (separate mode, different currency).
+  const toLedger = (amount: number, from: Currency): number | null => {
+    if (mode.kind === "convert") {
+      return convertWithRates(amount, from, ledgerCurrency, mode.rates);
     }
-  >();
+    return from === ledgerCurrency ? amount : null;
+  };
 
+  const personData = new Map<string, PersonAccumulator>();
   people.forEach((person) => {
     personData.set(person.id, {
       itemsSubtotal: 0,
@@ -53,108 +88,92 @@ export function calculatePersonTotals(
     });
   });
 
-  // Calculate item shares (consumption) and payments
-  items.forEach((item) => {
-    const itemCurrency = item.currency ?? baseCurrency;
-    const assignedCount = item.usedBy.size;
+  let billSubtotal = 0;
 
-    // Process consumption (assignedTo)
+  items.forEach((item) => {
+    const itemCurrency = effItemCurrency(item, baseCurrency);
+
+    const ledgerPrice = toLedger(item.price, itemCurrency);
+    if (ledgerPrice !== null) billSubtotal += ledgerPrice;
+
+    // Consumption (usedBy)
+    const assignedCount = item.usedBy.size;
     if (assignedCount > 0) {
       const sharePerPerson = item.price / assignedCount;
-      const shareInBaseCurrency = convertCurrency(
-        sharePerPerson,
-        itemCurrency,
-        baseCurrency,
-      );
-
-      item.usedBy.forEach((personId) => {
-        const data = personData.get(personId);
-        if (data) {
-          data.itemsSubtotal += shareInBaseCurrency;
-          data.assignedItems.push({
-            name: item.name,
-            share: sharePerPerson,
-            currency: itemCurrency,
-          });
-        }
-      });
+      const ledgerShare = toLedger(sharePerPerson, itemCurrency);
+      if (ledgerShare !== null) {
+        item.usedBy.forEach((personId) => {
+          const data = personData.get(personId);
+          if (data) {
+            data.itemsSubtotal += ledgerShare;
+            data.assignedItems.push({
+              name: item.name,
+              share: sharePerPerson,
+              currency: itemCurrency,
+            });
+          }
+        });
+      }
     }
 
-    // Process payments (paidBy)
+    // Payments (paidBy)
     item.paidBy.forEach((payer, personId) => {
-      const data = personData.get(personId);
-      if (data) {
-        const payerCurrency = payer.currency ?? itemCurrency;
-        const paidInBaseCurrency = convertCurrency(
-          payer.amount,
-          payerCurrency,
-          baseCurrency,
-        );
-        data.totalPaid += paidInBaseCurrency;
-        data.paidItems.push({
-          name: item.name,
-          amount: payer.amount,
-          currency: payerCurrency,
-        });
+      const payerCurrency = effPayerCurrency(item, payer, baseCurrency);
+      const ledgerPaid = toLedger(payer.amount, payerCurrency);
+      if (ledgerPaid !== null) {
+        const data = personData.get(personId);
+        if (data) {
+          data.totalPaid += ledgerPaid;
+          data.paidItems.push({
+            name: item.name,
+            amount: payer.amount,
+            currency: payerCurrency,
+          });
+        }
       }
     });
   });
 
-  // Calculate total bill subtotal in base currency
-  const billSubtotal = items.reduce((sum, item) => {
-    const itemCurrency = item.currency ?? baseCurrency;
-    const priceInBaseCurrency = convertCurrency(
-      item.price,
-      itemCurrency,
-      baseCurrency,
-    );
-    return sum + priceInBaseCurrency;
-  }, 0);
-
-  // Calculate adjustments
-  const adjustmentResults = adjustments.map((adjustment) => {
-    let totalAmount: number;
-
-    if (adjustment.type === "discount") {
-      // Discounts reduce the subtotal before other adjustments
-      totalAmount = adjustment.isPercent
-        ? (billSubtotal * adjustment.value) / 100
-        : adjustment.value;
-      // Discounts are subtracted (capped at billSubtotal to prevent negative)
-      totalAmount = Math.min(totalAmount, billSubtotal);
-    } else {
-      // Tips and taxes are added
-      totalAmount = adjustment.isPercent
-        ? (billSubtotal * adjustment.value) / 100
-        : adjustment.value;
-    }
-
-    return {
-      ...adjustment,
-      totalAmount,
-    };
-  });
-
-  // Net signed total of all adjustments (tips/taxes add, discounts subtract).
-  // This is the money owed on top of the subtotal that must also be "paid" by
-  // someone, otherwise balances can never net to zero.
-  const netAdjustmentTotal = adjustmentResults.reduce(
-    (sum, adj) =>
-      adj.type === "discount" ? sum - adj.totalAmount : sum + adj.totalAmount,
-    0,
+  // Which adjustments apply to this ledger. When converting, all adjustments
+  // land on the single base ledger. When keeping currencies separate,
+  // percentage adjustments apply within each ledger (relative to its own
+  // subtotal), while fixed-amount adjustments — which carry no currency — are
+  // assumed to be in the base currency and only apply to the base ledger.
+  const applicable = adjustments.filter((adj) =>
+    mode.kind === "convert"
+      ? true
+      : adj.isPercent || ledgerCurrency === baseCurrency,
   );
 
-  // Build results for each person
+  const adjustmentResults = applicable.map((adjustment) => {
+    let totalAmount: number;
+    if (adjustment.isPercent) {
+      totalAmount = (billSubtotal * adjustment.value) / 100;
+    } else if (mode.kind === "convert") {
+      // Fixed amounts are entered in the base currency.
+      totalAmount = convertWithRates(
+        adjustment.value,
+        baseCurrency,
+        ledgerCurrency,
+        mode.rates,
+      );
+    } else {
+      totalAmount = adjustment.value;
+    }
+
+    if (adjustment.type === "discount") {
+      totalAmount = Math.min(totalAmount, billSubtotal);
+    }
+
+    return { ...adjustment, totalAmount };
+  });
+
   return people.map((person) => {
     const data = personData.get(person.id)!;
 
-    // Calculate proportional ratio based on consumption
-    let personRatio = 0;
-    if (billSubtotal > 0) {
-      personRatio = data.itemsSubtotal / billSubtotal;
-    }
+    const personRatio =
+      billSubtotal > 0 ? data.itemsSubtotal / billSubtotal : 0;
 
-    // Calculate person's share of each adjustment
     const personAdjustments = adjustmentResults.map((adjResult) => ({
       id: adjResult.id,
       label: adjResult.label,
@@ -162,24 +181,25 @@ export function calculatePersonTotals(
       amount: adjResult.totalAmount * personRatio,
     }));
 
-    // Calculate total owed
-    const adjustmentsTotal = personAdjustments.reduce((sum, adj) => {
-      // Discounts subtract, tips and taxes add
-      return adj.type === "discount" ? sum - adj.amount : sum + adj.amount;
-    }, 0);
+    const adjustmentsTotal = personAdjustments.reduce(
+      (sum, adj) =>
+        adj.type === "discount" ? sum - adj.amount : sum + adj.amount,
+      0,
+    );
 
     const totalOwed = data.itemsSubtotal + adjustmentsTotal;
 
-    // Credit each payer with the adjustments riding on the items they paid
-    // for, attributed by the share of the subtotal they fronted. The owed side
-    // already spreads adjustments across consumers (personRatio); mirroring
-    // that on the paid side keeps the two halves in the same universe so
-    // balances net to zero. Without this, tax/tip/discount money is owed but
-    // never paid and the settlement can't reconcile.
+    // Credit each payer with the adjustments riding on the items they paid for,
+    // proportional to the share of the subtotal they fronted, so balances net
+    // to zero (mirrors the consumption-based distribution on the owed side).
     const paidRatio = billSubtotal > 0 ? data.totalPaid / billSubtotal : 0;
-    const totalPaid = data.totalPaid + netAdjustmentTotal * paidRatio;
+    const adjustmentsTotalForLedger = adjustmentResults.reduce(
+      (sum, adj) =>
+        adj.type === "discount" ? sum - adj.totalAmount : sum + adj.totalAmount,
+      0,
+    );
+    const totalPaid = data.totalPaid + adjustmentsTotalForLedger * paidRatio;
 
-    // Calculate balance: negative = overpaid (should receive), positive = underpaid (should pay)
     const balance = totalOwed - totalPaid;
 
     return {
@@ -194,4 +214,89 @@ export function calculatePersonTotals(
       paidItems: data.paidItems,
     };
   });
+}
+
+/**
+ * Compute per-person totals grouped into one or more currency ledgers.
+ *
+ * - Single currency (or only one currency actually used): one base-currency
+ *   ledger, no conversion.
+ * - Multiple currencies with exchange disabled: one ledger per currency, each
+ *   settled on its own — nothing is exchanged.
+ * - Exchange enabled: everything converted into the base currency via `rates`,
+ *   producing a single combined ledger.
+ */
+export function calculatePersonTotalsByCurrency(
+  people: Person[],
+  items: Item[],
+  adjustments: Adjustment[],
+  baseCurrency: Currency = "USD",
+  useExchangeRates = false,
+  rates: Record<Currency, number> = DEFAULT_RATES,
+): Array<{ currency: Currency; totals: PersonTotal[] }> {
+  // Distinct currencies that actually appear in the bill.
+  const used = new Set<Currency>();
+  items.forEach((item) => {
+    if (item.usedBy.size > 0) used.add(effItemCurrency(item, baseCurrency));
+    item.paidBy.forEach((payer) =>
+      used.add(effPayerCurrency(item, payer, baseCurrency)),
+    );
+  });
+
+  const isMultiCurrency = used.size > 1;
+
+  if (useExchangeRates || !isMultiCurrency) {
+    return [
+      {
+        currency: baseCurrency,
+        totals: buildLedgerTotals(
+          people,
+          items,
+          adjustments,
+          baseCurrency,
+          baseCurrency,
+          { kind: "convert", rates },
+        ),
+      },
+    ];
+  }
+
+  // Separate ledgers, base currency first then alphabetical for stable order.
+  const ledgerCurrencies = [...used].sort((a, b) => {
+    if (a === baseCurrency) return -1;
+    if (b === baseCurrency) return 1;
+    return a.localeCompare(b);
+  });
+
+  return ledgerCurrencies.map((currency) => ({
+    currency,
+    totals: buildLedgerTotals(
+      people,
+      items,
+      adjustments,
+      currency,
+      baseCurrency,
+      { kind: "separate" },
+    ),
+  }));
+}
+
+/**
+ * Single-ledger convenience used where a flat per-person list is expected.
+ * Converts everything into the base currency using the default rate table.
+ */
+export function calculatePersonTotals(
+  people: Person[],
+  items: Item[],
+  adjustments: Adjustment[],
+  baseCurrency: Currency = "USD",
+): PersonTotal[] {
+  return buildLedgerTotals(
+    people,
+    items,
+    adjustments,
+    baseCurrency,
+    baseCurrency,
+    { kind: "convert", rates: DEFAULT_RATES },
+  );
 }

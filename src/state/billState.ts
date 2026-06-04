@@ -2,15 +2,18 @@ import { signal, computed, effect } from "@preact/signals";
 import type {
   Person,
   Item,
-  PersonTotal,
   Currency,
   SettlementAlgorithm,
   ItemPayer,
-  SettlementResult,
   Adjustment,
   AdjustmentType,
+  CurrencyLedger,
 } from "../splitApp/split.types.ts";
-import { calculatePersonTotals } from "../utils/calculations";
+import {
+  calculatePersonTotalsByCurrency,
+  convertWithRates,
+  DEFAULT_RATES,
+} from "../utils/calculations";
 import { getCurrencyFromLocale } from "../utils/currency.utils.ts";
 import { calculateSettlement } from "../utils/settlementAlgorithms";
 import {
@@ -41,6 +44,11 @@ interface SerializedState {
   settlementAlgorithm: SettlementAlgorithm;
   hasMultipleCurrencies: boolean;
   hasMultiplePayers: boolean;
+  // Whether to convert across currencies using the rate table below. When
+  // false (default), currencies are kept in separate ledgers — no exchange.
+  useExchangeRates: boolean;
+  // Editable exchange rates, units per 1 USD (seeded from DEFAULT_RATES).
+  exchangeRates: Record<Currency, number>;
   // Legacy: pre-split flag. Read on load and migrated to the two new flags.
   isAdvancedMode?: boolean;
 }
@@ -135,6 +143,13 @@ export const hasMultipleCurrencies = signal<boolean>(
 export const hasMultiplePayers = signal<boolean>(
   savedState?.hasMultiplePayers ?? legacyAdvanced,
 );
+export const useExchangeRates = signal<boolean>(
+  savedState?.useExchangeRates ?? false,
+);
+export const exchangeRates = signal<Record<Currency, number>>({
+  ...DEFAULT_RATES,
+  ...savedState?.exchangeRates,
+});
 
 // Heal bills saved before single-currency switches cleared per-payer currency
 // overrides: in single-currency mode no override should survive on load.
@@ -152,6 +167,8 @@ effect(() => {
     settlementAlgorithm: settlementAlgorithm.value,
     hasMultipleCurrencies: hasMultipleCurrencies.value,
     hasMultiplePayers: hasMultiplePayers.value,
+    useExchangeRates: useExchangeRates.value,
+    exchangeRates: exchangeRates.value,
   };
   if (typeof window === "undefined") return;
   try {
@@ -161,23 +178,27 @@ effect(() => {
   }
 });
 
-// Computed signal for calculated totals
-export const calculatedTotals = computed<PersonTotal[]>(() => {
-  return calculatePersonTotals(
+// Per-currency ledgers: one (base currency) for single-currency or
+// exchange-enabled bills, or one per currency when multiple currencies are in
+// play and exchange is disabled. Each ledger is settled independently.
+export const calculatedLedgers = computed<CurrencyLedger[]>(() => {
+  const byCurrency = calculatePersonTotalsByCurrency(
     people.value,
     items.value,
     adjustments.value,
     baseCurrency.value,
+    useExchangeRates.value,
+    exchangeRates.value,
   );
-});
-
-// Computed signal for settlement
-export const calculatedSettlement = computed<SettlementResult>(() => {
-  return calculateSettlement(
-    calculatedTotals.value,
-    settlementAlgorithm.value,
-    baseCurrency.value,
-  );
+  return byCurrency.map(({ currency, totals }) => ({
+    currency,
+    totals,
+    settlement: calculateSettlement(
+      totals,
+      settlementAlgorithm.value,
+      currency,
+    ),
+  }));
 });
 
 // Person operations
@@ -482,6 +503,39 @@ export function toggleHasMultiplePayers(): void {
   setHasMultiplePayers(!hasMultiplePayers.value);
 }
 
+// Exchange rates. Disabled by default — currencies stay in separate ledgers.
+export function setUseExchangeRates(value: boolean): void {
+  useExchangeRates.value = value;
+}
+
+export function toggleUseExchangeRates(): void {
+  setUseExchangeRates(!useExchangeRates.value);
+}
+
+// How many base-currency units one unit of `currency` is worth, per the
+// current rate table. Used to display/seed the editable rates.
+export function exchangeRateInBase(currency: Currency): number {
+  return convertWithRates(1, currency, baseCurrency.value, exchangeRates.value);
+}
+
+// Set the rate from an editor value expressed as "1 `currency` = N base".
+export function setExchangeRateInBase(
+  currency: Currency,
+  valueInBase: number,
+): void {
+  if (!(valueInBase > 0)) return;
+  const rates = exchangeRates.value;
+  const baseRate =
+    rates[baseCurrency.value] ?? DEFAULT_RATES[baseCurrency.value];
+  // convertWithRates(1, currency, base) = (1 / rates[currency]) * baseRate
+  // => rates[currency] = baseRate / valueInBase
+  exchangeRates.value = { ...rates, [currency]: baseRate / valueInBase };
+}
+
+export function resetExchangeRates(): void {
+  exchangeRates.value = { ...DEFAULT_RATES };
+}
+
 // Apply a shared payload to the current signals. Replaces people, items,
 // adjustments, and the preferences embedded in the payload. Callers decide
 // whether to confirm with the user first.
@@ -497,6 +551,8 @@ export function applySharedPayload(payload: SharePayload): void {
   settlementAlgorithm.value = payload.settlementAlgorithm;
   hasMultipleCurrencies.value = payload.hasMultipleCurrencies;
   hasMultiplePayers.value = payload.hasMultiplePayers;
+  useExchangeRates.value = payload.useExchangeRates ?? false;
+  exchangeRates.value = { ...DEFAULT_RATES, ...payload.exchangeRates };
 }
 
 // On boot, if the URL carries a #data=... share fragment, decode it and

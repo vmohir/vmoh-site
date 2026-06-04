@@ -3,6 +3,7 @@ import { useState } from "preact/hooks";
 import {
   adjustments,
   baseCurrency,
+  exchangeRates,
   hasMultipleCurrencies,
   hasMultiplePayers,
   items,
@@ -11,7 +12,9 @@ import {
   settlementAlgorithm,
   toggleHasMultipleCurrencies,
   toggleHasMultiplePayers,
+  toggleUseExchangeRates,
   updateBaseCurrency,
+  useExchangeRates,
 } from "../state/billState";
 import { theme, toggleTheme } from "../state/theme";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
@@ -102,6 +105,8 @@ export default function AppHeader() {
       settlementAlgorithm: settlementAlgorithm.value,
       hasMultipleCurrencies: hasMultipleCurrencies.value,
       hasMultiplePayers: hasMultiplePayers.value,
+      useExchangeRates: useExchangeRates.value,
+      exchangeRates: exchangeRates.value,
     });
     let url: string;
     try {
@@ -181,6 +186,15 @@ export default function AppHeader() {
                   onToggle={toggleHasMultipleCurrencies}
                 />
               </div>
+              {hasMultipleCurrencies.value && (
+                <div class={styles.menuItem}>
+                  <Switch
+                    label="Exchange between currencies"
+                    signal={useExchangeRates}
+                    onToggle={toggleUseExchangeRates}
+                  />
+                </div>
+              )}
               <div class={styles.menuItem}>
                 <Switch
                   label="Multiple payers per item"

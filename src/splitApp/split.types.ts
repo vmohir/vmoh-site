@@ -74,4 +74,13 @@ export interface SettlementResult {
   isBalanced: boolean;
 }
 
+// One self-contained ledger. In single-currency or exchange-enabled mode there
+// is exactly one (in the base currency); with multiple currencies and exchange
+// disabled there is one per currency, each settled independently.
+export interface CurrencyLedger {
+  currency: Currency;
+  totals: PersonTotal[];
+  settlement: SettlementResult;
+}
+
 export type SettlementAlgorithm = "minimize-transactions" | "simple-pairwise";
