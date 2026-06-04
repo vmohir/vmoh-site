@@ -128,17 +128,21 @@ export default function ResultsSection() {
                 </span>
               </div>
             ))}
-            {!settlement.isBalanced && (
-              <div class={styles.warning}>
-                Warning: Settlement may not be balanced. Please check
-                calculations.
-              </div>
-            )}
           </div>
-        ) : (
-          <p class={styles.settledMessage}>
-            All balanced! No transfers needed.
-          </p>
+        ) : settlement.isBalanced ? (
+          <p class={styles.settledMessage}>All balanced! No transfers needed.</p>
+        ) : null}
+
+        {/* An unbalanced settlement can also produce zero transfers — e.g. when
+            no one is recorded as a payer, everyone is a debtor with no creditor
+            to pay. Surface the warning in that case too, not just alongside
+            transfers. */}
+        {!settlement.isBalanced && (
+          <div class={styles.warning}>
+            Settlement isn't balanced — the recorded payments don't add up to
+            the total owed. Check that every item has a payer and that the
+            amounts paid match the item prices.
+          </div>
         )}
       </div>
     </div>
