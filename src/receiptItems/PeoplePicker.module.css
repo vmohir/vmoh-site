@@ -49,6 +49,9 @@
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
+  /* Match the avatar height so the trigger is the same height whether it shows
+     a placeholder or selected avatars. */
+  height: 28px;
 }
 
 .stack[data-capacity="3"] {
