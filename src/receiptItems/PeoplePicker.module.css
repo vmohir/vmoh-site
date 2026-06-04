@@ -43,17 +43,57 @@
   font-size: 0.8125rem;
 }
 
+/* Fixed footprint so the pill never resizes as people are selected. Sized to
+   hold the capacity (3 avatars for multi-select, 1 for single payer). */
+.stack {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.stack[data-capacity="3"] {
+  min-width: 60px;
+}
+
+.stack[data-capacity="1"] {
+  min-width: 28px;
+}
+
 .avatars {
   display: inline-flex;
+  align-items: center;
 }
 
 .avatars > * {
-  margin-left: -8px;
+  margin-left: -12px;
   border: 2px solid var(--surface-bg);
 }
 
 .avatars > *:first-child {
   margin-left: 0;
+}
+
+/* 1–2 people: don't overlap, give them a little breathing room instead. */
+.avatars.spread {
+  gap: 4px;
+}
+
+.avatars.spread > * {
+  margin-left: 0;
+}
+
+/* "+n" overflow chip, styled like an avatar and sharing the overlap. */
+.overflow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: var(--interactive-hover-bg);
+  color: var(--text-secondary);
 }
 
 .caret {

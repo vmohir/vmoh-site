@@ -30,6 +30,22 @@ export function PeoplePicker({
     useDropdown<HTMLButtonElement>({ alignByViewport: true });
 
   const selectedPeople = people.filter((p) => selected.has(p.id));
+
+  // Fixed footprint: the pill always reserves room for `capacity` avatars so it
+  // never resizes (or wraps) as people are picked. Multi-select shows up to 3;
+  // beyond that the last slot becomes a "+n" chip. Single-select (one payer)
+  // only ever holds one person.
+  const capacity = multi ? 3 : 1;
+  const overflow =
+    selectedPeople.length > capacity
+      ? selectedPeople.length - (capacity - 1)
+      : 0;
+  const visiblePeople = overflow
+    ? selectedPeople.slice(0, capacity - 1)
+    : selectedPeople;
+  // 1–2 people read better spaced out than overlapped.
+  const spread = overflow === 0 && selectedPeople.length <= 2;
+
   const handlePick = (personId: string) => {
     const next = new Set(selected);
     if (multi) {
@@ -62,15 +78,18 @@ export function PeoplePicker({
             {leading}
           </span>
         )}
-        {selectedPeople.length === 0 ? (
-          <span class={styles.placeholder}>{label}</span>
-        ) : (
-          <span class={styles.avatars}>
-            {selectedPeople.map((p) => (
-              <PersonAvatar key={p.id} person={p} />
-            ))}
-          </span>
-        )}
+        <span class={styles.stack} data-capacity={capacity}>
+          {selectedPeople.length === 0 ? (
+            <span class={styles.placeholder}>{label}</span>
+          ) : (
+            <span class={`${styles.avatars} ${spread ? styles.spread : ""}`}>
+              {visiblePeople.map((p) => (
+                <PersonAvatar key={p.id} person={p} />
+              ))}
+              {overflow > 0 && <span class={styles.overflow}>+{overflow}</span>}
+            </span>
+          )}
+        </span>
         <ChevronDown class={styles.caret} size={14} aria-hidden="true" />
       </button>
 
