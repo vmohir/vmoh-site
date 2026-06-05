@@ -63,8 +63,11 @@ share riding on what they paid so balances net to zero.
 ### Domain model (`src/splitApp/split.types.ts`)
 
 - `Person { id, name }`
-- `Item { id, name, price, currency, usedBy: Set<personId>, paidBy: Map<personId, ItemPayer> }`
+- `Item { id, name, price, currency, usedBy: Set<personId>, paidBy: Map<personId, ItemPayer>, consumedBy: Map<personId, number> }`
   — `usedBy` is who consumes the item, `paidBy` is who actually paid.
+  `consumedBy` holds optional exact per-consumer amounts: empty → split `price`
+  equally across `usedBy`; non-empty → use those exact amounts (which should
+  sum to `price`). All three (`Set`/`Map`s) are serialised as arrays.
 - `Adjustment { id, label, value, isPercent, type: "tip" | "tax" | "discount" }`
 - `PersonTotal` is the per-person rollup; `Transfer` + `SettlementResult` are
   settlement output.

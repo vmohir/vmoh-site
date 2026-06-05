@@ -34,6 +34,7 @@ interface SerializedItem {
   currency?: Currency;
   usedBy: string[];
   paidBy: [string, ItemPayer][];
+  consumedBy?: [string, number][];
 }
 
 interface SerializedState {
@@ -58,6 +59,7 @@ function serializeItems(items: Item[]): SerializedItem[] {
     ...item,
     usedBy: Array.from(item.usedBy),
     paidBy: Array.from(item.paidBy.entries()),
+    consumedBy: Array.from(item.consumedBy.entries()),
   }));
 }
 
@@ -66,6 +68,7 @@ function deserializeItems(items: SerializedItem[]): Item[] {
     ...item,
     usedBy: new Set(item.usedBy),
     paidBy: new Map(item.paidBy),
+    consumedBy: new Map(item.consumedBy ?? []),
   }));
 }
 
@@ -230,7 +233,15 @@ export function removePerson(id: string): void {
     const newPaidBy = new Map(item.paidBy);
     newPaidBy.delete(id);
 
-    return { ...item, usedBy: newAssignedTo, paidBy: newPaidBy };
+    const newConsumedBy = new Map(item.consumedBy);
+    newConsumedBy.delete(id);
+
+    return {
+      ...item,
+      usedBy: newAssignedTo,
+      paidBy: newPaidBy,
+      consumedBy: newConsumedBy,
+    };
   });
 
   // Remove person from list
@@ -254,6 +265,7 @@ export function addItem(
     currency,
     usedBy: new Set<string>(assignees),
     paidBy: distributePayment(price, payers),
+    consumedBy: new Map<string, number>(),
   };
 
   items.value = [...items.value, newItem];
@@ -261,6 +273,14 @@ export function addItem(
 
 export function removeItem(id: string): void {
   items.value = items.value.filter((item) => item.id !== id);
+}
+
+// Re-insert a previously removed item at its original position (used to undo a
+// swipe-to-delete). Out-of-range indices clamp to the ends.
+export function insertItemAt(index: number, item: Item): void {
+  const next = [...items.value];
+  next.splice(Math.max(0, Math.min(index, next.length)), 0, item);
+  items.value = next;
 }
 
 export function updateItemName(id: string, newName: string): void {
@@ -300,9 +320,29 @@ export function toggleItemAssignment(itemId: string, personId: string): void {
 }
 
 export function setItemAssignees(itemId: string, personIds: string[]): void {
+  const keep = new Set(personIds);
   items.value = items.value.map((item) => {
     if (item.id !== itemId) return item;
-    return { ...item, usedBy: new Set(personIds) };
+    // Drop exact consumed amounts for anyone no longer a consumer.
+    const consumedBy = new Map(
+      [...item.consumedBy].filter(([id]) => keep.has(id)),
+    );
+    return { ...item, usedBy: keep, consumedBy };
+  });
+}
+
+// Set (or clear, when <= 0) the exact amount a consumer is responsible for.
+export function setItemConsumedAmount(
+  itemId: string,
+  personId: string,
+  amount: number,
+): void {
+  items.value = items.value.map((item) => {
+    if (item.id !== itemId) return item;
+    const consumedBy = new Map(item.consumedBy);
+    if (amount > 0) consumedBy.set(personId, amount);
+    else consumedBy.delete(personId);
+    return { ...item, consumedBy };
   });
 }
 

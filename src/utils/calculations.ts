@@ -96,24 +96,28 @@ function buildLedgerTotals(
     const ledgerPrice = toLedger(item.price, itemCurrency);
     if (ledgerPrice !== null) billSubtotal += ledgerPrice;
 
-    // Consumption (usedBy)
+    // Consumption (usedBy). With no exact amounts set, the price is split
+    // equally; otherwise each consumer is responsible for their exact amount.
     const assignedCount = item.usedBy.size;
     if (assignedCount > 0) {
-      const sharePerPerson = item.price / assignedCount;
-      const ledgerShare = toLedger(sharePerPerson, itemCurrency);
-      if (ledgerShare !== null) {
-        item.usedBy.forEach((personId) => {
-          const data = personData.get(personId);
-          if (data) {
-            data.itemsSubtotal += ledgerShare;
-            data.assignedItems.push({
-              name: item.name,
-              share: sharePerPerson,
-              currency: itemCurrency,
-            });
-          }
-        });
-      }
+      const useExact = item.consumedBy.size > 0;
+      const equalShare = item.price / assignedCount;
+      item.usedBy.forEach((personId) => {
+        const rawShare = useExact
+          ? (item.consumedBy.get(personId) ?? 0)
+          : equalShare;
+        const ledgerShare = toLedger(rawShare, itemCurrency);
+        if (ledgerShare === null) return;
+        const data = personData.get(personId);
+        if (data) {
+          data.itemsSubtotal += ledgerShare;
+          data.assignedItems.push({
+            name: item.name,
+            share: rawShare,
+            currency: itemCurrency,
+          });
+        }
+      });
     }
 
     // Payments (paidBy)

@@ -32,6 +32,10 @@ export interface Item {
   currency?: Currency;
   usedBy: Set<string>; // person IDs - who consumes the item
   paidBy: Map<string, ItemPayer>; // personId -> ItemPayer - who paid for the item
+  // Optional exact amount each consumer is responsible for. When empty, the
+  // price is split equally across `usedBy`. When any entries exist, those exact
+  // amounts are used instead (and should sum to `price`).
+  consumedBy: Map<string, number>;
 }
 
 export interface PersonTotal {

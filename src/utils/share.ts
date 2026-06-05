@@ -17,6 +17,7 @@ interface SerializedItem {
   currency?: Currency;
   usedBy: string[];
   paidBy: [string, ItemPayer][];
+  consumedBy?: [string, number][];
 }
 
 export interface SharePayload {
@@ -42,6 +43,7 @@ export function itemsToSerialized(items: Item[]): SerializedItem[] {
     currency: item.currency,
     usedBy: Array.from(item.usedBy),
     paidBy: Array.from(item.paidBy.entries()),
+    consumedBy: Array.from(item.consumedBy.entries()),
   }));
 }
 
@@ -53,6 +55,7 @@ export function itemsFromSerialized(items: SerializedItem[]): Item[] {
     currency: item.currency,
     usedBy: new Set(item.usedBy),
     paidBy: new Map(item.paidBy),
+    consumedBy: new Map(item.consumedBy ?? []),
   }));
 }
 
