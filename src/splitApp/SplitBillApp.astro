@@ -32,15 +32,32 @@ import ResultsSection from './ResultsSection';
 <script>
   // Mobile WebKit (iOS Safari/Brave) doesn't blur a focused field when you tap
   // an inert area the way desktop browsers do — only interactive elements
-  // dismiss focus. Restore the expected behaviour: a pointer-down on something
+  // dismiss focus. Restore the expected behaviour: a tap on something
   // non-interactive commits and blurs the active input/textarea.
+  //
+  // Decide on pointerup (not pointerdown) and only when the pointer barely
+  // moved, so starting a scroll on empty space doesn't blur the field — a
+  // scroll either moves past the threshold or fires pointercancel instead of
+  // pointerup.
   const INTERACTIVE =
     "input, textarea, select, button, a, label, summary, [contenteditable], [tabindex], [role]";
+  const TAP_SLOP = 8;
+  let startX = 0;
+  let startY = 0;
   document.addEventListener("pointerdown", (e) => {
+    startX = e.clientX;
+    startY = e.clientY;
+  });
+  document.addEventListener("pointerup", (e) => {
     const active = document.activeElement;
     if (
       !(active instanceof HTMLInputElement) &&
       !(active instanceof HTMLTextAreaElement)
+    )
+      return;
+    if (
+      Math.abs(e.clientX - startX) > TAP_SLOP ||
+      Math.abs(e.clientY - startY) > TAP_SLOP
     )
       return;
     const target = e.target;
