@@ -13,6 +13,35 @@
   border-color: var(--border-primary);
 }
 
+/* Desktop one-liner: name, price, payer/split, expand, remove on a single
+   row (wraps only if the viewport is too narrow). */
+.mainRow {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.expandBtn {
+  color: var(--text-muted);
+}
+
+.chevron {
+  transition: transform var(--transition);
+}
+
+.chevron[data-open="true"] {
+  transform: rotate(180deg);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
 .titleRow {
   display: flex;
   align-items: center;
