@@ -9,6 +9,7 @@ import {
 } from "../state/billState.ts";
 import { resolveItemShares } from "../utils/calculations.ts";
 import { PersonAvatar } from "ui/PersonAvatar.tsx";
+import { Input } from "ui/Input.tsx";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
 import styles from "./ConsumedAmounts.module.css";
 
@@ -49,19 +50,22 @@ function ValueInput({
   item,
   person,
   placeholder,
+  prefix,
 }: {
   item: Item;
   person: Person;
   placeholder: string;
+  prefix?: string;
 }) {
   const stored = item.consumedBy.get(person.id);
   const [text, setText] = useState(stored ? String(stored) : "");
 
   return (
-    <input
+    <Input
       type="text"
       inputMode="decimal"
-      class={styles.amountInput}
+      class={styles.amountField}
+      prefix={prefix}
       value={text}
       placeholder={placeholder}
       onInput={(e) => {
@@ -151,14 +155,13 @@ function ConsumerList({
               item={item}
               person={p}
               placeholder={placeholder}
+              prefix={isShares ? undefined : symbol}
             />
-            {showResolved ? (
+            {showResolved && (
               <span class={styles.resolved}>
                 = {symbol}
                 {resolved.toFixed(2)}
               </span>
-            ) : (
-              <span class={styles.curLabel}>{symbol}</span>
             )}
           </div>
         );
