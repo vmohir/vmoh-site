@@ -27,7 +27,7 @@ export default function ItemsSection() {
     <div className={styles.itemsSection}>
       <AddItemForm />
 
-      <div className={styles.itemsList}>
+      <div className={isMobile ? styles.chatList : styles.itemsList}>
         {items.value.map((item) =>
           isMobile ? (
             <SwipeToDelete key={item.id} onDelete={() => deleteWithUndo(item)}>

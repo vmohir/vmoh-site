@@ -1,7 +1,8 @@
 .wrap {
   position: relative;
-  border-radius: var(--border-radius);
   overflow: hidden;
+  /* Connected chat-style list: dividers between rows, no rounding. */
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 /* Revealed behind the surface as it slides left. */

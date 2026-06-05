@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { ArrowRight, ChevronRight, Users, Wallet } from "lucide-preact";
+import { ArrowRight, ChevronDown, Users, Wallet } from "lucide-preact";
 import type { Item, Person } from "../splitApp/split.types.ts";
 import {
   baseCurrency,
@@ -18,6 +18,8 @@ import { getCurrencySymbol } from "../utils/currency.utils.ts";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
 import { PeoplePicker } from "./PeoplePicker.tsx";
 import { ItemPayers } from "./ItemPayers.tsx";
+// Reuse the card layout verbatim so the row matches the original item card.
+import card from "./ItemCard.module.css";
 import styles from "./ItemRow.module.css";
 
 interface ItemRowProps {
@@ -25,17 +27,9 @@ interface ItemRowProps {
   people: Person[];
 }
 
-function ConsumedAmounts({
-  item,
-  people,
-  currency,
-}: {
-  item: Item;
-  people: Person[];
-  currency: Item["currency"];
-}) {
+function ConsumedAmounts({ item, people }: { item: Item; people: Person[] }) {
   const consumers = people.filter((p) => item.usedBy.has(p.id));
-  const cur = currency ?? baseCurrency.value;
+  const cur = item.currency ?? baseCurrency.value;
   const symbol = getCurrencySymbol(cur);
 
   if (consumers.length === 0) {
@@ -48,7 +42,7 @@ function ConsumedAmounts({
 
   return (
     <div class={styles.consumed}>
-      <span class={styles.sectionLabel}>Consumed amounts</span>
+      <span class={styles.label}>Consumed amounts</span>
       {consumers.map((p) => (
         <div key={p.id} class={styles.consumedRow}>
           <PersonAvatar person={p} />
@@ -89,44 +83,19 @@ function ConsumedAmounts({
 export function ItemRow({ item, people }: ItemRowProps) {
   const [open, setOpen] = useState(false);
   const itemCurrency = item.currency ?? baseCurrency.value;
-  const consumers = people.filter((p) => item.usedBy.has(p.id));
   const paidByIds = new Set(item.paidBy.keys());
 
   return (
     <div class={styles.row}>
-      <div class={styles.header}>
-        <button
-          type="button"
-          class={styles.expandBtn}
-          aria-label={open ? "Collapse" : "Expand"}
-          aria-expanded={open}
-          onClick={() => setOpen((o) => !o)}
-        >
-          <ChevronRight
-            class={styles.chevron}
-            data-open={open}
-            size={18}
-            aria-hidden="true"
-          />
-        </button>
+      <div class={card.titleRow}>
+        <EditableText
+          className={card.itemName}
+          value={item.name}
+          onSave={(v) => updateItemName(item.id, v)}
+          autoFocus={false}
+        />
 
-        <div class={styles.info}>
-          <EditableText
-            className={styles.itemName}
-            value={item.name}
-            onSave={(v) => updateItemName(item.id, v)}
-            autoFocus={false}
-          />
-          {consumers.length > 0 && (
-            <span class={styles.avatars}>
-              {consumers.map((p) => (
-                <PersonAvatar key={p.id} person={p} />
-              ))}
-            </span>
-          )}
-        </div>
-
-        <div class={styles.priceGroup}>
+        <div class={card.priceGroup}>
           {getCurrencySymbol(itemCurrency)}
           <EditableText
             value={item.price.toString()}
@@ -142,56 +111,62 @@ export function ItemRow({ item, people }: ItemRowProps) {
             }}
             autoFocus={false}
           />
+          {hasMultipleCurrencies.value && (
+            <CurrencySelector
+              class={card.currencySelector}
+              value={itemCurrency}
+              onChange={(currency) => updateItemCurrency(item.id, currency)}
+            />
+          )}
         </div>
       </div>
 
+      <div class={card.controlsRow}>
+        {people.length > 0 && (
+          <div class={card.flow}>
+            <PeoplePicker
+              label="Payer"
+              people={people}
+              selected={paidByIds}
+              onChange={(next) => setItemPayers(item.id, [...next])}
+              leading={<Wallet size={14} />}
+              multi={hasMultiplePayers.value}
+            />
+            <ArrowRight class={card.flowArrow} size={14} aria-hidden="true" />
+            <PeoplePicker
+              label="Split"
+              people={people}
+              selected={item.usedBy}
+              onChange={(next) => setItemAssignees(item.id, [...next])}
+              leading={<Users size={14} />}
+              multi
+            />
+          </div>
+        )}
+
+        <button
+          type="button"
+          class={`btn btn-sm btn-icon btn-ghost ${styles.expandBtn}`}
+          aria-label={open ? "Collapse" : "Expand"}
+          aria-expanded={open}
+          onClick={() => setOpen((o) => !o)}
+        >
+          <ChevronDown
+            class={styles.chevron}
+            data-open={open}
+            size={16}
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+
+      {hasMultiplePayers.value && item.paidBy.size > 1 && (
+        <ItemPayers item={item} people={people} />
+      )}
+
       {open && (
         <div class={styles.panel}>
-          {hasMultipleCurrencies.value && (
-            <label class={styles.currencyField}>
-              <span class={styles.sectionLabel}>Currency</span>
-              <CurrencySelector
-                value={itemCurrency}
-                onChange={(currency) => updateItemCurrency(item.id, currency)}
-              />
-            </label>
-          )}
-
-          {people.length > 0 && (
-            <div class={styles.flow}>
-              <PeoplePicker
-                label="Payer"
-                people={people}
-                selected={paidByIds}
-                onChange={(next) => setItemPayers(item.id, [...next])}
-                leading={<Wallet size={14} />}
-                multi={hasMultiplePayers.value}
-              />
-              <ArrowRight
-                class={styles.flowArrow}
-                size={14}
-                aria-hidden="true"
-              />
-              <PeoplePicker
-                label="Split"
-                people={people}
-                selected={item.usedBy}
-                onChange={(next) => setItemAssignees(item.id, [...next])}
-                leading={<Users size={14} />}
-                multi
-              />
-            </div>
-          )}
-
-          {hasMultiplePayers.value && item.paidBy.size > 1 && (
-            <ItemPayers item={item} people={people} />
-          )}
-
-          <ConsumedAmounts
-            item={item}
-            people={people}
-            currency={item.currency}
-          />
+          <ConsumedAmounts item={item} people={people} />
         </div>
       )}
     </div>
