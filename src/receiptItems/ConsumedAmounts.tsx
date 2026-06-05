@@ -1,4 +1,6 @@
+import type { ComponentType } from "preact";
 import { useState } from "preact/hooks";
+import { Coins, Equal, Scale } from "lucide-preact";
 import type { Item, Person, SplitMode } from "../splitApp/split.types.ts";
 import {
   baseCurrency,
@@ -15,21 +17,29 @@ interface ConsumedAmountsProps {
   people: Person[];
 }
 
-const MODES: { id: SplitMode; label: string; hint: string }[] = [
+const MODES: {
+  id: SplitMode;
+  label: string;
+  hint: string;
+  Icon: ComponentType<{ size?: number }>;
+}[] = [
   {
     id: "amounts",
     label: "Amounts",
     hint: "Blank fields share the remainder.",
+    Icon: Coins,
   },
   {
     id: "amounts-even",
     label: "+ Even",
     hint: "Amounts plus the rest split evenly across everyone.",
+    Icon: Equal,
   },
   {
     id: "shares",
     label: "Shares",
     hint: "Weights — price split proportionally.",
+    Icon: Scale,
   },
 ];
 
@@ -84,6 +94,7 @@ export function ConsumedAmounts({ item, people }: ConsumedAmountsProps) {
             aria-pressed={mode === m.id}
             onClick={() => setItemSplitMode(item.id, m.id)}
           >
+            <m.Icon size={14} />
             {m.label}
           </button>
         ))}
@@ -96,7 +107,6 @@ export function ConsumedAmounts({ item, people }: ConsumedAmountsProps) {
           item={item}
           consumers={consumers}
           symbol={symbol}
-          cur={cur}
           isShares={isShares}
           hint={activeHint}
         />
@@ -109,14 +119,12 @@ function ConsumerList({
   item,
   consumers,
   symbol,
-  cur,
   isShares,
   hint,
 }: {
   item: Item;
   consumers: Person[];
   symbol: string;
-  cur: string;
   isShares: boolean;
   hint?: string;
 }) {
@@ -150,7 +158,7 @@ function ConsumerList({
                 {resolved.toFixed(2)}
               </span>
             ) : (
-              <span class={styles.curLabel}>{cur}</span>
+              <span class={styles.curLabel}>{symbol}</span>
             )}
           </div>
         );

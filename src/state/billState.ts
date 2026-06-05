@@ -335,18 +335,12 @@ export function setItemAssignees(itemId: string, personIds: string[]): void {
   });
 }
 
-// Switch an item's split mode. Amount modes ("amounts"/"amounts-even") share
-// the same per-person numbers, so those are kept when switching between them;
-// switching to/from "shares" reinterprets the numbers, so they're cleared.
+// Switch an item's split mode. The per-person numbers are kept (reinterpreted
+// as amounts or weights depending on the mode) so switching back restores them.
 export function setItemSplitMode(itemId: string, mode: SplitMode): void {
-  items.value = items.value.map((item) => {
-    if (item.id !== itemId) return item;
-    const wasWeight = item.splitMode === "shares";
-    const isWeight = mode === "shares";
-    const consumedBy =
-      wasWeight === isWeight ? item.consumedBy : new Map<string, number>();
-    return { ...item, splitMode: mode, consumedBy };
-  });
+  items.value = items.value.map((item) =>
+    item.id === itemId ? { ...item, splitMode: mode } : item,
+  );
 }
 
 // Set (or clear, when <= 0) the exact amount a consumer is responsible for.

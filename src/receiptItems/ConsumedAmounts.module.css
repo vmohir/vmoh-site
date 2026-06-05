@@ -18,7 +18,10 @@
 }
 
 .modeBtn {
-  padding: 0.25rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.25rem 0.625rem;
   background: transparent;
   border: none;
   border-radius: 999px;
