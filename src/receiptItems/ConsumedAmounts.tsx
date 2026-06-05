@@ -1,6 +1,6 @@
 import type { ComponentType } from "preact";
 import { useState } from "preact/hooks";
-import { Coins, Equal, Scale } from "lucide-preact";
+import { Coins, Divide, Scale } from "lucide-preact";
 import type { Item, Person, SplitMode } from "../splitApp/split.types.ts";
 import {
   baseCurrency,
@@ -32,9 +32,9 @@ const MODES: {
   },
   {
     id: "amounts-even",
-    label: "+ Even",
+    label: "Even",
     hint: "Amounts plus the rest split evenly across everyone.",
-    Icon: Equal,
+    Icon: Divide,
   },
   {
     id: "shares",
