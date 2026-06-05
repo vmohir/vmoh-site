@@ -1,6 +1,6 @@
 import type { ComponentType } from "preact";
 import { useState } from "preact/hooks";
-import { Coins, Divide, Scale } from "lucide-preact";
+import { PieChart, Receipt, Split } from "lucide-preact";
 import type { Item, Person, SplitMode } from "../splitApp/split.types.ts";
 import {
   baseCurrency,
@@ -28,19 +28,19 @@ const MODES: {
     id: "amounts",
     label: "Amounts",
     hint: "Blank fields share the remainder.",
-    Icon: Coins,
+    Icon: Receipt,
   },
   {
     id: "amounts-even",
-    label: "Even",
+    label: "Split rest",
     hint: "Amounts plus the rest split evenly across everyone.",
-    Icon: Divide,
+    Icon: Split,
   },
   {
     id: "shares",
     label: "Shares",
     hint: "Weights — price split proportionally.",
-    Icon: Scale,
+    Icon: PieChart,
   },
 ];
 
