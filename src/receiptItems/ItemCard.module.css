@@ -60,6 +60,11 @@
   min-width: 0;
 }
 
+/* Cap the price field to ~8 characters; the name flexes into the rest. */
+.priceInput {
+  width: 5rem;
+}
+
 .priceGroup {
   display: inline-flex;
   align-items: center;
@@ -82,10 +87,6 @@
 
 .removeBtn {
   margin-left: auto;
-}
-
-.priceGroup > :nth-child(2) {
-  width: 4rem;
 }
 
 .itemInfo {

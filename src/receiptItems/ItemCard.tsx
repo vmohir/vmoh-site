@@ -54,6 +54,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         <div class={styles.priceGroup}>
           {getCurrencySymbol(itemCurrency)}
           <EditableText
+            className={styles.priceInput}
             value={item.price.toString()}
             onSave={handleSavePrice}
             type="text"

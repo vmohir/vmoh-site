@@ -44,6 +44,7 @@ export function ItemRow({ item, people }: ItemRowProps) {
         <div class={card.priceGroup}>
           {getCurrencySymbol(itemCurrency)}
           <EditableText
+            className={card.priceInput}
             value={item.price.toString()}
             onSave={(v) => {
               const price = parseFloat(v);
