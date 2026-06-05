@@ -6,6 +6,61 @@
   letter-spacing: 0.05em;
 }
 
+/* Segmented split-mode control */
+.modes {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 2px;
+  gap: 2px;
+  background: var(--surface-subtle-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+}
+
+.modeBtn {
+  padding: 0.25rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+
+.modeBtn:hover {
+  color: var(--text-primary);
+}
+
+.modeActive {
+  background: var(--surface-bg);
+  color: var(--text-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.resolved {
+  width: 5rem;
+  text-align: right;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.splitEvenBtn {
+  flex-shrink: 0;
+  padding: 0.25rem 0.625rem;
+  background: var(--status-error);
+  color: #fff;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .hint {
   margin: 0;
   font-size: 0.8125rem;

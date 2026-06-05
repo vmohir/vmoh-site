@@ -8,6 +8,7 @@ import type {
   Adjustment,
   AdjustmentType,
   CurrencyLedger,
+  SplitMode,
 } from "../splitApp/split.types.ts";
 import {
   calculatePersonTotalsByCurrency,
@@ -35,6 +36,7 @@ interface SerializedItem {
   usedBy: string[];
   paidBy: [string, ItemPayer][];
   consumedBy?: [string, number][];
+  splitMode?: SplitMode;
 }
 
 interface SerializedState {
@@ -69,6 +71,7 @@ function deserializeItems(items: SerializedItem[]): Item[] {
     usedBy: new Set(item.usedBy),
     paidBy: new Map(item.paidBy),
     consumedBy: new Map(item.consumedBy ?? []),
+    splitMode: item.splitMode ?? "amounts",
   }));
 }
 
@@ -266,6 +269,7 @@ export function addItem(
     usedBy: new Set<string>(assignees),
     paidBy: distributePayment(price, payers),
     consumedBy: new Map<string, number>(),
+    splitMode: "amounts",
   };
 
   items.value = [...items.value, newItem];
@@ -328,6 +332,20 @@ export function setItemAssignees(itemId: string, personIds: string[]): void {
       [...item.consumedBy].filter(([id]) => keep.has(id)),
     );
     return { ...item, usedBy: keep, consumedBy };
+  });
+}
+
+// Switch an item's split mode. Amount modes ("amounts"/"amounts-even") share
+// the same per-person numbers, so those are kept when switching between them;
+// switching to/from "shares" reinterprets the numbers, so they're cleared.
+export function setItemSplitMode(itemId: string, mode: SplitMode): void {
+  items.value = items.value.map((item) => {
+    if (item.id !== itemId) return item;
+    const wasWeight = item.splitMode === "shares";
+    const isWeight = mode === "shares";
+    const consumedBy =
+      wasWeight === isWeight ? item.consumedBy : new Map<string, number>();
+    return { ...item, splitMode: mode, consumedBy };
   });
 }
 

@@ -5,6 +5,7 @@ import type {
   Currency,
   SettlementAlgorithm,
   ItemPayer,
+  SplitMode,
 } from "../splitApp/split.types.ts";
 
 const SHARE_VERSION = 1;
@@ -18,6 +19,7 @@ interface SerializedItem {
   usedBy: string[];
   paidBy: [string, ItemPayer][];
   consumedBy?: [string, number][];
+  splitMode?: SplitMode;
 }
 
 export interface SharePayload {
@@ -44,6 +46,7 @@ export function itemsToSerialized(items: Item[]): SerializedItem[] {
     usedBy: Array.from(item.usedBy),
     paidBy: Array.from(item.paidBy.entries()),
     consumedBy: Array.from(item.consumedBy.entries()),
+    splitMode: item.splitMode,
   }));
 }
 
@@ -56,6 +59,7 @@ export function itemsFromSerialized(items: SerializedItem[]): Item[] {
     usedBy: new Set(item.usedBy),
     paidBy: new Map(item.paidBy),
     consumedBy: new Map(item.consumedBy ?? []),
+    splitMode: item.splitMode ?? "amounts",
   }));
 }
 

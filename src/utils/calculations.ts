@@ -31,6 +31,62 @@ export function convertWithRates(
   return (amount / fromRate) * toRate;
 }
 
+// Resolve how much (in the item's own currency) each consumer owes for an item,
+// according to its split mode. Shared by the calculations and the editor UI so
+// the on-screen placeholders match what actually gets charged.
+//
+// All modes sum exactly to `price` except "amounts" when every consumer has a
+// value and those don't add up — that genuine mismatch is surfaced as an
+// unbalanced settlement.
+export function resolveItemShares(item: Item): Map<string, number> {
+  const ids = [...item.usedBy];
+  const shares = new Map<string, number>();
+  if (ids.length === 0) return shares;
+
+  const { price, consumedBy, splitMode } = item;
+
+  if (splitMode === "shares") {
+    const weightOf = (id: string) => {
+      const w = consumedBy.get(id);
+      return w && w > 0 ? w : 1;
+    };
+    const totalWeight = ids.reduce((sum, id) => sum + weightOf(id), 0);
+    ids.forEach((id) =>
+      shares.set(
+        id,
+        totalWeight > 0 ? (price * weightOf(id)) / totalWeight : 0,
+      ),
+    );
+    return shares;
+  }
+
+  // Amount modes. "Entered" = has an explicit value (0 is stored as absent).
+  const entered = ids.filter((id) => consumedBy.has(id));
+  const enteredTotal = entered.reduce(
+    (sum, id) => sum + (consumedBy.get(id) ?? 0),
+    0,
+  );
+
+  if (splitMode === "amounts-even") {
+    const perHead = (price - enteredTotal) / ids.length;
+    ids.forEach((id) => shares.set(id, (consumedBy.get(id) ?? 0) + perHead));
+    return shares;
+  }
+
+  // "amounts": blanks share the remainder equally; if none are blank, each owes
+  // exactly what was entered (which may not sum to price → unbalanced).
+  const blanks = ids.filter((id) => !consumedBy.has(id));
+  if (blanks.length > 0) {
+    const perBlank = (price - enteredTotal) / blanks.length;
+    ids.forEach((id) =>
+      shares.set(id, consumedBy.has(id) ? (consumedBy.get(id) ?? 0) : perBlank),
+    );
+  } else {
+    ids.forEach((id) => shares.set(id, consumedBy.get(id) ?? 0));
+  }
+  return shares;
+}
+
 // Effective currency of an item / payment. Undefined inherits the base.
 const effItemCurrency = (item: Item, base: Currency): Currency =>
   item.currency ?? base;
@@ -96,16 +152,11 @@ function buildLedgerTotals(
     const ledgerPrice = toLedger(item.price, itemCurrency);
     if (ledgerPrice !== null) billSubtotal += ledgerPrice;
 
-    // Consumption (usedBy). With no exact amounts set, the price is split
-    // equally; otherwise each consumer is responsible for their exact amount.
-    const assignedCount = item.usedBy.size;
-    if (assignedCount > 0) {
-      const useExact = item.consumedBy.size > 0;
-      const equalShare = item.price / assignedCount;
+    // Consumption (usedBy), divided per the item's split mode.
+    if (item.usedBy.size > 0) {
+      const shares = resolveItemShares(item);
       item.usedBy.forEach((personId) => {
-        const rawShare = useExact
-          ? (item.consumedBy.get(personId) ?? 0)
-          : equalShare;
+        const rawShare = shares.get(personId) ?? 0;
         const ledgerShare = toLedger(rawShare, itemCurrency);
         if (ledgerShare === null) return;
         const data = personData.get(personId);

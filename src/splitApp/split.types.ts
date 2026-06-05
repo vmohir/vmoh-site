@@ -22,6 +22,12 @@ export interface ItemPayer {
   currency?: Currency;
 }
 
+// How an item's price is divided across its consumers (`usedBy`):
+// - "amounts": exact amounts; people left blank share the remainder equally.
+// - "amounts-even": exact amounts plus the leftover split equally across all.
+// - "shares": per-person weights; price split proportionally (blank = 1).
+export type SplitMode = "amounts" | "amounts-even" | "shares";
+
 export interface Item {
   id: string;
   name: string;
@@ -32,9 +38,11 @@ export interface Item {
   currency?: Currency;
   usedBy: Set<string>; // person IDs - who consumes the item
   paidBy: Map<string, ItemPayer>; // personId -> ItemPayer - who paid for the item
-  // Optional exact amount each consumer is responsible for. When empty, the
-  // price is split equally across `usedBy`. When any entries exist, those exact
-  // amounts are used instead (and should sum to `price`).
+  // How the price is divided across `usedBy` (see SplitMode).
+  splitMode: SplitMode;
+  // Per-consumer value whose meaning depends on `splitMode`: an exact amount
+  // for "amounts"/"amounts-even", or a weight for "shares". A missing entry
+  // means "unspecified" (shares the remainder, or weight 1 for shares).
   consumedBy: Map<string, number>;
 }
 
