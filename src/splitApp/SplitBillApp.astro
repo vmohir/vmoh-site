@@ -29,6 +29,26 @@ import ResultsSection from './ResultsSection';
   </section>
 </div>
 
+<script>
+  // Mobile WebKit (iOS Safari/Brave) doesn't blur a focused field when you tap
+  // an inert area the way desktop browsers do — only interactive elements
+  // dismiss focus. Restore the expected behaviour: a pointer-down on something
+  // non-interactive commits and blurs the active input/textarea.
+  const INTERACTIVE =
+    "input, textarea, select, button, a, label, summary, [contenteditable], [tabindex], [role]";
+  document.addEventListener("pointerdown", (e) => {
+    const active = document.activeElement;
+    if (
+      !(active instanceof HTMLInputElement) &&
+      !(active instanceof HTMLTextAreaElement)
+    )
+      return;
+    const target = e.target;
+    if (target instanceof Element && target.closest(INTERACTIVE)) return;
+    active.blur();
+  });
+</script>
+
 <style>
   @reference "../styles/global.css";
   .split-bill-container {
