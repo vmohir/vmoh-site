@@ -1,3 +1,4 @@
+import { useState } from "preact/hooks";
 import type { Item, Person } from "../splitApp/split.types.ts";
 import { baseCurrency, setItemConsumedAmount } from "../state/billState.ts";
 import { PersonAvatar } from "ui/PersonAvatar.tsx";
@@ -7,6 +8,29 @@ import styles from "./ConsumedAmounts.module.css";
 interface ConsumedAmountsProps {
   item: Item;
   people: Person[];
+}
+
+// One consumer's amount field. Keeps local text so partial decimals ("12.",
+// "0.") aren't clobbered by re-formatting the parsed number on every keystroke.
+function AmountInput({ item, person }: { item: Item; person: Person }) {
+  const stored = item.consumedBy.get(person.id);
+  const [text, setText] = useState(stored ? String(stored) : "");
+
+  return (
+    <input
+      type="text"
+      inputMode="decimal"
+      class={styles.amountInput}
+      value={text}
+      placeholder="0.00"
+      onInput={(e) => {
+        const next = (e.target as HTMLInputElement).value;
+        setText(next);
+        const parsed = parseFloat(next);
+        setItemConsumedAmount(item.id, person.id, isNaN(parsed) ? 0 : parsed);
+      }}
+    />
+  );
 }
 
 // Expanded editor: one input per consumer for the exact amount they consumed,
@@ -32,20 +56,7 @@ export function ConsumedAmounts({ item, people }: ConsumedAmountsProps) {
         <div key={p.id} class={styles.consumedRow}>
           <PersonAvatar person={p} />
           <span class={styles.consumedName}>{p.name}</span>
-          <input
-            type="text"
-            inputMode="decimal"
-            class={styles.amountInput}
-            value={item.consumedBy.get(p.id) || ""}
-            placeholder="0.00"
-            onInput={(e) =>
-              setItemConsumedAmount(
-                item.id,
-                p.id,
-                parseFloat((e.target as HTMLInputElement).value) || 0,
-              )
-            }
-          />
+          <AmountInput item={item} person={p} />
           <span class={styles.curLabel}>{cur}</span>
         </div>
       ))}
