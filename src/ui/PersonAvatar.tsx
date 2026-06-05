@@ -16,6 +16,16 @@ const PALETTE = [
   { bg: "bg-pink-500", text: "text-white" },
   { bg: "bg-teal-500", text: "text-white" },
   { bg: "bg-indigo-500", text: "text-white" },
+  { bg: "bg-lime-400", text: "text-black" },
+  { bg: "bg-fuchsia-500", text: "text-white" },
+  { bg: "bg-sky-500", text: "text-white" },
+  { bg: "bg-red-500", text: "text-white" },
+  { bg: "bg-green-600", text: "text-white" },
+  { bg: "bg-purple-500", text: "text-white" },
+  { bg: "bg-yellow-400", text: "text-black" },
+  { bg: "bg-blue-700", text: "text-white" },
+  { bg: "bg-pink-300", text: "text-black" },
+  { bg: "bg-teal-300", text: "text-black" },
 ];
 
 interface PersonAvatarProps {
