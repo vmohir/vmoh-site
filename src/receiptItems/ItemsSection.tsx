@@ -28,7 +28,9 @@ export default function ItemsSection() {
       <AddItemForm />
 
       <div className={isMobile ? styles.chatList : styles.itemsList}>
-        {items.value.map((item) =>
+        {/* Newest first. Reverse a copy for display only — the stored order is
+            kept so undo (insertItemAt) restores items to their real index. */}
+        {[...items.value].reverse().map((item) =>
           isMobile ? (
             <SwipeToDelete key={item.id} onDelete={() => deleteWithUndo(item)}>
               <ItemRow item={item} people={people.value} />
