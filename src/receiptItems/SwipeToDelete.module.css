@@ -1,7 +1,7 @@
 .wrap {
   position: relative;
-  overflow: hidden;
-  /* Connected chat-style list: dividers between rows, no rounding. */
+  /* Connected chat-style list: dividers between rows, no rounding.
+     overflow is set inline — clipped only while swiping. */
   border-bottom: 1px solid var(--border-subtle);
 }
 

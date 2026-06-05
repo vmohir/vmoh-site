@@ -65,21 +65,30 @@ export function SwipeToDelete({ onDelete, children }: SwipeToDeleteProps) {
     }
   };
 
+  // Only transform/clip while a swipe is in progress or animating. At rest we
+  // use transform:none and overflow:visible so an open dropdown inside the row
+  // isn't clipped or trapped under later rows by a transform stacking context.
+  const active = animating || dx !== 0;
+
   return (
-    <div class={styles.wrap}>
+    <div
+      class={styles.wrap}
+      style={{ overflow: active ? "hidden" : "visible" }}
+    >
       <div class={styles.deleteHint} aria-hidden="true">
         <Trash2 size={18} />
       </div>
       <div
         class={styles.surface}
         style={{
-          transform: `translateX(${dx}px)`,
+          transform: active ? `translateX(${dx}px)` : "none",
           transition: animating ? "transform 180ms ease" : "none",
         }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerEnd}
         onPointerCancel={reset}
+        onTransitionEnd={() => setAnimating(false)}
       >
         {children}
       </div>
