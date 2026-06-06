@@ -3,6 +3,23 @@
   /* Connected chat-style list: dividers between rows, no rounding.
      overflow is set inline — clipped only while swiping. */
   border-bottom: 1px solid var(--border-subtle);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+/* Slide + fade new rows in. Resting transform is none (no stacking context). */
+@starting-style {
+  .wrap {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrap {
+    transition: none;
+  }
 }
 
 /* Revealed behind the surface as it slides left. */

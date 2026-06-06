@@ -6,7 +6,25 @@
   border-radius: var(--border-radius);
   background: var(--surface-bg);
   border: 1px solid var(--border-subtle);
-  transition: border-color var(--transition);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease,
+    border-color var(--transition);
+}
+
+/* Slide + fade new cards in (CSS-only entry animation). Resting transform is
+   none, so no lingering stacking context. */
+@starting-style {
+  .itemCard {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .itemCard {
+    transition: border-color var(--transition);
+  }
 }
 
 .itemCard:hover {
