@@ -56,13 +56,19 @@ export function SwipeToDelete({ onDelete, children }: SwipeToDeleteProps) {
     const committed = axis.current === "h" && -dx > DELETE_THRESHOLD;
     dragging.current = false;
     axis.current = null;
-    setAnimating(true);
     if (committed) {
+      setAnimating(true);
       setDx(-window.innerWidth);
       setTimeout(onDelete, 180);
-    } else {
+    } else if (dx !== 0) {
+      // A real horizontal swipe that didn't reach the threshold — animate back.
+      setAnimating(true);
       setDx(0);
     }
+    // Otherwise it was a tap or a vertical scroll: leave dx at 0 and animating
+    // false so the surface keeps transform:none. Engaging the transform here
+    // would turn the surface into a stacking context and trap an open dropdown
+    // beneath the following row, so taps on its options would miss.
   };
 
   // Only transform/clip while a swipe is in progress or animating. At rest we
