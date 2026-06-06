@@ -102,6 +102,7 @@ export function ItemAdjustments({ item }: { item: Item }) {
           aria-hidden="true"
         />
         <span class={styles.label}>Adjustments</span>
+        <span class={styles.rule} aria-hidden="true" />
         {count > 0 && Math.abs(net) > 0.005 && (
           <span class={styles.net}>
             {net < 0 ? "−" : "+"}

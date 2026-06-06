@@ -33,7 +33,7 @@ export function ItemRow({ item, people }: ItemRowProps) {
   const paidByIds = new Set(item.paidBy.keys());
 
   return (
-    <div class={styles.row}>
+    <div class={styles.row} data-open={open}>
       <div class={card.titleRow}>
         <EditableText
           className={card.itemName}

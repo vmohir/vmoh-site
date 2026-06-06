@@ -20,11 +20,13 @@
   transform: rotate(180deg);
 }
 
-/* Expanded panel */
+/* Expanded panel — a full-width darker band that bleeds to the row edges and
+   down to its bottom (the row has 0.875rem 1rem padding). */
 .panel {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--border-subtle);
+  margin: 0.5rem -1rem -0.875rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface-muted-bg);
 }

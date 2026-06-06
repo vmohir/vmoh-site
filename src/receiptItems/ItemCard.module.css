@@ -52,12 +52,15 @@
   transform: rotate(180deg);
 }
 
+/* Expanded panel — a rounded, slightly darker inset box. */
 .panel {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--border-subtle);
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: var(--surface-muted-bg);
+  border-radius: var(--border-radius);
 }
 
 .titleRow {

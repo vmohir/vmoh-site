@@ -5,7 +5,16 @@
   border-bottom: 1px solid var(--border-subtle);
   transition:
     opacity 160ms ease,
-    transform 160ms ease;
+    transform 160ms ease,
+    margin 180ms ease,
+    border-color 180ms ease;
+}
+
+/* When the row inside is expanded, detach it from its neighbours with a gap
+   (and drop the divider, since the gap already separates it). */
+.wrap:has([data-open="true"]) {
+  margin-block: 0.625rem;
+  border-bottom-color: transparent;
 }
 
 /* Slide + fade new rows in. Resting transform is none (no stacking context). */
