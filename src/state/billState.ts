@@ -122,22 +122,7 @@ export const items = signal<Item[]>(
   savedState?.items ? deserializeItems(savedState.items) : [],
 );
 export const adjustments = signal<Adjustment[]>(
-  savedState?.adjustments ?? [
-    {
-      id: crypto.randomUUID(),
-      label: "Tax",
-      value: 0,
-      isPercent: true,
-      type: "tax",
-    },
-    {
-      id: crypto.randomUUID(),
-      label: "Tip",
-      value: 0,
-      isPercent: true,
-      type: "tip",
-    },
-  ],
+  savedState?.adjustments ?? [],
 );
 export const baseCurrency = signal<Currency>(
   savedState?.baseCurrency ?? getCurrencyFromLocale(),
@@ -454,7 +439,7 @@ function rescalePayments(
 function getDefaultLabel(type: AdjustmentType): string {
   const defaults = {
     tip: "Tip",
-    tax: "Tax",
+    tax: "VAT",
     discount: "Discount",
   };
   return defaults[type];
@@ -706,20 +691,5 @@ if (typeof window !== "undefined") {
 export function resetAll(): void {
   people.value = [{ id: crypto.randomUUID(), name: "You" }];
   items.value = [];
-  adjustments.value = [
-    {
-      id: crypto.randomUUID(),
-      label: "Tax",
-      value: 0,
-      isPercent: true,
-      type: "tax",
-    },
-    {
-      id: crypto.randomUUID(),
-      label: "Tip",
-      value: 0,
-      isPercent: true,
-      type: "tip",
-    },
-  ];
+  adjustments.value = [];
 }

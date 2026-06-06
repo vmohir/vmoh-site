@@ -56,7 +56,7 @@ export default function AdjustmentCard({ adjustment }: AdjustmentCardProps) {
           onChange={handleTypeChange}
         >
           <option value="tip">Tip</option>
-          <option value="tax">Tax</option>
+          <option value="tax">VAT</option>
           <option value="discount">Discount</option>
         </Select>
       </div>

@@ -5,8 +5,8 @@ import styles from "./AdjustmentsSection.module.css";
 
 export default function AdjustmentsSection() {
   const handleAddAdjustment = () => {
-    // Add with default values
-    addAdjustment("New Adjustment", 0, true, "tip");
+    // Empty label falls back to the type's default ("Tip").
+    addAdjustment("", 0, true, "tip");
   };
 
   return (
