@@ -101,6 +101,17 @@ function LedgerView({
                   </div>
                 ))}
 
+                {Math.abs(personTotal.itemAdjustments) > 0.005 && (
+                  <div class={styles.breakdownRow}>
+                    <span>Item tip/tax/discount</span>
+                    <span>
+                      {personTotal.itemAdjustments < 0 ? "-" : ""}
+                      {symbol}
+                      {Math.abs(personTotal.itemAdjustments).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+
                 <div class={styles.breakdownRow}>
                   <span>Total owed</span>
                   <span>

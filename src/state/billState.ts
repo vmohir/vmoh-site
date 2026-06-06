@@ -37,6 +37,7 @@ interface SerializedItem {
   paidBy: [string, ItemPayer][];
   consumedBy?: [string, number][];
   splitMode?: SplitMode;
+  adjustments?: Adjustment[];
 }
 
 interface SerializedState {
@@ -72,6 +73,7 @@ function deserializeItems(items: SerializedItem[]): Item[] {
     paidBy: new Map(item.paidBy),
     consumedBy: new Map(item.consumedBy ?? []),
     splitMode: item.splitMode ?? "amounts",
+    adjustments: item.adjustments ?? [],
   }));
 }
 
@@ -270,6 +272,7 @@ export function addItem(
     paidBy: distributePayment(price, payers),
     consumedBy: new Map<string, number>(),
     splitMode: "amounts",
+    adjustments: [],
   };
 
   items.value = [...items.value, newItem];
@@ -355,6 +358,53 @@ export function setItemConsumedAmount(
     if (amount > 0) consumedBy.set(personId, amount);
     else consumedBy.delete(personId);
     return { ...item, consumedBy };
+  });
+}
+
+// Per-item adjustments (tip/tax/discount applied to a single item).
+export function addItemAdjustment(
+  itemId: string,
+  type: AdjustmentType = "tip",
+): void {
+  items.value = items.value.map((item) => {
+    if (item.id !== itemId) return item;
+    const adjustment: Adjustment = {
+      id: crypto.randomUUID(),
+      label: getDefaultLabel(type),
+      value: 0,
+      isPercent: true,
+      type,
+    };
+    return { ...item, adjustments: [...item.adjustments, adjustment] };
+  });
+}
+
+export function updateItemAdjustment(
+  itemId: string,
+  adjustmentId: string,
+  updates: Partial<Omit<Adjustment, "id">>,
+): void {
+  items.value = items.value.map((item) => {
+    if (item.id !== itemId) return item;
+    return {
+      ...item,
+      adjustments: item.adjustments.map((adj) =>
+        adj.id === adjustmentId ? { ...adj, ...updates } : adj,
+      ),
+    };
+  });
+}
+
+export function removeItemAdjustment(
+  itemId: string,
+  adjustmentId: string,
+): void {
+  items.value = items.value.map((item) => {
+    if (item.id !== itemId) return item;
+    return {
+      ...item,
+      adjustments: item.adjustments.filter((adj) => adj.id !== adjustmentId),
+    };
   });
 }
 

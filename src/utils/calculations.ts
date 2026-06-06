@@ -103,9 +103,26 @@ type LedgerMode =
   // Keep currencies apart: only amounts already in the ledger currency count.
   | { kind: "separate" };
 
+// Net per-item adjustment (signed) in the item's own currency: tip/tax add,
+// discount subtracts, with total discount capped so the item can't go negative.
+export function itemAdjustmentNet(item: Item): number {
+  let additions = 0;
+  let discounts = 0;
+  for (const adj of item.adjustments) {
+    const amount = adj.isPercent ? (item.price * adj.value) / 100 : adj.value;
+    if (adj.type === "discount") discounts += amount;
+    else additions += amount;
+  }
+  discounts = Math.min(discounts, item.price + additions);
+  return additions - discounts;
+}
+
 interface PersonAccumulator {
   itemsSubtotal: number;
   totalPaid: number;
+  // This person's share of per-item adjustments, on the owed and paid sides.
+  itemAdjOwed: number;
+  itemAdjPaid: number;
   assignedItems: PersonTotal["assignedItems"];
   paidItems: PersonTotal["paidItems"];
 }
@@ -139,6 +156,8 @@ function buildLedgerTotals(
     personData.set(person.id, {
       itemsSubtotal: 0,
       totalPaid: 0,
+      itemAdjOwed: 0,
+      itemAdjPaid: 0,
       assignedItems: [],
       paidItems: [],
     });
@@ -152,6 +171,13 @@ function buildLedgerTotals(
     const ledgerPrice = toLedger(item.price, itemCurrency);
     if (ledgerPrice !== null) billSubtotal += ledgerPrice;
 
+    // Per-item adjustments, in the ledger currency. Distributed across the
+    // item's consumers/payers in proportion to their share of the price, so
+    // each consumer is charged their slice and each payer is credited theirs.
+    const adjNetLedger = toLedger(itemAdjustmentNet(item), itemCurrency);
+    const canSplitAdj =
+      adjNetLedger !== null && ledgerPrice !== null && ledgerPrice > 0;
+
     // Consumption (usedBy), divided per the item's split mode.
     if (item.usedBy.size > 0) {
       const shares = resolveItemShares(item);
@@ -162,6 +188,9 @@ function buildLedgerTotals(
         const data = personData.get(personId);
         if (data) {
           data.itemsSubtotal += ledgerShare;
+          if (canSplitAdj) {
+            data.itemAdjOwed += adjNetLedger! * (ledgerShare / ledgerPrice!);
+          }
           data.assignedItems.push({
             name: item.name,
             share: rawShare,
@@ -179,6 +208,9 @@ function buildLedgerTotals(
         const data = personData.get(personId);
         if (data) {
           data.totalPaid += ledgerPaid;
+          if (canSplitAdj) {
+            data.itemAdjPaid += adjNetLedger! * (ledgerPaid / ledgerPrice!);
+          }
           data.paidItems.push({
             name: item.name,
             amount: payer.amount,
@@ -242,7 +274,7 @@ function buildLedgerTotals(
       0,
     );
 
-    const totalOwed = data.itemsSubtotal + adjustmentsTotal;
+    const totalOwed = data.itemsSubtotal + adjustmentsTotal + data.itemAdjOwed;
 
     // Credit each payer with the adjustments riding on the items they paid for,
     // proportional to the share of the subtotal they fronted, so balances net
@@ -253,7 +285,8 @@ function buildLedgerTotals(
         adj.type === "discount" ? sum - adj.totalAmount : sum + adj.totalAmount,
       0,
     );
-    const totalPaid = data.totalPaid + adjustmentsTotalForLedger * paidRatio;
+    const totalPaid =
+      data.totalPaid + adjustmentsTotalForLedger * paidRatio + data.itemAdjPaid;
 
     const balance = totalOwed - totalPaid;
 
@@ -262,6 +295,7 @@ function buildLedgerTotals(
       personName: person.name,
       itemsSubtotal: data.itemsSubtotal,
       adjustments: personAdjustments,
+      itemAdjustments: data.itemAdjOwed,
       total: totalOwed,
       totalPaid,
       balance,

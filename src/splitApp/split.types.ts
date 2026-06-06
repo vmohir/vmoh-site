@@ -44,6 +44,9 @@ export interface Item {
   // for "amounts"/"amounts-even", or a weight for "shares". A missing entry
   // means "unspecified" (shares the remainder, or weight 1 for shares).
   consumedBy: Map<string, number>;
+  // Per-item tip/tax/discount applied to this item's price, split across its
+  // consumers in proportion to what they consumed.
+  adjustments: Adjustment[];
 }
 
 export interface PersonTotal {
@@ -56,6 +59,8 @@ export interface PersonTotal {
     type: AdjustmentType;
     amount: number;
   }>;
+  // Net of this person's share of per-item adjustments (signed).
+  itemAdjustments: number;
   total: number;
   totalPaid: number;
   balance: number;

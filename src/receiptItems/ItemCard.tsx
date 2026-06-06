@@ -16,6 +16,7 @@ import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
 import { PeoplePicker } from "./PeoplePicker.tsx";
 import { ItemPayers } from "./ItemPayers.tsx";
 import { ConsumedAmounts } from "./ConsumedAmounts.tsx";
+import { ItemAdjustments } from "./ItemAdjustments.tsx";
 import styles from "./ItemCard.module.css";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
 
@@ -125,6 +126,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
       {open && (
         <div class={styles.panel}>
           <ConsumedAmounts item={item} people={people} />
+          <ItemAdjustments item={item} />
         </div>
       )}
     </div>

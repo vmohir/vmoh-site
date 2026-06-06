@@ -20,6 +20,7 @@ interface SerializedItem {
   paidBy: [string, ItemPayer][];
   consumedBy?: [string, number][];
   splitMode?: SplitMode;
+  adjustments?: Adjustment[];
 }
 
 export interface SharePayload {
@@ -47,6 +48,7 @@ export function itemsToSerialized(items: Item[]): SerializedItem[] {
     paidBy: Array.from(item.paidBy.entries()),
     consumedBy: Array.from(item.consumedBy.entries()),
     splitMode: item.splitMode,
+    adjustments: item.adjustments,
   }));
 }
 
@@ -60,6 +62,7 @@ export function itemsFromSerialized(items: SerializedItem[]): Item[] {
     paidBy: new Map(item.paidBy),
     consumedBy: new Map(item.consumedBy ?? []),
     splitMode: item.splitMode ?? "amounts",
+    adjustments: item.adjustments ?? [],
   }));
 }
 

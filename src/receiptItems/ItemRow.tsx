@@ -17,6 +17,7 @@ import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
 import { PeoplePicker } from "./PeoplePicker.tsx";
 import { ItemPayers } from "./ItemPayers.tsx";
 import { ConsumedAmounts } from "./ConsumedAmounts.tsx";
+import { ItemAdjustments } from "./ItemAdjustments.tsx";
 // Reuse the card layout verbatim so the row matches the original item card.
 import card from "./ItemCard.module.css";
 import styles from "./ItemRow.module.css";
@@ -114,6 +115,7 @@ export function ItemRow({ item, people }: ItemRowProps) {
       {open && (
         <div class={styles.panel}>
           <ConsumedAmounts item={item} people={people} />
+          <ItemAdjustments item={item} />
         </div>
       )}
     </div>
