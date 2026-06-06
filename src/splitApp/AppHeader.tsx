@@ -17,6 +17,7 @@ import {
   useExchangeRates,
 } from "../state/billState";
 import { theme, toggleTheme } from "../state/theme";
+import { LogoOptions } from "../ui/LogoOptions.tsx";
 import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
 import { Popover } from "../ui/Popover.tsx";
 import { useDropdown } from "../ui/useDropdown.ts";
@@ -136,6 +137,8 @@ export default function AppHeader() {
   return (
     <header class={styles.header}>
       <h1 class={styles.title}>Split Bill</h1>
+
+      <LogoOptions />
 
       <div class={styles.rightCluster}>
         <button
