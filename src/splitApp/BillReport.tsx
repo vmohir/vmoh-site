@@ -4,11 +4,19 @@ import {
   items,
   people,
 } from "../state/billState";
+import type { AdjustmentType } from "./split.types.ts";
 import { resolveItemShares } from "../utils/calculations.ts";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
 import styles from "./BillReport.module.css";
 
 export type ReportVariant = "summary" | "receipt" | "full";
+
+// Per-item adjustments have no editable label, so name them by their type.
+const ADJUSTMENT_LABEL: Record<AdjustmentType, string> = {
+  tip: "Tip",
+  tax: "VAT",
+  discount: "Discount",
+};
 
 const TITLES: Record<ReportVariant, string> = {
   summary: "Settlement summary",
@@ -122,7 +130,7 @@ function Items({ detailed }: { detailed: boolean }) {
                 return (
                   <div class={`${styles.detail} ${styles.muted}`} key={a.id}>
                     <span>
-                      {a.label}
+                      {ADJUSTMENT_LABEL[a.type]}
                       {a.isPercent ? ` (${a.value}%)` : ""}
                     </span>
                     <span>
