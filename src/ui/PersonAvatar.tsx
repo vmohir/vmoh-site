@@ -1,4 +1,5 @@
 import type { Person } from "../splitApp/split.types.ts";
+import { people } from "../state/billState";
 import styles from "./PersonAvatar.module.css";
 
 // Fixed palette. A person's colour is picked by hashing their id so the
@@ -39,14 +40,47 @@ function hashId(id: string): number {
   return (h >>> 0) % PALETTE.length;
 }
 
-export const PersonAvatar = ({ person }: PersonAvatarProps) => {
-  const initials = person.name
+function defaultInitials(name: string): string {
+  return name
     .split(" ")
+    .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase())
     .join("")
     .slice(0, 2);
+}
 
+// First three letters of the name (spaces stripped), capitalized as
+// Tt-style so "mohammad" and "Mohammad" both read as "Moh".
+function threeLetterPrefix(name: string): string {
+  const condensed = name.replace(/\s+/g, "").slice(0, 3);
+  if (!condensed) return "";
+  return condensed.charAt(0).toUpperCase() + condensed.slice(1).toLowerCase();
+}
+
+// Avatars default to one or two-letter initials. When another person shares
+// the same default initials we try a 3-letter prefix; we only commit to it
+// when it actually distinguishes this person from every collider. So
+// "Mohammad" + "Mojtaba" become "Moh" + "Moj", but "Mohammad" +
+// "MohammadAli" (3-letter prefix collides) both stay as "M".
+function computeAvatarLabel(person: Person, all: Person[]): string {
+  const mine = defaultInitials(person.name);
+  const colliders = all.filter(
+    (p) => p.id !== person.id && defaultInitials(p.name) === mine,
+  );
+  if (colliders.length === 0) return mine;
+
+  const myPrefix = threeLetterPrefix(person.name);
+  if (myPrefix.length < 3) return mine;
+  const ambiguous = colliders.some(
+    (p) => threeLetterPrefix(p.name) === myPrefix,
+  );
+  return ambiguous ? mine : myPrefix;
+}
+
+export const PersonAvatar = ({ person }: PersonAvatarProps) => {
+  const label = computeAvatarLabel(person, people.value);
   const { bg, text } = PALETTE[hashId(person.id)]!;
+  const cls = `${styles.avatar} ${label.length >= 3 ? styles.condensed : ""} ${bg} ${text}`;
 
-  return <div class={`${styles.avatar} ${bg} ${text}`}>{initials}</div>;
+  return <div class={cls}>{label}</div>;
 };

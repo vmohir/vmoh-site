@@ -10,3 +10,12 @@
   flex-shrink: 0;
   user-select: none;
 }
+
+/* Three-letter labels would overflow the 28px circle at full width, so
+   tighten the letterforms with the variable font's wdth axis (Google Sans
+   Flex supports 25..151) and shave a hair off the size for headroom. */
+.condensed {
+  font-size: 0.6875rem;
+  font-variation-settings: "wdth" 60;
+  letter-spacing: -0.02em;
+}
