@@ -7,25 +7,34 @@ import ResultsSection from './ResultsSection';
 ---
 
 <div class="split-bill-container">
-  <AppHeader client:load />
+  <!--
+    All islands render client-only. Everything in the app is signal-driven
+    state read from localStorage / the URL hash, which doesn't exist
+    server-side. An SSR pass produces an empty/default tree that disagrees
+    with the client tree on hydration, leaving stale class names on the
+    nodes Preact reused (see the "GroupCard inherits PersonRow styling on
+    first paint" bug). Skipping SSR for these islands avoids that entirely
+    at the cost of a brief blank flash on first paint.
+  -->
+  <AppHeader client:only="preact" />
 
   <section class="people-section">
-    <PeopleSection client:load />
+    <PeopleSection client:only="preact" />
   </section>
 
   <section class="items-section">
     <h2>Items</h2>
-    <ItemsSection client:load />
+    <ItemsSection client:only="preact" />
   </section>
 
   <section class="adjustments-section">
     <h2>Adjustments</h2>
-    <AdjustmentsSection client:load />
+    <AdjustmentsSection client:only="preact" />
   </section>
 
   <section class="results-section">
     <h2>Results</h2>
-    <ResultsSection client:load />
+    <ResultsSection client:only="preact" />
   </section>
 </div>
 
