@@ -97,11 +97,19 @@ function Items({ detailed }: { detailed: boolean }) {
         const cur = item.currency ?? baseCurrency.value;
         const symbol = getCurrencySymbol(cur);
         const consumers = people.value.filter((p) => item.usedBy.has(p.id));
+        const payers = people.value
+          .filter((p) => item.paidBy.has(p.id))
+          .map((p) => p.name);
         const shares = detailed ? resolveItemShares(item) : null;
         return (
           <div class={styles.item} key={item.id}>
             <div class={styles.row}>
-              <span class={styles.name}>{item.name}</span>
+              <span class={styles.name}>
+                {item.name}
+                {payers.length > 0 && (
+                  <span class={styles.by}> by {payers.join(", ")}</span>
+                )}
+              </span>
               <span class={styles.strong}>
                 {symbol}
                 {item.price.toFixed(2)}

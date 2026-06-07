@@ -113,6 +113,11 @@
   color: #9ca3af;
 }
 
+.by {
+  font-weight: 400;
+  color: #9ca3af;
+}
+
 .detail {
   display: flex;
   justify-content: space-between;
