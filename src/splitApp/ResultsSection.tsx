@@ -6,6 +6,7 @@ import {
 } from "../state/billState";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
 import ExchangeRates from "./ExchangeRates.tsx";
+import { ReportExport } from "./ReportExport.tsx";
 import SettlementSettings from "./SettlementSettings.tsx";
 import styles from "./ResultsSection.module.css";
 
@@ -190,6 +191,10 @@ export default function ResultsSection() {
 
   return (
     <div class={styles.resultsSection}>
+      <div class={styles.reportBar}>
+        <ReportExport />
+      </div>
+
       {showRateEditor && <ExchangeRates />}
 
       {/* With multiple per-currency ledgers the settlement method applies to

@@ -4,6 +4,11 @@
   gap: 1.5rem;
 }
 
+.reportBar {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .personResults {
   display: flex;
   flex-direction: column;

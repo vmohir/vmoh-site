@@ -17,6 +17,7 @@
     "@preact/signals": "^2.5.1",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.16.6",
+    "html-to-image": "^1.11.13",
     "lucide-preact": "^1.16.0",
     "preact": "^10.28.1",
     "tailwindcss": "^4.1.18"
