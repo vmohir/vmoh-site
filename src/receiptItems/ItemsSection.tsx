@@ -40,7 +40,7 @@ export default function ItemsSection() {
               key={item.id}
               item={item}
               people={people.value}
-              onRemove={removeItem}
+              onRemove={() => deleteWithUndo(item)}
             />
           ),
         )}
