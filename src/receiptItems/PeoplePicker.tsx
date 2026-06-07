@@ -98,6 +98,24 @@ export function PeoplePicker({
           align={alignEnd ? "end" : "start"}
           role={multi ? "listbox" : "menu"}
         >
+          {multi && people.length > 1 && (
+            <label class={`${styles.option} ${styles.selectAll}`}>
+              <input
+                type="checkbox"
+                checked={selected.size === people.length}
+                onChange={() =>
+                  onChange(
+                    selected.size === people.length
+                      ? new Set()
+                      : new Set(people.map((p) => p.id)),
+                  )
+                }
+              />
+              <span class={styles.optionName}>
+                {selected.size === people.length ? "Deselect all" : "Select all"}
+              </span>
+            </label>
+          )}
           {people.map((person) => {
             const isSelected = selected.has(person.id);
             return multi ? (
