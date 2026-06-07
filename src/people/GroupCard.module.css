@@ -2,6 +2,14 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--border-radius);
   background: var(--surface-subtle-bg);
+  transition:
+    border-color var(--transition),
+    background var(--transition);
+}
+
+.dropInto {
+  border-color: var(--text-primary);
+  background: var(--interactive-hover-bg);
 }
 
 .header {

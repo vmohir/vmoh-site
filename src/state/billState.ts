@@ -335,6 +335,70 @@ export const groupByPersonId = computed<Map<string, Group>>(() => {
   return map;
 });
 
+// Drag-and-drop primitives. movePersonRelative is the single workhorse for
+// reordering and group membership: it places `personId` adjacent to
+// `targetPersonId` in the canonical people[] order and syncs group
+// membership to match the target's group (or to ungrouped if the target is
+// ungrouped). One function handles every case: reorder ungrouped, reorder
+// within a group, hop between groups, join a group from outside, leave a
+// group to land on an ungrouped row.
+export function movePersonRelative(
+  personId: string,
+  targetPersonId: string,
+  position: "before" | "after",
+): void {
+  if (personId === targetPersonId) return;
+
+  // Reorder the people[] backbone first.
+  const list = people.value;
+  const fromIdx = list.findIndex((p) => p.id === personId);
+  const targetIdx = list.findIndex((p) => p.id === targetPersonId);
+  if (fromIdx < 0 || targetIdx < 0) return;
+
+  const next = [...list];
+  const [moved] = next.splice(fromIdx, 1);
+  if (!moved) return;
+  const newTargetIdx = next.findIndex((p) => p.id === targetPersonId);
+  const insertIdx = position === "before" ? newTargetIdx : newTargetIdx + 1;
+  next.splice(insertIdx, 0, moved);
+  people.value = next;
+
+  // Sync group membership: the dragged person joins the target's group (or
+  // leaves any group if the target is ungrouped).
+  const targetGroup = groups.value.find((g) =>
+    g.memberIds.includes(targetPersonId),
+  );
+
+  if (!targetGroup) {
+    // Drop on an ungrouped target — remove the dragged person from any group.
+    groups.value = groups.value
+      .map((g) =>
+        g.memberIds.includes(personId) ? withMemberOut(g, personId) : g,
+      )
+      .filter((g) => g.memberIds.length >= 2);
+    return;
+  }
+
+  // Drop on a grouped target — make sure the dragged person is in that group,
+  // positioned adjacent to the target. Pull them out of any other group
+  // first (a person belongs to at most one group), then splice into the
+  // target group's memberIds.
+  groups.value = groups.value
+    .map((g) => {
+      if (g.id === targetGroup.id) {
+        const members = g.memberIds.filter((id) => id !== personId);
+        const tIdx = members.indexOf(targetPersonId);
+        const insertAt = position === "before" ? tIdx : tIdx + 1;
+        members.splice(insertAt, 0, personId);
+        return { ...g, memberIds: members };
+      }
+      return g.memberIds.includes(personId)
+        ? withMemberOut(g, personId)
+        : g;
+    })
+    .filter((g) => g.memberIds.length >= 2);
+}
+
 // Item operations
 export function addItem(
   name: string,

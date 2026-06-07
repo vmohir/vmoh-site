@@ -1,12 +1,64 @@
 .row {
+  position: relative;
   background: var(--surface-bg);
   border: 1px solid var(--border-subtle);
   border-radius: var(--border-radius);
-  transition: border-color var(--transition);
+  transition:
+    border-color var(--transition),
+    opacity var(--transition);
 }
 
 .row:hover {
   border-color: var(--border-primary);
+}
+
+.beingDragged {
+  opacity: 0.35;
+}
+
+/* Insertion indicators: a 2px bar at the relevant edge of the row that
+   shows where the dragged person will land if released. */
+.dropBefore::before,
+.dropAfter::after {
+  content: "";
+  position: absolute;
+  left: 0.25rem;
+  right: 0.25rem;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+.dropBefore::before {
+  top: -2px;
+}
+
+.dropAfter::after {
+  bottom: -2px;
+}
+
+.grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: grab;
+  flex-shrink: 0;
+  touch-action: none;
+}
+
+.grip:active {
+  cursor: grabbing;
+}
+
+.grip:hover {
+  color: var(--text-primary);
 }
 
 .header {

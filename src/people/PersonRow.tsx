@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { ChevronDown, X } from "lucide-preact";
+import { ChevronDown, GripVertical, X } from "lucide-preact";
 import type {
   Currency,
   CurrencyLedger,
@@ -10,6 +10,7 @@ import { updatePersonName } from "../state/billState.ts";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
 import EditableText from "ui/EditableText";
 import { PersonAvatar } from "ui/PersonAvatar.tsx";
+import { dragState } from "./dnd.ts";
 import styles from "./PersonRow.module.css";
 
 interface PersonRowProps {
@@ -144,9 +145,64 @@ export default function PersonRow({
 
   const active = entries.filter((e) => Math.abs(e.total.balance) > 0.01);
 
+  // Drag visuals: dim self while being dragged, draw an insertion line on
+  // the side the dragged person would land if released right now.
+  const ds = dragState.value;
+  const isBeingDragged = !!ds?.active && ds.personId === person.id;
+  const isDropTarget =
+    !!ds?.active &&
+    ds.target?.kind === "row" &&
+    ds.target.personId === person.id;
+  const dropPosition = isDropTarget
+    ? (ds!.target as { position: "before" | "after" }).position
+    : null;
+
+  const handleGripPointerDown = (e: PointerEvent) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    const target = e.currentTarget as HTMLElement;
+    const row = target.closest(`[data-person-row]`) as HTMLElement | null;
+    if (!row) return;
+    const rect = row.getBoundingClientRect();
+    target.setPointerCapture(e.pointerId);
+    dragState.value = {
+      personId: person.id,
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startY: e.clientY,
+      x: e.clientX,
+      y: e.clientY,
+      offsetX: e.clientX - rect.left,
+      offsetY: e.clientY - rect.top,
+      width: rect.width,
+      height: rect.height,
+      target: null,
+      active: false,
+    };
+    // Stop the press from also focusing the EditableText behind the grip.
+    e.preventDefault();
+  };
+
+  const rowClass = [
+    styles.row,
+    isBeingDragged ? styles.beingDragged : "",
+    dropPosition === "before" ? styles.dropBefore : "",
+    dropPosition === "after" ? styles.dropAfter : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div class={styles.row} data-open={open}>
+    <div class={rowClass} data-open={open} data-person-row={person.id}>
       <div class={styles.header}>
+        <button
+          type="button"
+          class={styles.grip}
+          aria-label="Drag to reorder"
+          title="Drag to reorder or move into a group"
+          onPointerDown={handleGripPointerDown}
+        >
+          <GripVertical size={14} aria-hidden="true" />
+        </button>
         <button
           type="button"
           class={styles.expand}

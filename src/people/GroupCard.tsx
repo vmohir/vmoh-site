@@ -7,6 +7,7 @@ import type {
 import { removeGroup, updateGroupName } from "../state/billState.ts";
 import EditableText from "ui/EditableText";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
+import { dragState } from "./dnd.ts";
 import styles from "./GroupCard.module.css";
 
 interface GroupCardProps {
@@ -37,11 +38,27 @@ function groupBalances(
     .filter((entry) => Math.abs(entry.balance) > 0.01);
 }
 
-export default function GroupCard({ group, ledgers, children }: GroupCardProps) {
+export default function GroupCard({
+  group,
+  ledgers,
+  children,
+}: GroupCardProps) {
   const balances = groupBalances(group, ledgers);
 
+  // Highlight when an active drag would land on this group as a whole (i.e.
+  // the user is hovering an empty area of the card, not a specific member
+  // row inside it — those are handled by PersonRow's own indicators).
+  const ds = dragState.value;
+  const isDropTarget =
+    !!ds?.active &&
+    ds.target?.kind === "group" &&
+    ds.target.groupId === group.id;
+
   return (
-    <div class={styles.card}>
+    <div
+      class={`${styles.card} ${isDropTarget ? styles.dropInto : ""}`}
+      data-group-id={group.id}
+    >
       <div class={styles.header}>
         <span class={styles.label} aria-hidden="true">
           Group
