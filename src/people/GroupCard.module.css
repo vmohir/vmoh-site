@@ -1,0 +1,82 @@
+.card {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius);
+  background: var(--surface-subtle-bg);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.625rem 0.375rem;
+}
+
+.label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.balance {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: right;
+}
+
+.balance.owe {
+  color: var(--status-error);
+}
+
+.balance.receive {
+  color: var(--status-success);
+}
+
+.balance.settled {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    color var(--transition),
+    border-color var(--transition);
+}
+
+.actionBtn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.members {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0 0.5rem 0.5rem;
+}

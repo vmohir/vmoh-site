@@ -29,6 +29,7 @@ test("share button writes a hydrating URL to the clipboard", async ({
 
   // Build a small bill: one extra person + one item.
   await page.goto("/");
+  await page.waitForLoadState("networkidle");
   await page.getByRole("button", { name: "Add Person" }).click();
   const personInputs = page
     .locator("section")
@@ -56,8 +57,7 @@ test("share button writes a hydrating URL to the clipboard", async ({
   // Open the URL fresh (clear storage, full reload) and confirm it hydrates.
   await page.evaluate(() => localStorage.removeItem("split-bill-state"));
   await page.goto(url);
-  await page.evaluate(() => window.location.reload());
-  await page.waitForLoadState("networkidle");
+  await page.reload({ waitUntil: "networkidle" });
 
   // Hash is stripped after import.
   await expect

@@ -16,7 +16,9 @@ const itemsSection = (page: Page) =>
     .filter({ has: page.getByRole("heading", { name: "Items" }) });
 
 test("default state shows one person and no items", async ({ page }) => {
-  await expect(page.getByRole("heading", { name: "Split Bill" })).toBeVisible();
+  await expect(
+    page.getByRole("banner").getByRole("heading", { level: 1 }),
+  ).toBeVisible();
   await expect(peopleSection(page).getByRole("textbox")).toHaveValue("You");
   await expect(page.getByText("No items added yet")).toBeVisible();
 });

@@ -6,6 +6,7 @@ import type {
   SettlementAlgorithm,
   ItemPayer,
   SplitMode,
+  Group,
 } from "../splitApp/split.types.ts";
 
 const SHARE_VERSION = 1;
@@ -36,6 +37,9 @@ export interface SharePayload {
   // rates existed.
   useExchangeRates?: boolean;
   exchangeRates?: Record<Currency, number>;
+  // Optional for backwards compatibility with links created before groups
+  // existed.
+  groups?: Group[];
 }
 
 export function itemsToSerialized(items: Item[]): SerializedItem[] {
@@ -131,6 +135,7 @@ export function buildSharePayload(input: {
   hasMultiplePayers: boolean;
   useExchangeRates: boolean;
   exchangeRates: Record<Currency, number>;
+  groups: Group[];
 }): SharePayload {
   return {
     v: SHARE_VERSION,
@@ -143,6 +148,7 @@ export function buildSharePayload(input: {
     hasMultiplePayers: input.hasMultiplePayers,
     useExchangeRates: input.useExchangeRates,
     exchangeRates: input.exchangeRates,
+    groups: input.groups,
   };
 }
 

@@ -30,3 +30,14 @@
   color: #666;
   font-style: italic;
 }
+
+.adders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.adders > * {
+  flex: 1 1 auto;
+  min-width: max-content;
+}

@@ -1,0 +1,83 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 1px dashed var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  height: var(--person-item-height);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.trigger:hover:not(:disabled) {
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+  background: var(--surface-bg);
+}
+
+.trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border: none;
+  background: transparent;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.option:hover {
+  background: var(--interactive-hover-bg);
+}
+
+.optionName {
+  flex: 1;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.5rem 0.25rem 0.25rem;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 0.375rem;
+}
+
+.create {
+  font-size: 0.8125rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--border-primary);
+  background: var(--text-primary);
+  color: var(--surface-bg);
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.create:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.empty {
+  padding: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}

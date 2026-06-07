@@ -8,6 +8,7 @@ import type {
   Adjustment,
   AdjustmentType,
   CurrencyLedger,
+  Group,
   SplitMode,
 } from "../splitApp/split.types.ts";
 import {
@@ -16,7 +17,10 @@ import {
   DEFAULT_RATES,
 } from "../utils/calculations";
 import { getCurrencyFromLocale } from "../utils/currency.utils.ts";
-import { calculateSettlement } from "../utils/settlementAlgorithms";
+import {
+  calculateSettlement,
+  collapseTotalsByGroup,
+} from "../utils/settlementAlgorithms";
 import {
   clearHashShare,
   decodeSharePayload,
@@ -53,6 +57,10 @@ interface SerializedState {
   useExchangeRates: boolean;
   // Editable exchange rates, units per 1 USD (seeded from DEFAULT_RATES).
   exchangeRates: Record<Currency, number>;
+  // People bundled into a single settlement entity (couples, families, etc.).
+  // Optional for backwards compatibility with state saved before groups
+  // existed.
+  groups?: Group[];
   // Legacy: pre-split flag. Read on load and migrated to the two new flags.
   isAdvancedMode?: boolean;
 }
@@ -141,6 +149,7 @@ export const exchangeRates = signal<Record<Currency, number>>({
   ...DEFAULT_RATES,
   ...savedState?.exchangeRates,
 });
+export const groups = signal<Group[]>(savedState?.groups ?? []);
 
 // Heal bills saved before single-currency switches cleared per-payer currency
 // overrides: in single-currency mode no override should survive on load.
@@ -160,6 +169,7 @@ effect(() => {
     hasMultiplePayers: hasMultiplePayers.value,
     useExchangeRates: useExchangeRates.value,
     exchangeRates: exchangeRates.value,
+    groups: groups.value,
   };
   if (typeof window === "undefined") return;
   try {
@@ -185,7 +195,7 @@ export const calculatedLedgers = computed<CurrencyLedger[]>(() => {
     currency,
     totals,
     settlement: calculateSettlement(
-      totals,
+      collapseTotalsByGroup(totals, groups.value),
       settlementAlgorithm.value,
       currency,
     ),
@@ -232,9 +242,98 @@ export function removePerson(id: string): void {
     };
   });
 
+  // Drop the person from any group, then dissolve groups left with <2 members.
+  groups.value = groups.value
+    .map((g) =>
+      g.memberIds.includes(id)
+        ? { ...g, memberIds: g.memberIds.filter((m) => m !== id) }
+        : g,
+    )
+    .filter((g) => g.memberIds.length >= 2);
+
   // Remove person from list
   people.value = people.value.filter((p) => p.id !== id);
 }
+
+// Group operations. A person belongs to at most one group; adding them to a
+// new group pulls them out of any existing one. Groups with fewer than 2
+// members self-dissolve.
+function autoGroupName(memberIds: string[], all: Person[]): string {
+  const names = memberIds
+    .map((id) => all.find((p) => p.id === id)?.name)
+    .filter((n): n is string => !!n);
+  if (names.length === 0) return "Group";
+  if (names.length === 1) return names[0]!;
+  if (names.length === 2) return `${names[0]} & ${names[1]}`;
+  return `${names.slice(0, -1).join(", ")} & ${names[names.length - 1]}`;
+}
+
+function withMemberOut(g: Group, personId: string): Group {
+  return { ...g, memberIds: g.memberIds.filter((m) => m !== personId) };
+}
+
+export function addGroup(memberIds: string[]): void {
+  const unique = Array.from(new Set(memberIds));
+  if (unique.length < 2) return;
+  // Pull these people out of any other group first.
+  const cleaned = groups.value
+    .map((g) =>
+      g.memberIds.some((m) => unique.includes(m))
+        ? { ...g, memberIds: g.memberIds.filter((m) => !unique.includes(m)) }
+        : g,
+    )
+    .filter((g) => g.memberIds.length >= 2);
+  const newGroup: Group = {
+    id: crypto.randomUUID(),
+    name: autoGroupName(unique, people.value),
+    memberIds: unique,
+  };
+  groups.value = [...cleaned, newGroup];
+}
+
+export function removeGroup(id: string): void {
+  groups.value = groups.value.filter((g) => g.id !== id);
+}
+
+export function updateGroupName(id: string, newName: string): void {
+  if (!newName.trim()) return;
+  groups.value = groups.value.map((g) =>
+    g.id === id ? { ...g, name: newName.trim() } : g,
+  );
+}
+
+export function addMemberToGroup(groupId: string, personId: string): void {
+  // Remove the person from any other group first.
+  const cleaned = groups.value
+    .map((g) =>
+      g.id !== groupId && g.memberIds.includes(personId)
+        ? withMemberOut(g, personId)
+        : g,
+    )
+    .filter((g) => g.memberIds.length >= 2 || g.id === groupId);
+  groups.value = cleaned.map((g) =>
+    g.id === groupId && !g.memberIds.includes(personId)
+      ? { ...g, memberIds: [...g.memberIds, personId] }
+      : g,
+  );
+}
+
+export function removeMemberFromGroup(
+  groupId: string,
+  personId: string,
+): void {
+  groups.value = groups.value
+    .map((g) => (g.id === groupId ? withMemberOut(g, personId) : g))
+    .filter((g) => g.memberIds.length >= 2);
+}
+
+// Person → group lookup, computed for convenience in the UI.
+export const groupByPersonId = computed<Map<string, Group>>(() => {
+  const map = new Map<string, Group>();
+  for (const g of groups.value)
+    for (const id of g.memberIds) map.set(id, g);
+  return map;
+});
 
 // Item operations
 export function addItem(
@@ -638,6 +737,15 @@ export function applySharedPayload(payload: SharePayload): void {
   hasMultiplePayers.value = payload.hasMultiplePayers;
   useExchangeRates.value = payload.useExchangeRates ?? false;
   exchangeRates.value = { ...DEFAULT_RATES, ...payload.exchangeRates };
+  // Drop groups whose members no longer exist or who fall below the 2-member
+  // minimum after that cleanup.
+  const personIds = new Set(payload.people.map((p) => p.id));
+  groups.value = (payload.groups ?? [])
+    .map((g) => ({
+      ...g,
+      memberIds: g.memberIds.filter((id) => personIds.has(id)),
+    }))
+    .filter((g) => g.memberIds.length >= 2);
 }
 
 // On boot, if the URL carries a #data=... share fragment, decode it and
@@ -690,4 +798,5 @@ export function resetAll(): void {
   people.value = [{ id: crypto.randomUUID(), name: "You" }];
   items.value = [];
   adjustments.value = [];
+  groups.value = [];
 }

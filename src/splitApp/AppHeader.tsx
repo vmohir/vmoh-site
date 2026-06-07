@@ -4,6 +4,7 @@ import {
   adjustments,
   baseCurrency,
   exchangeRates,
+  groups,
   hasMultipleCurrencies,
   hasMultiplePayers,
   items,
@@ -108,6 +109,7 @@ export default function AppHeader() {
       hasMultiplePayers: hasMultiplePayers.value,
       useExchangeRates: useExchangeRates.value,
       exchangeRates: exchangeRates.value,
+      groups: groups.value,
     });
     let url: string;
     try {
@@ -136,7 +138,10 @@ export default function AppHeader() {
 
   return (
     <header class={styles.header}>
-      <h1 class={styles.title}>Split Bill</h1>
+      <h1 class={styles.title}>
+        <p class={styles.titleText}>Split</p>
+        <p class={styles.titleText}>Split</p>
+      </h1>
 
       <LogoOptions />
 

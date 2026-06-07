@@ -15,6 +15,16 @@ export interface Person {
   name: string;
 }
 
+// A group bundles two or more people whose balances are netted together
+// before settlement, so transfers within the group disappear and external
+// transfers reference the group as one party (e.g. "Alice & Bob → Carol").
+// Items still belong to individuals; only the settlement view collapses.
+export interface Group {
+  id: string;
+  name: string;
+  memberIds: string[];
+}
+
 export interface ItemPayer {
   personId: string;
   amount: number;

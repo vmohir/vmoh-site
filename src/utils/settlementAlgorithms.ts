@@ -1,10 +1,64 @@
 import type {
+  Group,
   PersonTotal,
   Transfer,
   SettlementResult,
   SettlementAlgorithm,
   Currency,
 } from "../splitApp/split.types.ts";
+
+/**
+ * Fold each group's members into a single synthetic PersonTotal whose id and
+ * name are the group's, and whose balance is the sum of its members'.
+ * Settlement only reads personId/personName/balance, so a synthetic entry is
+ * indistinguishable from a real one — transfers that would have happened
+ * inside the group cancel out, and the cross-group transfers reference the
+ * group as one party.
+ *
+ * People who aren't in any group pass through unchanged. The non-balance
+ * fields on the synthetic entry (assignedItems, paidItems, adjustments, etc.)
+ * are intentionally zeroed: they only feed the per-person breakdown, which
+ * works off the un-collapsed totals.
+ */
+export function collapseTotalsByGroup(
+  totals: PersonTotal[],
+  groups: Group[],
+): PersonTotal[] {
+  if (groups.length === 0) return totals;
+  const memberToGroup = new Map<string, Group>();
+  for (const g of groups)
+    for (const id of g.memberIds) memberToGroup.set(id, g);
+
+  const collapsedById = new Map<string, PersonTotal>();
+  for (const t of totals) {
+    const group = memberToGroup.get(t.personId);
+    if (!group) {
+      collapsedById.set(t.personId, t);
+      continue;
+    }
+    const existing = collapsedById.get(group.id);
+    if (existing) {
+      collapsedById.set(group.id, {
+        ...existing,
+        balance: existing.balance + t.balance,
+      });
+    } else {
+      collapsedById.set(group.id, {
+        personId: group.id,
+        personName: group.name,
+        itemsSubtotal: 0,
+        adjustments: [],
+        itemAdjustments: 0,
+        total: 0,
+        totalPaid: 0,
+        balance: t.balance,
+        assignedItems: [],
+        paidItems: [],
+      });
+    }
+  }
+  return Array.from(collapsedById.values());
+}
 
 /**
  * A person's balance rounded to whole cents. Settlement runs entirely in
