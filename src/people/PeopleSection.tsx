@@ -1,5 +1,10 @@
-import { people, addPerson, removePerson } from "state/billState.ts";
-import PersonItem from "./PersonItem.tsx";
+import {
+  people,
+  addPerson,
+  removePerson,
+  calculatedLedgers,
+} from "state/billState.ts";
+import PersonRow from "./PersonRow.tsx";
 import { getRandomPersonName } from "utils/person.utils.ts";
 import { PersonItemAdder } from "./PersonItemAdder.tsx";
 import styles from "./PeopleSection.module.css";
@@ -9,16 +14,18 @@ export default function PeopleSection() {
     addPerson(getRandomPersonName());
   };
 
+  const ledgers = calculatedLedgers.value;
+
   return (
     <div class={styles.peopleSection}>
       <h2>People</h2>
 
-      {/* People list */}
       <div class="flex flex-col gap-2">
-        {people.value.map((person, i) => (
-          <PersonItem
+        {people.value.map((person) => (
+          <PersonRow
             key={person.id}
             person={person}
+            ledgers={ledgers}
             onRemove={people.value.length <= 1 ? undefined : removePerson}
           />
         ))}
