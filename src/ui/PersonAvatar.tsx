@@ -1,10 +1,9 @@
 import type { Person } from "../splitApp/split.types.ts";
-import { people } from "../state/billState";
 import styles from "./PersonAvatar.module.css";
 
-// Fixed, ordered palette: the Nth person in the list gets the Nth colour,
-// wrapping once the palette is exhausted. Simple and collision-free for small
-// groups. Each entry pairs a background with a readable text colour.
+// Fixed palette. A person's colour is picked by hashing their id so the
+// assignment stays stable across reorders and renames — only adding or
+// removing a person can change anyone's colour, never moving them around.
 const PALETTE = [
   { bg: "bg-blue-500", text: "text-white" },
   { bg: "bg-emerald-500", text: "text-white" },
@@ -32,6 +31,14 @@ interface PersonAvatarProps {
   person: Person;
 }
 
+// djb2 — fast, deterministic, well-distributed for short strings.
+function hashId(id: string): number {
+  let h = 5381;
+  for (let i = 0; i < id.length; i++) h = (h * 33) ^ id.charCodeAt(i);
+  // `>>> 0` coerces to unsigned 32-bit so the modulo isn't negative.
+  return (h >>> 0) % PALETTE.length;
+}
+
 export const PersonAvatar = ({ person }: PersonAvatarProps) => {
   const initials = person.name
     .split(" ")
@@ -39,8 +46,7 @@ export const PersonAvatar = ({ person }: PersonAvatarProps) => {
     .join("")
     .slice(0, 2);
 
-  const index = people.value.findIndex((p) => p.id === person.id);
-  const { bg, text } = PALETTE[(index < 0 ? 0 : index) % PALETTE.length]!;
+  const { bg, text } = PALETTE[hashId(person.id)]!;
 
   return <div class={`${styles.avatar} ${bg} ${text}`}>{initials}</div>;
 };
