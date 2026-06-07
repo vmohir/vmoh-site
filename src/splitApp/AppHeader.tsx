@@ -107,26 +107,45 @@ function EditableTitle() {
   );
 }
 
-// SplitFare-style S logomark: two narrow ribbon-receipt parallelograms,
-// both leaning ↘, offset diagonally so the upper piece's bottom tucks
-// behind the lower piece's top. The back piece gets a translucent-black
-// overlay so the fold reads as two-tone shading.
+// SplitFare-style S logomark — a stack of three receipt-ribbon pieces.
+// The back two pieces (existing front + back of the S) are rotated as a
+// group by ~10° so the whole S leans dynamically. A third smaller piece
+// sits on top at a different angle, as if a third receipt was laid across
+// the others — adds depth and makes the receipt-stack metaphor explicit.
 function SLogo() {
   return (
     <svg
-      viewBox="0 0 40 64"
+      viewBox="0 0 48 72"
       class={styles.logo}
       fill="currentColor"
       aria-hidden="true"
       focusable="false"
     >
-      <path d="M 16 28 L 32 28 L 36 58 L 34 60 L 32 58 L 30 60 L 28 58 L 26 60 L 24 58 L 22 60 L 20 58 L 18 60 L 16 58 Z" />
-      <path
-        fill="black"
-        fill-opacity="0.28"
-        d="M 16 28 L 32 28 L 36 58 L 34 60 L 32 58 L 30 60 L 28 58 L 26 60 L 24 58 L 22 60 L 20 58 L 18 60 L 16 58 Z"
-      />
-      <path d="M 4 6 L 6 4 L 8 6 L 10 4 L 12 6 L 14 4 L 16 6 L 18 4 L 20 6 L 22 4 L 24 6 L 28 36 L 12 36 Z" />
+      {/* Existing two pieces rotated together as the base of the stack. */}
+      <g transform="rotate(-10 24 36)">
+        {/* Back piece — lower-right of the S, with serrated bottom. */}
+        <path d="M 20 32 L 36 32 L 40 62 L 38 64 L 36 62 L 34 64 L 32 62 L 30 64 L 28 62 L 26 64 L 24 62 L 22 64 L 20 62 Z" />
+        {/* Darkening overlay so the back reads as the shadowed side of the fold. */}
+        <path
+          fill="black"
+          fill-opacity="0.28"
+          d="M 20 32 L 36 32 L 40 62 L 38 64 L 36 62 L 34 64 L 32 62 L 30 64 L 28 62 L 26 64 L 24 62 L 22 64 L 20 62 Z"
+        />
+        {/* Front piece — upper-left of the S, with serrated top. */}
+        <path d="M 8 10 L 10 8 L 12 10 L 14 8 L 16 10 L 18 8 L 20 10 L 22 8 L 24 10 L 26 8 L 28 10 L 32 40 L 16 40 Z" />
+      </g>
+      {/* Third piece on top — a smaller receipt laid across the middle at
+          a steeper angle so it reads as a separate scrap covering the fold. */}
+      <g transform="rotate(18 24 36)">
+        <path d="M 18 18 L 20 16 L 22 18 L 24 16 L 26 18 L 28 16 L 30 18 L 34 54 L 22 54 Z" />
+        {/* A faint white wash on the top piece so it reads brighter than the
+            two below — like fresher paper laid on top. */}
+        <path
+          fill="white"
+          fill-opacity="0.18"
+          d="M 18 18 L 20 16 L 22 18 L 24 16 L 26 18 L 28 16 L 30 18 L 34 54 L 22 54 Z"
+        />
+      </g>
     </svg>
   );
 }
