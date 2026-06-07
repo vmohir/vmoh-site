@@ -790,6 +790,10 @@ if (typeof window !== "undefined") {
   } else {
     window.addEventListener("load", run, { once: true });
   }
+  // Also handle a share link pasted into the address bar of an already-open
+  // page — that only changes the hash, it doesn't reload. (clearHashShare uses
+  // replaceState, which doesn't fire hashchange, so this won't loop.)
+  window.addEventListener("hashchange", run);
 }
 
 // Wipe people / items / adjustments back to a fresh starting state. Keeps
