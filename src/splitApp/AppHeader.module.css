@@ -18,10 +18,28 @@
   font-variation-settings:
     "slnt" -5,
     "wdth" 75;
-  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
-.title .titleText,
-.title .titleTextSplit {
+
+.logo {
+  display: block;
+  flex-shrink: 0;
+  height: 1.05em;
+  width: auto;
+  /* Receipt-red. Matches the orange-red split layer's family so the logo
+     and the wordmark's offset shadow sit in the same palette. */
+  color: #e0552c;
+}
+
+.wordmark {
+  position: relative;
+  display: inline-block;
+}
+
+.wordmark .titleText,
+.wordmark .titleTextSplit {
   transition: all 0.2s ease-in-out;
 }
 .titleText {

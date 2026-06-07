@@ -84,23 +84,50 @@ function EditableTitle() {
 
   return (
     <h1 class={styles.title}>
-      <p
-        ref={editRef}
-        class={styles.titleText}
-        contentEditable
-        spellcheck={false}
-        onInput={handleInput}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            (e.currentTarget as HTMLElement).blur();
-          }
-        }}
-      />
-      <p class={styles.titleTextSplit} aria-hidden="true">
-        {appTitle.value}
-      </p>
+      <SLogo />
+      <span class={styles.wordmark}>
+        <p
+          ref={editRef}
+          class={styles.titleText}
+          contentEditable
+          spellcheck={false}
+          onInput={handleInput}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              (e.currentTarget as HTMLElement).blur();
+            }
+          }}
+        />
+        <p class={styles.titleTextSplit} aria-hidden="true">
+          {appTitle.value}
+        </p>
+      </span>
     </h1>
+  );
+}
+
+// SplitFare-style S logomark: two narrow ribbon-receipt parallelograms,
+// both leaning ↘, offset diagonally so the upper piece's bottom tucks
+// behind the lower piece's top. The back piece gets a translucent-black
+// overlay so the fold reads as two-tone shading.
+function SLogo() {
+  return (
+    <svg
+      viewBox="0 0 40 64"
+      class={styles.logo}
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M 16 28 L 32 28 L 36 58 L 34 60 L 32 58 L 30 60 L 28 58 L 26 60 L 24 58 L 22 60 L 20 58 L 18 60 L 16 58 Z" />
+      <path
+        fill="black"
+        fill-opacity="0.28"
+        d="M 16 28 L 32 28 L 36 58 L 34 60 L 32 58 L 30 60 L 28 58 L 26 60 L 24 58 L 22 60 L 20 58 L 18 60 L 16 58 Z"
+      />
+      <path d="M 4 6 L 6 4 L 8 6 L 10 4 L 12 6 L 14 4 L 16 6 L 18 4 L 20 6 L 22 4 L 24 6 L 28 36 L 12 36 Z" />
+    </svg>
   );
 }
 
