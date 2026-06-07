@@ -1,39 +1,68 @@
-import { useRef, useState } from "preact/hooks";
-import { Download, ImageDown, Share2, X } from "lucide-preact";
-import { BillReport } from "./BillReport.tsx";
+import { useEffect, useRef, useState } from "preact/hooks";
+import {
+  Download,
+  NotebookText,
+  ReceiptText,
+  Share2,
+  Wallet,
+  X,
+} from "lucide-preact";
+import { BillReport, type ReportVariant } from "./BillReport.tsx";
 import styles from "./ReportExport.module.css";
 
-// "Save as image": rasterises an off-screen BillReport to a PNG, then previews
-// it with Share (native sheet, great on mobile) / Save options.
+const BUTTONS: {
+  variant: ReportVariant;
+  label: string;
+  Icon: typeof Wallet;
+}[] = [
+  { variant: "summary", label: "Summary", Icon: Wallet },
+  { variant: "receipt", label: "Receipt", Icon: ReceiptText },
+  { variant: "full", label: "Full report", Icon: NotebookText },
+];
+
+// Three report flavours, each rasterised from an off-screen BillReport to a PNG
+// and previewed with Share / Save.
 export function ReportExport() {
   const reportRef = useRef<HTMLDivElement>(null);
+  const [variant, setVariant] = useState<ReportVariant>("summary");
+  const [capturing, setCapturing] = useState(false);
   const [dataUrl, setDataUrl] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
 
-  const generate = async () => {
-    if (!reportRef.current || busy) return;
-    setBusy(true);
-    try {
-      // Dynamic import keeps html-to-image out of the initial bundle / SSR.
-      const { toPng } = await import("html-to-image");
-      const url = await toPng(reportRef.current, {
-        pixelRatio: 2,
-        backgroundColor: "#ffffff",
-        cacheBust: true,
-      });
-      setDataUrl(url);
-    } catch (e) {
-      console.error("Failed to render report image:", e);
-    } finally {
-      setBusy(false);
-    }
+  // Rasterise after the off-screen report has rendered the requested variant.
+  useEffect(() => {
+    if (!capturing || !reportRef.current) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { toPng } = await import("html-to-image");
+        const url = await toPng(reportRef.current!, {
+          pixelRatio: 2,
+          backgroundColor: "#ffffff",
+          cacheBust: true,
+        });
+        if (!cancelled) setDataUrl(url);
+      } catch (e) {
+        console.error("Failed to render report image:", e);
+      } finally {
+        if (!cancelled) setCapturing(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [capturing, variant]);
+
+  const requestCapture = (v: ReportVariant) => {
+    if (capturing) return;
+    setVariant(v);
+    setCapturing(true);
   };
 
   const download = () => {
     if (!dataUrl) return;
     const link = document.createElement("a");
     link.href = dataUrl;
-    link.download = "split-bill.png";
+    link.download = `split-bill-${variant}.png`;
     link.click();
   };
 
@@ -41,33 +70,41 @@ export function ReportExport() {
     if (!dataUrl) return;
     try {
       const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], "split-bill.png", { type: "image/png" });
+      const file = new File([blob], `split-bill-${variant}.png`, {
+        type: "image/png",
+      });
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: "Split Bill" });
         return;
       }
     } catch {
-      // user dismissed or sharing unsupported — fall back to a download
+      // dismissed or unsupported — fall back to download
     }
     download();
   };
 
   return (
-    <>
-      <button
-        type="button"
-        class={styles.trigger}
-        onClick={generate}
-        disabled={busy}
-      >
-        <ImageDown size={16} aria-hidden="true" />
-        {busy ? "Generating…" : "Save as image"}
-      </button>
+    <div class={styles.wrap}>
+      <span class={styles.heading}>Export report</span>
+      <div class={styles.group}>
+        {BUTTONS.map(({ variant: v, label, Icon }) => (
+          <button
+            key={v}
+            type="button"
+            class={styles.reportBtn}
+            disabled={capturing}
+            onClick={() => requestCapture(v)}
+          >
+            <Icon size={18} aria-hidden="true" />
+            <span>{label}</span>
+          </button>
+        ))}
+      </div>
 
       {/* Off-screen rasterisation source. */}
       <div class={styles.offscreen} aria-hidden="true">
         <div ref={reportRef}>
-          <BillReport />
+          <BillReport variant={variant} />
         </div>
       </div>
 
@@ -96,6 +133,6 @@ export function ReportExport() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

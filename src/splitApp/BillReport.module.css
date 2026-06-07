@@ -76,12 +76,6 @@
   color: #9ca3af;
 }
 
-.transfers {
-  background: #f3f4f6;
-  border-radius: 10px;
-  padding: 10px 12px;
-}
-
 .subhead {
   font-size: 11px;
   font-weight: 700;
@@ -91,15 +85,41 @@
   margin-bottom: 6px;
 }
 
-.transferRow {
+.row {
   display: flex;
   justify-content: space-between;
+  gap: 12px;
   font-size: 14px;
-  padding: 3px 0;
+  padding: 2px 0;
 }
 
-.transferAmt {
+.strong {
   font-weight: 700;
+  white-space: nowrap;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.item {
+  padding: 5px 0;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.itemSub {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.detail {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: #4b5563;
+  padding: 1px 0 1px 12px;
 }
 
 .footer {

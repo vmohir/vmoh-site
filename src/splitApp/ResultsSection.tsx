@@ -191,10 +191,6 @@ export default function ResultsSection() {
 
   return (
     <div class={styles.resultsSection}>
-      <div class={styles.reportBar}>
-        <ReportExport />
-      </div>
-
       {showRateEditor && <ExchangeRates />}
 
       {/* With multiple per-currency ledgers the settlement method applies to
@@ -215,6 +211,8 @@ export default function ResultsSection() {
           showCurrencyHeading={multipleLedgers}
         />
       ))}
+
+      <ReportExport />
     </div>
   );
 }

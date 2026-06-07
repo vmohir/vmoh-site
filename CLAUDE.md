@@ -66,9 +66,9 @@ share riding on what they paid so balances net to zero.
 - `Item { id, name, price, currency, usedBy: Set<personId>, paidBy: Map<personId, ItemPayer>, consumedBy: Map<personId, number> }`
   — `usedBy` is who consumes the item, `paidBy` is who actually paid.
   `consumedBy` holds optional exact per-consumer amounts: empty → split `price`
-  equally across `usedBy`; non-empty → use those exact amounts (which should
-  sum to `price`). All three (`Set`/`Map`s) are serialised as arrays. Items
-  also carry `splitMode` and their own `adjustments` (per-item tip/tax/discount,
+  equally across `usedBy`; non-empty → use those exact amounts (which should sum
+  to `price`). All three (`Set`/`Map`s) are serialised as arrays. Items also
+  carry `splitMode` and their own `adjustments` (per-item tip/tax/discount,
   split across consumers pro rata and credited to the item's payer).
 - `Adjustment { id, label, value, isPercent, type: "tip" | "tax" | "discount" }`
 - `PersonTotal` is the per-person rollup; `Transfer` + `SettlementResult` are

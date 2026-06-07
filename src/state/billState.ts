@@ -121,9 +121,7 @@ export const people = signal<Person[]>(
 export const items = signal<Item[]>(
   savedState?.items ? deserializeItems(savedState.items) : [],
 );
-export const adjustments = signal<Adjustment[]>(
-  savedState?.adjustments ?? [],
-);
+export const adjustments = signal<Adjustment[]>(savedState?.adjustments ?? []);
 export const baseCurrency = signal<Currency>(
   savedState?.baseCurrency ?? getCurrencyFromLocale(),
 );

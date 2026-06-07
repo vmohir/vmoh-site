@@ -49,10 +49,7 @@ function Logo3({ size = 30 }: { size?: number }) {
 function Logo4({ size = 30 }: { size?: number }) {
   return (
     <svg viewBox="0 0 32 32" width={size} height={size}>
-      <path
-        d="M7 4h18v20l-3-2-3 2-3-2-3 2-3-2-3 2z"
-        fill="currentColor"
-      />
+      <path d="M7 4h18v20l-3-2-3 2-3-2-3 2-3-2-3 2z" fill="currentColor" />
       <line
         x1="16"
         y1="6"

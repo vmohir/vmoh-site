@@ -112,7 +112,9 @@ export function PeoplePicker({
                 }
               />
               <span class={styles.optionName}>
-                {selected.size === people.length ? "Deselect all" : "Select all"}
+                {selected.size === people.length
+                  ? "Deselect all"
+                  : "Select all"}
               </span>
             </label>
           )}
