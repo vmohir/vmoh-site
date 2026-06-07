@@ -107,45 +107,36 @@ function EditableTitle() {
   );
 }
 
-// SplitFare-style S logomark — a stack of three receipt-ribbon pieces.
-// The back two pieces (existing front + back of the S) are rotated as a
-// group by ~10° so the whole S leans dynamically. A third smaller piece
-// sits on top at a different angle, as if a third receipt was laid across
-// the others — adds depth and makes the receipt-stack metaphor explicit.
+// Logomark — paths sourced from src/assets/logo.svg (the user's hand-drawn
+// version). Colour is currentColor so the wordmark's CSS controls the
+// hue; the black overlays at low opacity are kept as is — they're depth
+// shading, not the brand colour.
 function SLogo() {
   return (
     <svg
-      viewBox="0 0 48 72"
+      viewBox="0 0 600 600"
       class={styles.logo}
       fill="currentColor"
       aria-hidden="true"
       focusable="false"
     >
-      {/* Existing two pieces rotated together as the base of the stack. */}
-      <g transform="rotate(-10 24 36)">
-        {/* Back piece — lower-right of the S, with serrated bottom. */}
-        <path d="M 20 32 L 36 32 L 40 62 L 38 64 L 36 62 L 34 64 L 32 62 L 30 64 L 28 62 L 26 64 L 24 62 L 22 64 L 20 62 Z" />
-        {/* Darkening overlay so the back reads as the shadowed side of the fold. */}
-        <path
-          fill="black"
-          fill-opacity="0.28"
-          d="M 20 32 L 36 32 L 40 62 L 38 64 L 36 62 L 34 64 L 32 62 L 30 64 L 28 62 L 26 64 L 24 62 L 22 64 L 20 62 Z"
-        />
-        {/* Front piece — upper-left of the S, with serrated top. */}
-        <path d="M 8 10 L 10 8 L 12 10 L 14 8 L 16 10 L 18 8 L 20 10 L 22 8 L 24 10 L 26 8 L 28 10 L 32 40 L 16 40 Z" />
-      </g>
-      {/* Third piece on top — a smaller receipt laid across the middle at
-          a steeper angle so it reads as a separate scrap covering the fold. */}
-      <g transform="rotate(18 24 36)">
-        <path d="M 18 18 L 20 16 L 22 18 L 24 16 L 26 18 L 28 16 L 30 18 L 34 54 L 22 54 Z" />
-        {/* A faint white wash on the top piece so it reads brighter than the
-            two below — like fresher paper laid on top. */}
-        <path
-          fill="white"
-          fill-opacity="0.18"
-          d="M 18 18 L 20 16 L 22 18 L 24 16 L 26 18 L 28 16 L 30 18 L 34 54 L 22 54 Z"
-        />
-      </g>
+      <path d="M234.62 108.403L298.628 54.7893L328.058 57.3596L325.483 86.7366L325.484 86.7376L354.913 89.3069L352.338 118.684L381.767 121.254L379.193 150.631L408.623 153.201L406.047 182.578L342.039 236.192L234.62 108.403Z" />
+      <path
+        fill="black"
+        fill-opacity="0.35"
+        d="M234.62 108.403L298.628 54.7893L328.058 57.3596L325.483 86.7366L325.484 86.7376L354.913 89.3069L352.338 118.684L381.767 121.254L379.193 150.631L408.623 153.201L406.047 182.578L342.039 236.192L234.62 108.403Z"
+      />
+      <path fill="black" fill-opacity="0.05" d="M361.717 220.244L236.728 106.92L233.711 109.451L341.219 237.574L361.717 220.244Z" />
+      <path fill="black" fill-opacity="0.05" d="M350.201 230.653L234.651 109.483L229.626 113.904L339.126 239.357L350.201 230.653Z" />
+      <path d="M365.389 489.597L300.975 543.211L271.359 540.64L273.951 511.263L273.95 511.262L244.335 508.693L246.926 479.316L217.31 476.746L219.901 447.369L190.285 444.799L192.877 415.422L257.29 361.808L365.389 489.597Z" />
+      <path
+        fill="black"
+        fill-opacity="0.35"
+        d="M365.389 489.597L300.975 543.211L271.359 540.64L273.951 511.263L273.95 511.262L244.335 508.693L246.926 479.316L217.31 476.746L219.901 447.369L190.285 444.799L192.877 415.422L257.29 361.808L365.389 489.597Z"
+      />
+      <path fill="black" fill-opacity="0.05" d="M344.516 507.192L254.618 364.423L257.634 361.892L365.142 490.015L344.516 507.192Z" />
+      <path fill="black" fill-opacity="0.05" d="M354.928 498.818L255.663 363.982L260.89 359.801L365.423 489.422L354.928 498.818Z" />
+      <path d="M187.279 278.635C151.779 236.328 157.297 173.252 199.604 137.752L235.107 107.961L412.721 319.633C448.221 361.941 442.703 425.016 400.396 460.516L364.893 490.307L187.279 278.635Z" />
     </svg>
   );
 }
