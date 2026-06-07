@@ -29,6 +29,8 @@
     --surface-bg: theme(colors.white);
     --surface-subtle-bg: oklch(94.2% 0 0);
     --surface-muted-bg: theme(colors.neutral.200);
+    /* Expanded item panel — sits just above the page (lighter than canvas). */
+    --item-panel-bg: oklch(98.4% 0 0);
 
     /* Text */
     --text-primary: theme(colors.neutral.900);
@@ -64,6 +66,7 @@
     --surface-bg: #28282e;
     --surface-subtle-bg: #222227;
     --surface-muted-bg: #33333a;
+    --item-panel-bg: #2f2f37;
 
     /* Text — primary just shy of pure white for comfort */
     --text-primary: #f5f5f7;

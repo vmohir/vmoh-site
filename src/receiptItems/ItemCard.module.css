@@ -52,14 +52,14 @@
   transform: rotate(180deg);
 }
 
-/* Expanded panel — a rounded, slightly darker inset box. */
+/* Expanded panel — a rounded inset box, distinct from the card. */
 .panel {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   margin-top: 0.5rem;
   padding: 0.75rem;
-  background: var(--surface-muted-bg);
+  background: var(--item-panel-bg);
   border-radius: var(--border-radius);
 }
 
