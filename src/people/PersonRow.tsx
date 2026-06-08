@@ -31,7 +31,7 @@ function balanceText(balance: number, symbol: string) {
   if (balance < -0.01)
     return {
       cls: styles.receive,
-      text: `Should receive ${symbol}${Math.abs(balance).toFixed(2)}`,
+      text: `Receives ${symbol}${Math.abs(balance).toFixed(2)}`,
     };
   return { cls: styles.settled, text: "Settled" };
 }
