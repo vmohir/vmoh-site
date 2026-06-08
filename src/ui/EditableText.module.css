@@ -34,3 +34,37 @@
 .field:focus {
   box-shadow: 0 0 0 1px var(--border-primary) inset;
 }
+
+/* Field with an inline prefix (e.g. a currency symbol), like the add-item
+   price field. The wrapper is the box; the input sits transparent inside. */
+.prefixWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.prefixField {
+  padding: 0.25rem 0.5rem;
+  background: var(--surface-subtle-bg);
+  border-radius: 0.375rem;
+}
+
+.prefixField:focus-within {
+  box-shadow: 0 0 0 1px var(--border-primary) inset;
+}
+
+.prefix {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.bareInput {
+  min-width: 0;
+  flex: 1;
+  padding: 0.25rem 0;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+}

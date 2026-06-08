@@ -1,4 +1,5 @@
 import styles from "./EditableText.module.css";
+import type { ComponentChildren } from "preact";
 import { useState, useEffect, useRef } from "preact/hooks";
 import { focusNextInput } from "../utils/focusNextInput.ts";
 
@@ -13,6 +14,9 @@ interface EditableTextProps {
   // When true, render with a visible field look (subtle bg, rounded) so it's
   // obviously editable — used while a row is expanded.
   field?: boolean;
+  // Optional content shown inside the field, before the input (e.g. a currency
+  // symbol), mirroring the add-item form's price field.
+  prefix?: ComponentChildren;
 }
 
 export default function EditableText({
@@ -24,6 +28,7 @@ export default function EditableText({
   validate,
   className,
   field = false,
+  prefix,
 }: EditableTextProps) {
   const [editValue, setEditValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -71,7 +76,7 @@ export default function EditableText({
     }
   };
 
-  return (
+  const input = (
     <input
       ref={inputRef}
       type={type}
@@ -81,7 +86,24 @@ export default function EditableText({
       onBlur={handleSave}
       onKeyDown={handleKeyPress}
       enterKeyHint="next"
-      class={`${className ?? ""} ${styles.editableText} ${field ? styles.field : ""}`}
+      class={
+        prefix != null
+          ? styles.bareInput
+          : `${className ?? ""} ${styles.editableText} ${field ? styles.field : ""}`
+      }
     />
+  );
+
+  if (prefix == null) return input;
+
+  return (
+    <span
+      class={`${className ?? ""} ${styles.prefixWrap} ${field ? styles.prefixField : ""}`}
+    >
+      <span class={styles.prefix} aria-hidden="true">
+        {prefix}
+      </span>
+      {input}
+    </span>
   );
 }

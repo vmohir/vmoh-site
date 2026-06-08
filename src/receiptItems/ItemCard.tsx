@@ -54,7 +54,6 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         />
 
         <div class={styles.priceGroup}>
-          {getCurrencySymbol(itemCurrency)}
           <EditableText
             className={styles.priceInput}
             value={item.price.toString()}
@@ -64,6 +63,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
             validate={validatePrice}
             autoFocus={false}
             field={open}
+            prefix={getCurrencySymbol(itemCurrency)}
           />
           {hasMultipleCurrencies.value && (
             <CurrencySelector

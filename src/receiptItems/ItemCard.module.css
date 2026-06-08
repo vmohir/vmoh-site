@@ -81,9 +81,9 @@
   min-width: 0;
 }
 
-/* Cap the price field to ~8 characters; the name flexes into the rest. */
+/* Cap the price field (now holds the currency symbol too); name flexes. */
 .priceInput {
-  width: 5rem;
+  width: 5.5rem;
 }
 
 .priceGroup {

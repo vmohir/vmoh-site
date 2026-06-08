@@ -44,7 +44,6 @@ export function ItemRow({ item, people }: ItemRowProps) {
         />
 
         <div class={card.priceGroup}>
-          {getCurrencySymbol(itemCurrency)}
           <EditableText
             className={card.priceInput}
             value={item.price.toString()}
@@ -60,6 +59,7 @@ export function ItemRow({ item, people }: ItemRowProps) {
             }}
             autoFocus={false}
             field={open}
+            prefix={getCurrencySymbol(itemCurrency)}
           />
           {hasMultipleCurrencies.value && (
             <CurrencySelector
