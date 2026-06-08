@@ -79,6 +79,8 @@
 .itemName {
   flex: 1;
   min-width: 0;
+  /* Ellipsis when blurred; focusing the input reverts to normal scroll/edit. */
+  text-overflow: ellipsis;
 }
 
 /* Cap the price field (now holds the currency symbol too); name flexes. */
