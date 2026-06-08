@@ -40,6 +40,7 @@ export function ItemRow({ item, people }: ItemRowProps) {
           value={item.name}
           onSave={(v) => updateItemName(item.id, v)}
           autoFocus={false}
+          field={open}
         />
 
         <div class={card.priceGroup}>
@@ -58,6 +59,7 @@ export function ItemRow({ item, people }: ItemRowProps) {
               return !isNaN(price) && price >= 0;
             }}
             autoFocus={false}
+            field={open}
           />
           {hasMultipleCurrencies.value && (
             <CurrencySelector

@@ -50,6 +50,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
           value={item.name}
           onSave={(v) => updateItemName(item.id, v)}
           autoFocus={false}
+          field={open}
         />
 
         <div class={styles.priceGroup}>
@@ -62,6 +63,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
             inputMode="decimal"
             validate={validatePrice}
             autoFocus={false}
+            field={open}
           />
           {hasMultipleCurrencies.value && (
             <CurrencySelector

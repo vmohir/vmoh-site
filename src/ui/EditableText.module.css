@@ -17,3 +17,20 @@
 .editableText:focus {
   border-bottom-color: var(--text-primary);
 }
+
+/* Field look — matches the add-form inputs so it's obviously editable. */
+.field {
+  padding: 0.25rem 0.5rem;
+  background: var(--surface-subtle-bg);
+  border-radius: 0.375rem;
+  border-bottom-color: transparent;
+}
+
+.field:hover,
+.field:focus {
+  border-bottom-color: transparent;
+}
+
+.field:focus {
+  box-shadow: 0 0 0 1px var(--border-primary) inset;
+}

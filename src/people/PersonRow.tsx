@@ -225,6 +225,7 @@ export default function PersonRow({
           value={person.name}
           onSave={(v) => updatePersonName(person.id, v)}
           autoFocus={false}
+          field={open}
         />
 
         <span class={styles.balances}>

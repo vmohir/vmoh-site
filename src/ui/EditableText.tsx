@@ -10,6 +10,9 @@ interface EditableTextProps {
   autoFocus?: boolean;
   validate?: (value: string) => boolean;
   className?: string;
+  // When true, render with a visible field look (subtle bg, rounded) so it's
+  // obviously editable — used while a row is expanded.
+  field?: boolean;
 }
 
 export default function EditableText({
@@ -20,6 +23,7 @@ export default function EditableText({
   autoFocus = true,
   validate,
   className,
+  field = false,
 }: EditableTextProps) {
   const [editValue, setEditValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -77,7 +81,7 @@ export default function EditableText({
       onBlur={handleSave}
       onKeyDown={handleKeyPress}
       enterKeyHint="next"
-      class={`${className} ${styles.editableText}`}
+      class={`${className ?? ""} ${styles.editableText} ${field ? styles.field : ""}`}
     />
   );
 }
