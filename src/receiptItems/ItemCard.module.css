@@ -178,6 +178,49 @@
   border-top: 1px solid var(--border-primary);
 }
 
+/* Collapsed payer summary: avatars (+ amounts when they fit). */
+.payerSummary {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.payerChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.payerChip > :first-child {
+  width: 22px;
+  height: 22px;
+  font-size: 0.625rem;
+}
+
+.payerAmt {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hidden width probe — always renders amounts so the fit test is stable. */
+.payerProbe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  gap: 0.5rem;
+  white-space: nowrap;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .label {
   font-size: 0.6875rem;
   color: var(--text-muted);
