@@ -1,9 +1,6 @@
 import { Unlink } from "lucide-preact";
 import type { ComponentChildren } from "preact";
-import type {
-  CurrencyLedger,
-  Group,
-} from "../splitApp/split.types.ts";
+import type { CurrencyLedger, Group } from "../splitApp/split.types.ts";
 import { removeGroup, updateGroupName } from "../state/billState.ts";
 import EditableText from "ui/EditableText";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";

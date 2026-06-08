@@ -122,5 +122,7 @@ test("dragging a person onto a group adds them to that group", async ({
   // And the group card should now report all three as its members. We check
   // by counting Remove buttons inside the group container.
   const groupCard = peopleSection(page).locator("[data-group-id]");
-  await expect(groupCard.getByRole("button", { name: "Remove" })).toHaveCount(3);
+  await expect(groupCard.getByRole("button", { name: "Remove" })).toHaveCount(
+    3,
+  );
 });

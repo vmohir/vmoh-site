@@ -47,9 +47,7 @@ test("grouping two members collapses their settlement into one transfer", async 
   await expect(resultsSection.getByText("2 transactions needed")).toBeVisible();
 
   // Form a group of Bob + Carol via the People section "Group" button.
-  await peopleSection
-    .getByRole("button", { name: "Group people" })
-    .click();
+  await peopleSection.getByRole("button", { name: "Group people" }).click();
   await page.getByRole("checkbox", { name: "Bob" }).check();
   await page.getByRole("checkbox", { name: "Carol" }).check();
   await page.getByRole("button", { name: "Create" }).click();
@@ -59,8 +57,6 @@ test("grouping two members collapses their settlement into one transfer", async 
   await expect(resultsSection.getByText("Bob & Carol → You")).toBeVisible();
 
   // Dissolving the group restores the two-transfer settlement.
-  await peopleSection
-    .getByRole("button", { name: "Dissolve group" })
-    .click();
+  await peopleSection.getByRole("button", { name: "Dissolve group" }).click();
   await expect(resultsSection.getByText("2 transactions needed")).toBeVisible();
 });

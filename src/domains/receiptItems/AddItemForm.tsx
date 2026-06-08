@@ -5,7 +5,6 @@ import {
   addItem,
   baseCurrency,
   hasMultipleCurrencies,
-  hasMultiplePayers,
   people,
 } from "../../state/billState.ts";
 import { CurrencySelector } from "../currencies/CurrencySelector.tsx";
@@ -98,7 +97,6 @@ export function AddItemForm() {
             selected={paidByDraft}
             onChange={setPaidByDraft}
             leading={<Wallet size={14} />}
-            multi={hasMultiplePayers.value}
           />
           <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
           <PeoplePicker

@@ -137,6 +137,20 @@
   flex-shrink: 0;
 }
 
+/* Trailing "Advanced" entry, separated from the people list. */
+.advanced {
+  margin-top: 0.125rem;
+  border-top: 1px solid var(--border-subtle);
+  border-radius: 0;
+  padding-top: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.advancedIcon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
 .selectAll {
   color: var(--text-secondary);
   font-weight: 500;

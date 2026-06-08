@@ -4,7 +4,6 @@ import type { Item, Person } from "../splitApp/split.types.ts";
 import {
   baseCurrency,
   hasMultipleCurrencies,
-  hasMultiplePayers,
   setItemAssignees,
   setItemPayers,
   updateItemCurrency,
@@ -28,6 +27,12 @@ interface ItemCardProps {
 
 export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
   const [open, setOpen] = useState(false);
+  const [payersOpen, setPayersOpen] = useState(false);
+
+  const openAdvancedPayers = () => {
+    setOpen(true);
+    setPayersOpen(true);
+  };
 
   const handleSavePrice = (newPrice: string) => {
     const price = parseFloat(newPrice);
@@ -82,7 +87,7 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
               selected={paidByIds}
               onChange={(next) => setItemPayers(item.id, [...next])}
               leading={<Wallet size={14} />}
-              multi={hasMultiplePayers.value}
+              onAdvanced={openAdvancedPayers}
             />
             <ArrowRight class={styles.flowArrow} size={14} aria-hidden="true" />
             <PeoplePicker
@@ -121,13 +126,17 @@ export default function ItemCard({ item, people, onRemove }: ItemCardProps) {
         </button>
       </div>
 
-      {hasMultiplePayers.value && item.paidBy.size > 1 && (
-        <ItemPayers item={item} people={people} />
-      )}
-
       {open && (
         <div class={styles.panel}>
           <ConsumedAmounts item={item} people={people} />
+          {people.length > 0 && (
+            <ItemPayers
+              item={item}
+              people={people}
+              open={payersOpen}
+              onToggle={() => setPayersOpen((o) => !o)}
+            />
+          )}
           <ItemAdjustments item={item} />
         </div>
       )}

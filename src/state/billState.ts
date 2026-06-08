@@ -318,10 +318,7 @@ export function addMemberToGroup(groupId: string, personId: string): void {
   );
 }
 
-export function removeMemberFromGroup(
-  groupId: string,
-  personId: string,
-): void {
+export function removeMemberFromGroup(groupId: string, personId: string): void {
   groups.value = groups.value
     .map((g) => (g.id === groupId ? withMemberOut(g, personId) : g))
     .filter((g) => g.memberIds.length >= 2);
@@ -330,8 +327,7 @@ export function removeMemberFromGroup(
 // Person → group lookup, computed for convenience in the UI.
 export const groupByPersonId = computed<Map<string, Group>>(() => {
   const map = new Map<string, Group>();
-  for (const g of groups.value)
-    for (const id of g.memberIds) map.set(id, g);
+  for (const g of groups.value) for (const id of g.memberIds) map.set(id, g);
   return map;
 });
 
@@ -392,9 +388,7 @@ export function movePersonRelative(
         members.splice(insertAt, 0, personId);
         return { ...g, memberIds: members };
       }
-      return g.memberIds.includes(personId)
-        ? withMemberOut(g, personId)
-        : g;
+      return g.memberIds.includes(personId) ? withMemberOut(g, personId) : g;
     })
     .filter((g) => g.memberIds.length >= 2);
 }

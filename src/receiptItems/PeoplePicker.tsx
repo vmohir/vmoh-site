@@ -1,5 +1,5 @@
 import type { VNode } from "preact";
-import { Check, ChevronDown } from "lucide-preact";
+import { Check, ChevronDown, SlidersHorizontal } from "lucide-preact";
 import type { Person } from "../splitApp/split.types.ts";
 import { PersonAvatar } from "ui/PersonAvatar.tsx";
 import { Popover } from "ui/Popover.tsx";
@@ -15,6 +15,9 @@ interface PeoplePickerProps {
   leading?: VNode;
   // True → checkbox list, multi-select. False → single-select, closes on pick.
   multi?: boolean;
+  // When set, a trailing "Advanced" option is shown that runs this (e.g. to
+  // reveal the multi-payer amounts editor) and closes the dropdown.
+  onAdvanced?: () => void;
 }
 
 // Multi/single-select dropdown of people for an item.
@@ -25,6 +28,7 @@ export function PeoplePicker({
   onChange,
   leading,
   multi = false,
+  onAdvanced,
 }: PeoplePickerProps) {
   const { open, toggle, close, wrapRef, triggerRef, alignEnd } =
     useDropdown<HTMLButtonElement>({ alignByViewport: true });
@@ -151,6 +155,25 @@ export function PeoplePicker({
               </button>
             );
           })}
+
+          {onAdvanced && (
+            <button
+              type="button"
+              class={`${styles.option} ${styles.advanced}`}
+              role="menuitem"
+              onClick={() => {
+                onAdvanced();
+                close();
+              }}
+            >
+              <SlidersHorizontal
+                size={14}
+                class={styles.advancedIcon}
+                aria-hidden="true"
+              />
+              <span class={styles.optionName}>Advanced…</span>
+            </button>
+          )}
         </Popover>
       )}
     </div>

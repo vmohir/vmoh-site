@@ -13,14 +13,8 @@ interface GroupAdderProps {
 
 // Opens a popover listing ungrouped people; pick 2+ to create a group.
 export default function GroupAdder({ ungrouped }: GroupAdderProps) {
-  const {
-    open,
-    toggle,
-    close,
-    wrapRef,
-    triggerRef,
-    alignEnd,
-  } = useDropdown<HTMLButtonElement>({ alignByViewport: true });
+  const { open, toggle, close, wrapRef, triggerRef, alignEnd } =
+    useDropdown<HTMLButtonElement>({ alignByViewport: true });
   const [picked, setPicked] = useState<Set<string>>(new Set());
 
   const togglePick = (id: string) => {
@@ -51,7 +45,9 @@ export default function GroupAdder({ ungrouped }: GroupAdderProps) {
         aria-haspopup="dialog"
         disabled={disabled}
         onClick={toggle}
-        title={disabled ? "Need 2+ ungrouped people to form a group" : "Group people"}
+        title={
+          disabled ? "Need 2+ ungrouped people to form a group" : "Group people"
+        }
       >
         <Link2 size={14} aria-hidden="true" />
         Group
