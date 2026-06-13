@@ -12,52 +12,15 @@ import {
   people,
   resetAll,
   settlementAlgorithm,
-  toggleHasMultipleCurrencies,
-  toggleUseExchangeRates,
-  updateBaseCurrency,
   useExchangeRates,
 } from "../state/billState";
 import { theme, toggleTheme } from "../state/theme";
 import { LogoOptions } from "../ui/LogoOptions.tsx";
-import { CurrencySelector } from "../domains/currencies/CurrencySelector.tsx";
+import { CurrencyMenu } from "../domains/currencies/CurrencyMenu.tsx";
 import { Popover } from "../ui/Popover.tsx";
 import { useDropdown } from "../ui/useDropdown.ts";
 import { buildSharePayload, buildShareUrl } from "../utils/share.ts";
-import type { Signal } from "@preact/signals";
 import styles from "./AppHeader.module.css";
-
-function CurrencyControl() {
-  return (
-    <CurrencySelector
-      variant="ghost"
-      value={baseCurrency.value}
-      onChange={updateBaseCurrency}
-    />
-  );
-}
-
-interface SwitchProps {
-  label: string;
-  signal: Signal<boolean>;
-  onToggle: () => void;
-}
-
-function Switch({ label, signal, onToggle }: SwitchProps) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={signal.value}
-      class={`${styles.toggle} ${signal.value ? styles.toggleOn : ""}`}
-      onClick={onToggle}
-    >
-      <span class={styles.toggleTrack}>
-        <span class={styles.toggleThumb} />
-      </span>
-      <span class={styles.toggleLabel}>{label}</span>
-    </button>
-  );
-}
 
 // Stacked twin of the "Split" wordmark: the top layer is contentEditable and
 // the source of truth; the orange .titleTextSplit layer mirrors the signal
@@ -274,27 +237,15 @@ export default function AppHeader() {
             <Settings size={18} aria-hidden="true" />
           </button>
           {menuOpen && (
-            <Popover align={menuAlignEnd ? "end" : "start"} role="menu">
+            <Popover
+              align={menuAlignEnd ? "end" : "start"}
+              role="menu"
+              overflow="visible"
+            >
               <div class={styles.menuItem}>
                 <span class={styles.menuLabel}>Currency</span>
-                <CurrencyControl />
+                <CurrencyMenu />
               </div>
-              <div class={styles.menuItem}>
-                <Switch
-                  label="Multiple currencies"
-                  signal={hasMultipleCurrencies}
-                  onToggle={toggleHasMultipleCurrencies}
-                />
-              </div>
-              {hasMultipleCurrencies.value && (
-                <div class={styles.menuItem}>
-                  <Switch
-                    label="Exchange between currencies"
-                    signal={useExchangeRates}
-                    onToggle={toggleUseExchangeRates}
-                  />
-                </div>
-              )}
               <div class={styles.menuItem}>
                 <ThemeToggle />
               </div>

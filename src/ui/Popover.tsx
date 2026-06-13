@@ -5,6 +5,9 @@ interface PopoverProps {
   align?: "start" | "end";
   role?: "menu" | "listbox";
   class?: string;
+  // "visible" lets the surface overflow its box (e.g. for a nested dropdown);
+  // default "auto" keeps a scrollable, clipped surface for long lists.
+  overflow?: "auto" | "visible";
   children: ComponentChildren;
 }
 
@@ -14,11 +17,12 @@ export function Popover({
   align = "end",
   role = "menu",
   class: extra,
+  overflow = "auto",
   children,
 }: PopoverProps) {
   return (
     <div
-      class={`${styles.popover} ${align === "end" ? styles.alignEnd : styles.alignStart} ${extra ?? ""}`}
+      class={`${styles.popover} ${align === "end" ? styles.alignEnd : styles.alignStart} ${overflow === "visible" ? styles.overflowVisible : ""} ${extra ?? ""}`}
       role={role}
     >
       {children}

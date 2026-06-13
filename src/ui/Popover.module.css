@@ -35,3 +35,9 @@
   left: auto;
   right: 0;
 }
+
+/* Allow nested dropdowns to overflow instead of being clipped/scrolled. */
+.overflowVisible {
+  overflow: visible;
+  max-height: none;
+}
