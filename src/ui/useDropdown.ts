@@ -148,7 +148,10 @@ export function useDropdown<T extends HTMLElement = HTMLButtonElement>(
     open,
     setOpen,
     toggle: () => setOpen((v) => !v),
-    close: () => setOpen(false),
+    close: () => {
+      setOpen(false);
+      triggerRef.current?.focus();
+    },
     wrapRef,
     triggerRef,
     menuRef,
