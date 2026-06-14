@@ -2,6 +2,7 @@
 import AppHeader from './AppHeader';
 import PeopleSection from '../people/PeopleSection';
 import ItemsSection from '../receiptItems/ItemsSection';
+import { CurrencyMenu } from '../domains/currencies/CurrencyMenu';
 import AdjustmentsSection from './AdjustmentsSection';
 import ResultsSection from './ResultsSection';
 ---
@@ -23,7 +24,10 @@ import ResultsSection from './ResultsSection';
   </section>
 
   <section class="items-section">
-    <h2>Items</h2>
+    <div class="section-header">
+      <CurrencyMenu client:only="preact" />
+      <h2>Items</h2>
+    </div>
     <ItemsSection client:only="preact" />
   </section>
 
@@ -88,5 +92,11 @@ import ResultsSection from './ResultsSection';
 
   section {
     @apply flex flex-col gap-3;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
   }
 </style>

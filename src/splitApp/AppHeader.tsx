@@ -16,7 +16,6 @@ import {
 } from "../state/billState";
 import { theme, toggleTheme } from "../state/theme";
 import { LogoOptions } from "../ui/LogoOptions.tsx";
-import { CurrencyMenu } from "../domains/currencies/CurrencyMenu.tsx";
 import { Popover } from "../ui/Popover.tsx";
 import { useDropdown } from "../ui/useDropdown.ts";
 import { buildSharePayload, buildShareUrl } from "../utils/share.ts";
@@ -237,15 +236,7 @@ export default function AppHeader() {
             <Settings size={18} aria-hidden="true" />
           </button>
           {menuOpen && (
-            <Popover
-              align={menuAlignEnd ? "end" : "start"}
-              role="menu"
-              overflow="visible"
-            >
-              <div class={styles.menuItem}>
-                <span class={styles.menuLabel}>Currency</span>
-                <CurrencyMenu />
-              </div>
+            <Popover align={menuAlignEnd ? "end" : "start"} role="menu">
               <div class={styles.menuItem}>
                 <ThemeToggle />
               </div>
