@@ -147,6 +147,12 @@ export default function AppHeader() {
     alignEnd: menuAlignEnd,
   } = useDropdown<HTMLButtonElement>({ alignByViewport: true });
 
+  // Drop the static loading-shell rendered by SplitBillApp.astro once the
+  // real, interactive header is mounted.
+  useEffect(() => {
+    document.getElementById("app-loading-shell")?.remove();
+  }, []);
+
   const handleReset = () => {
     if (
       window.confirm(
