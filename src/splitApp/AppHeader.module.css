@@ -38,44 +38,24 @@
   display: inline-block;
 }
 
-.wordmark .titleText,
-.wordmark .titleTextSplit {
-  transition: all 0.2s ease-in-out;
-}
 .titleText {
-  /*clip-path: polygon(0 0, 0 70%, 100% 30%, 100% 0);*/
   clip-path: polygon(0 0, 0 75%, 100% 39%, 100% 0);
-  /* The editable wordmark — make it stack above the orange mirror and read
-     as editable, and strip the default focus outline so caret stays clean. */
   position: relative;
   z-index: 1;
   margin: 0;
-  cursor: text;
-  outline: none;
   white-space: pre;
 }
-.titleText:empty::before {
-  content: "Split";
-  color: var(--text-muted);
-}
+
 .titleTextSplit {
   display: inline-block;
   position: absolute;
   inset: 0px;
   margin: 0;
   transform: translateX(1.3px) translateY(1.3px);
-  /*clip-path: polygon(0 70%, 100% 30%, 100% 100%, 0 100%);*/
   clip-path: polygon(0 72%, 100% 37%, 100% 100%, 0 100%);
   color: #a75300;
   pointer-events: none;
   user-select: none;
-}
-
-.title:hover .titleText {
-  transform: translateX(-1px) translateY(-1px);
-}
-.title:hover .titleTextSplit {
-  transform: translateX(2.3px) translateY(2.3px);
 }
 
 .rightCluster {

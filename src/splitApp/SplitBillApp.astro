@@ -35,8 +35,8 @@ import ResultsSection from './ResultsSection';
         <path d="M187.279 278.635C151.779 236.328 157.297 173.252 199.604 137.752L235.107 107.961L412.721 319.633C448.221 361.941 442.703 425.016 400.396 460.516L364.893 490.307L187.279 278.635Z" />
       </svg>
       <span class="loading-wordmark">
-        <span class="loading-title-text" id="app-loading-title-text">Split</span>
-        <span class="loading-title-text-split" aria-hidden="true" id="app-loading-title-shadow">Split</span>
+        <span class="loading-title-text">Split</span>
+        <span class="loading-title-text-split" aria-hidden="true">Split</span>
       </span>
     </h1>
     <svg
@@ -50,20 +50,6 @@ import ResultsSection from './ResultsSection';
       <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="44" stroke-dashoffset="22" />
     </svg>
   </div>
-
-  <script is:inline>
-    // Seed the loading wordmark with the user's saved title so we don't flash
-    // the default "Split" before the real header mounts.
-    try {
-      const stored = localStorage.getItem("split-bill-app-title");
-      if (stored) {
-        const a = document.getElementById("app-loading-title-text");
-        const b = document.getElementById("app-loading-title-shadow");
-        if (a) a.textContent = stored;
-        if (b) b.textContent = stored;
-      }
-    } catch {}
-  </script>
 
   <AppHeader client:only="preact" />
 

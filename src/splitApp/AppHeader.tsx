@@ -1,6 +1,5 @@
 import { Check, Moon, RotateCcw, Settings, Share2, Sun } from "lucide-preact";
-import { useEffect, useRef, useState } from "preact/hooks";
-import { appTitle } from "../state/appTitle";
+import { useEffect, useState } from "preact/hooks";
 import {
   adjustments,
   baseCurrency,
@@ -21,47 +20,16 @@ import { useDropdown } from "../ui/useDropdown.ts";
 import { buildSharePayload, buildShareUrl } from "../utils/share.ts";
 import styles from "./AppHeader.module.css";
 
-// Stacked twin of the "Split" wordmark: the top layer is contentEditable and
-// the source of truth; the orange .titleTextSplit layer mirrors the signal
-// so typing in the top live-updates the bottom. We seed the editable layer's
-// textContent once via the ref and never re-render its children — pushing
-// the signal back through JSX would clobber the caret on every keystroke.
-function EditableTitle() {
-  const editRef = useRef<HTMLParagraphElement | null>(null);
-
-  useEffect(() => {
-    if (editRef.current && editRef.current.textContent !== appTitle.value) {
-      editRef.current.textContent = appTitle.value;
-    }
-  }, []);
-
-  const handleInput = (e: Event) => {
-    const el = e.currentTarget as HTMLElement;
-    // Strip newlines so Enter / paste-with-linebreaks can't break the wordmark.
-    const text = (el.textContent ?? "").replace(/\n/g, "");
-    if (text !== el.textContent) el.textContent = text;
-    appTitle.value = text;
-  };
-
+// Stacked twin of the "Split" wordmark — the orange .titleTextSplit layer
+// sits behind the top layer with an offset for the receipt-shadow effect.
+function Title() {
   return (
     <h1 class={styles.title}>
       <SLogo />
       <span class={styles.wordmark}>
-        <p
-          ref={editRef}
-          class={styles.titleText}
-          contentEditable
-          spellcheck={false}
-          onInput={handleInput}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              (e.currentTarget as HTMLElement).blur();
-            }
-          }}
-        />
+        <p class={styles.titleText}>Split</p>
         <p class={styles.titleTextSplit} aria-hidden="true">
-          {appTitle.value}
+          Split
         </p>
       </span>
     </h1>
@@ -204,7 +172,7 @@ export default function AppHeader() {
 
   return (
     <header class={styles.header}>
-      <EditableTitle />
+      <Title />
 
       <div class={styles.rightCluster}>
         <button
