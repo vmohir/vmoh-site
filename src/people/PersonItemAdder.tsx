@@ -7,7 +7,7 @@ interface PersonItemAdderProps {
 
 export const PersonItemAdder = ({ onAdd }: PersonItemAdderProps) => {
   return (
-    <button onClick={onAdd} class={styles.personItemAdderButton}>
+    <button type="button" onClick={onAdd} class={styles.personItemAdderButton}>
       <Plus size={14} aria-hidden="true" />
       Add Person
     </button>

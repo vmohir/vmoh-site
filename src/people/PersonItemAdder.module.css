@@ -14,7 +14,8 @@
   transition: all var(--transition);
 }
 
-.personItemAdderButton:hover {
+.personItemAdderButton:hover,
+.personItemAdderButton:focus-visible {
   border-color: var(--border-primary);
   color: var(--text-primary);
   background: var(--surface-bg);
