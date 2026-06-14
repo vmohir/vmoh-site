@@ -25,8 +25,8 @@ import ResultsSection from './ResultsSection';
 
   <section class="items-section">
     <div class="section-header">
-      <CurrencyMenu client:only="preact" />
       <h2>Items</h2>
+      <CurrencyMenu client:only="preact" />
     </div>
     <ItemsSection client:only="preact" />
   </section>
@@ -97,6 +97,7 @@ import ResultsSection from './ResultsSection';
   .section-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.625rem;
   }
 </style>
