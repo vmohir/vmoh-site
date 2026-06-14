@@ -16,7 +16,7 @@ import styles from "./CurrencyMenu.module.css";
 // Base-currency picker plus the currency-related toggles, in one dropdown that
 // uses the app's shared Popover (like the settlement / payer menus).
 export function CurrencyMenu() {
-  const { open, toggle, close, wrapRef, triggerRef, alignEnd } =
+  const { open, toggle, close, wrapRef, triggerRef, menuRef, alignEnd } =
     useDropdown<HTMLButtonElement>({ alignByViewport: true });
 
   return (
@@ -34,7 +34,7 @@ export function CurrencyMenu() {
       </button>
 
       {open && (
-        <Popover align={alignEnd ? "end" : "start"} role="menu" overflow="auto">
+        <Popover align={alignEnd ? "end" : "start"} role="menu" overflow="auto" menuRef={menuRef}>
           <div class={styles.sectionLabel}>Base currency</div>
           {CURRENCY_LIST.map((c) => {
             const code = c.code as Currency;

@@ -143,6 +143,7 @@ export default function AppHeader() {
     toggle: toggleMenu,
     wrapRef,
     triggerRef: menuTriggerRef,
+    menuRef,
     alignEnd: menuAlignEnd,
   } = useDropdown<HTMLButtonElement>({ alignByViewport: true });
 
@@ -236,7 +237,7 @@ export default function AppHeader() {
             <Settings size={18} aria-hidden="true" />
           </button>
           {menuOpen && (
-            <Popover align={menuAlignEnd ? "end" : "start"} role="menu">
+            <Popover align={menuAlignEnd ? "end" : "start"} role="menu" menuRef={menuRef}>
               <div class={styles.menuItem}>
                 <ThemeToggle />
               </div>

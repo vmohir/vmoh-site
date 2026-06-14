@@ -8,6 +8,8 @@ interface PopoverProps {
   // "visible" lets the surface overflow its box (e.g. for a nested dropdown);
   // default "auto" keeps a scrollable, clipped surface for long lists.
   overflow?: "auto" | "visible";
+  // Ref from useDropdown for keyboard navigation.
+  menuRef?: { current: HTMLDivElement | null };
   children: ComponentChildren;
 }
 
@@ -18,10 +20,12 @@ export function Popover({
   role = "menu",
   class: extra,
   overflow = "auto",
+  menuRef,
   children,
 }: PopoverProps) {
   return (
     <div
+      ref={menuRef}
       class={`${styles.popover} ${align === "end" ? styles.alignEnd : styles.alignStart} ${overflow === "visible" ? styles.overflowVisible : ""} ${extra ?? ""}`}
       role={role}
     >

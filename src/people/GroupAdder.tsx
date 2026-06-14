@@ -13,7 +13,7 @@ interface GroupAdderProps {
 
 // Opens a popover listing ungrouped people; pick 2+ to create a group.
 export default function GroupAdder({ ungrouped }: GroupAdderProps) {
-  const { open, toggle, close, wrapRef, triggerRef, alignEnd } =
+  const { open, toggle, close, wrapRef, triggerRef, menuRef, alignEnd } =
     useDropdown<HTMLButtonElement>({ alignByViewport: true });
   const [picked, setPicked] = useState<Set<string>>(new Set());
 
@@ -53,7 +53,7 @@ export default function GroupAdder({ ungrouped }: GroupAdderProps) {
         Group
       </button>
       {open && (
-        <Popover align={alignEnd ? "end" : "start"} role="listbox">
+        <Popover align={alignEnd ? "end" : "start"} role="listbox" menuRef={menuRef}>
           {ungrouped.length === 0 ? (
             <div class={styles.empty}>No ungrouped people</div>
           ) : (

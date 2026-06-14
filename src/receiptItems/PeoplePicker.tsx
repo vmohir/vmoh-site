@@ -30,7 +30,7 @@ export function PeoplePicker({
   multi = false,
   onAdvanced,
 }: PeoplePickerProps) {
-  const { open, toggle, close, wrapRef, triggerRef, alignEnd } =
+  const { open, toggle, close, wrapRef, triggerRef, menuRef, alignEnd } =
     useDropdown<HTMLButtonElement>({ alignByViewport: true });
 
   const selectedPeople = people.filter((p) => selected.has(p.id));
@@ -101,6 +101,7 @@ export function PeoplePicker({
         <Popover
           align={alignEnd ? "end" : "start"}
           role={multi ? "listbox" : "menu"}
+          menuRef={menuRef}
         >
           {multi && people.length > 1 && (
             <label class={`${styles.option} ${styles.selectAll}`}>
