@@ -17,10 +17,6 @@ export default function AdjustmentsSection() {
         ))}
       </div>
 
-      {adjustments.value.length === 0 && (
-        <p class={styles.emptyMessage}>No adjustments added yet</p>
-      )}
-
       <button class={styles.addButton} onClick={handleAddAdjustment}>
         <Plus size={14} aria-hidden="true" />
         Add Adjustment
