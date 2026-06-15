@@ -38,6 +38,11 @@
   display: inline-block;
 }
 
+.titleText,
+.titleTextSplit {
+  transition: transform 0.2s ease-in-out;
+}
+
 .titleText {
   clip-path: polygon(0 0, 0 75%, 100% 39%, 100% 0);
   position: relative;
@@ -56,6 +61,14 @@
   color: #a75300;
   pointer-events: none;
   user-select: none;
+}
+
+.title:hover .titleText {
+  transform: translateX(-1px) translateY(-1px);
+}
+
+.title:hover .titleTextSplit {
+  transform: translateX(2.3px) translateY(2.3px);
 }
 
 .rightCluster {
