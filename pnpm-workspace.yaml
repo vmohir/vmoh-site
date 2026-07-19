@@ -2,6 +2,13 @@ packages:
   - 'packages/*'
   - '!packages/old'
 
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  netlify-cli: true
+  sharp: true
+  unix-dgram: true
+
 overrides:
   devalue@>=5.1.0 <5.6.2: '>=5.6.2'
   devalue@>=5.3.0 <=5.6.1: '>=5.6.2'
