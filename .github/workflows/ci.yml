@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build homepage + old-homepage
+        run: pnpm run build
+
+      - name: Build split-bill
+        run: pnpm run build:split-bill
+
+      - name: Build chooser
+        run: pnpm run build:chooser
+
+      - name: Format check (split-bill)
+        run: pnpm --filter splitted format:check
+
+      - name: Format check (chooser)
+        run: pnpm --filter chooser-online format:check
+
+      - name: Build slides
+        run: pnpm run build:slides
