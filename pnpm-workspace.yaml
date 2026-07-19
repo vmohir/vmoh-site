@@ -1,6 +1,6 @@
 packages:
   - 'packages/*'
-  - '!packages/old'
+  - '!packages/old-homepage'
 
 allowBuilds:
   '@parcel/watcher': true

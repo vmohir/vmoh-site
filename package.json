@@ -7,11 +7,11 @@
   "scripts": {
     "prebuild": "rm -rf dist",
     "build:homepage": "pnpm --filter @vmoh-site/homepage build",
-    "build:old": "cd packages/old && npm run build",
-    "build": "npm run build:homepage && npm run build:old",
+    "build:old-homepage": "cd packages/old-homepage && npm run build",
+    "build": "npm run build:homepage && npm run build:old-homepage",
     "build:split-bill": "pnpm --filter splitted build",
-    "build:chooser-online": "pnpm --filter chooser-online build",
-    "build:vahid-slides": "cd packages/vahid-slides && pnpm install --frozen-lockfile && pnpm run build"
+    "build:chooser": "pnpm --filter chooser-online build",
+    "build:slides": "cd packages/slides && pnpm install --frozen-lockfile && pnpm run build"
   },
   "devDependencies": {
     "netlify-cli": "^23.14.0"
