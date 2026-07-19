@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <div id="app"></div>
+</Layout>
+
+<script>
+  // Skip Astro's islands runtime — we have a single root component, so a
+  // direct Preact `render` saves the inline astro-island element definition,
+  // the islands client.js, and the renderer chunk.
+  import { h, render } from "preact";
+  import ChooserApp from "../chooser/ChooserApp";
+
+  const root = document.getElementById("app");
+  if (root) render(h(ChooserApp, null), root);
+</script>
