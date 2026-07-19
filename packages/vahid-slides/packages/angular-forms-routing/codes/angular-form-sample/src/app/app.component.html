@@ -1,0 +1,16 @@
+<form [formGroup]="userInfoForm" (submit)="test($event)">
+
+    <input type="text" formControlName="username">
+
+
+    <div>
+        {{userInfoForm.get('username').errors | json}}
+        <br>
+        dirty: {{userInfoForm.get('username').dirty}}
+        <br>
+        touched: {{userInfoForm.get('username').touched}}
+        <br>
+    </div>
+
+    <button type="submit">submit</button>
+</form>

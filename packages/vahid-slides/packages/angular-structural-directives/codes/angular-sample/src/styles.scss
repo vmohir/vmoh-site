@@ -1,0 +1,33 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+}
+section {
+    background: #f9f9f9;
+    border-radius: 4px;
+    padding: 24px;
+    box-shadow: 0 2px 5px #aaaaaa;
+    margin: 16px;
+    button {
+        font-size: 18px;
+        border-radius: 4px;
+        background: #0068ff;
+        margin: 16px 0;
+        padding: 8px 16px;
+        border: none;
+        outline: none;
+        color: #ffffff;
+    }
+
+    ul {
+        li {
+            margin-bottom: 8px;
+            > span {
+                margin: 0 8px;
+                display: inline-block;
+            }
+        }
+    }
+}

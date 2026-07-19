@@ -1,0 +1,8 @@
+{
+  "name": "@vahid-slides/front-end-tools",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p ../../dist/packages/front-end-tools && cp -r index.html markdown.md ../../dist/packages/front-end-tools/"
+  }
+}

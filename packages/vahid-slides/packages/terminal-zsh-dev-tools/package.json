@@ -1,0 +1,8 @@
+{
+  "name": "@vahid-slides/terminal-zsh-dev-tools",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p ../../dist/packages/terminal-zsh-dev-tools && cp -r index.html markdown.md station.png ../../dist/packages/terminal-zsh-dev-tools/"
+  }
+}

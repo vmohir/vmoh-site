@@ -1,0 +1,12 @@
+h3 {
+  position: relative;
+}
+
+h3:before {
+  content: '.';
+  position: absolute;
+  top: -25px;
+  line-height: 1;
+  font-size: 64px;
+  left: -22px;
+}

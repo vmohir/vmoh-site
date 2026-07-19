@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css?family=Fira+Code|Fira+Sans|Rancho&display=swap');
+
+body {
+  font-family: 'Fira Sans', sans-serif;
+}
+p {
+  margin-bottom: 0;
+}
+h1,
+h2,
+h3 {
+  font-family: 'Rancho', cursive;
+  font-weight: normal;
+}
+h4,
+h5,
+h6 {
+  font-family: 'Rancho', cursive;
+  font-weight: normal;
+}
+h1 {
+  font-size: 6rem !important;
+}
+
+h2 {
+  font-size: 45px !important;
+}
+
+h3 {
+  font-size: 35px !important;
+}
+
+.remark-slides-area code,
+.remark-preview-area code {
+  background: #111;
+  border-radius: 5px;
+  padding: 2px 7px;
+  color: #89ff00;
+}
+a {
+  color: #4fc3f7;
+}
+a:hover {
+  color: #a3e2ff;
+}
+
+img {
+  max-width: 100%;
+}
+.remark-code,
+.remark-inline-code {
+  font-family: 'Fira Code', monospace;
+}
+
+.remark-slide-content {
+  background: #272822;
+  color: #fff;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.fz-14 {
+  font-size: 14px;
+}
+
+.doc-link {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+}
+
+.remark-slide {
+  position: relative;
+}
+
+.doc-link a {
+  display: block;
+  color: #2196f3;
+  border-radius: 9px;
+  padding: 5px 7px;
+  line-height: 1;
+  font-size: 12px;
+  position: relative;
+  text-align: right;
+  margin-bottom: -2px;
+}
+
+.doc-link:before {
+  content: '↓ links';
+  color: #999;
+  position: absolute;
+  right: 0;
+  font-size: 11px;
+  font-family: 'Fira Code';
+  top: -20px;
+}
+
+.doc-link a:before {
+  content: '•';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-40%);
+  right: -1px;
+}
+
+.note:after {
+  content: '*';
+  color: #777;
+  padding: 0 2px;
+}
+
+.note {
+  display: inline-block;
+}
+
+.remark-slide-content.full-page-image {
+  padding: 0 !important;
+  vertical-align: middle;
+  background: #fff;
+}
+.remark-slide-content.full-page-image .remark-slide-number {
+  color: #444444;
+}
+.remark-slide-content.full-page-image img {
+  display: block;
+  margin: 0 auto;
+}
+.links-list {
+  display: block;
+  padding-left: 30px;
+  margin-bottom: 18px;
+}
+.links-list a {
+  display: list-item;
+}

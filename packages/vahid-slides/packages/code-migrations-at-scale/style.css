@@ -1,0 +1,46 @@
+:root {
+  --slidev-slide-container-background: #122626 !important;
+  --slidev-code-background: #172323 !important;
+  /*--slidev-code-foreground: #eee;*/
+  /*--slidev-code-tab-divider: #222222;*/
+  /*--slidev-code-tab-text-color: #98989f;*/
+  /*--slidev-code-tab-active-text-color: #dfdfd6;*/
+}
+.dark .slidev-slide-content {
+  --un-bg-opacity: 0.4 !important;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family:
+    "Raleway",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+  font-weight: 500;
+}
+strong {
+  color: #00ce9f;
+}
+.slidev-layout.intro {
+  h1 {
+    text-shadow: 3px 4px 0px rgba(0, 0, 0, 0.3);
+  }
+}
+.slidev-layout a {
+  border-bottom: none;
+}

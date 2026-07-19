@@ -1,0 +1,26 @@
+<app-ngcontentchild>
+    <span ngc-title>Component Title</span>
+
+    <div>
+        <ul>
+            <li *ngFor="let item of arr">{{ item.value }}</li>
+        </ul>
+    </div>
+
+    <div ngc-footer>
+        <button (click)="clearButtonClick()">Clear Array</button>
+    </div>
+</app-ngcontentchild>
+<app-ngcontentchild>
+    <span ngc-title>Component Title</span>
+
+    <div appTest #myDirective="appTest">
+        <ul>
+            <li *ngFor="let item of arr">{{ item.value }}</li>
+        </ul>
+    </div>
+
+    <div ngc-footer>
+        <button (click)="clearButtonClick()">Clear Array</button>
+    </div>
+</app-ngcontentchild>

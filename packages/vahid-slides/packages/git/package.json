@@ -1,0 +1,8 @@
+{
+  "name": "@vahid-slides/git",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p ../../dist/packages/git && cp -r index.html markdown.md images/ termynal.js termynal.css highlight.pack.js style.css ../../dist/packages/git/"
+  }
+}

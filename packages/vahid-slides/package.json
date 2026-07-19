@@ -1,0 +1,22 @@
+{
+  "name": "vahid-slides",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "pnpm -r --workspace-concurrency=1 build"
+  },
+  "devDependencies": {
+    "oxlint": "^1.30.0",
+    "prettier": "^3.7.4",
+    "prettier-plugin-slidev": "^1.0.5"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

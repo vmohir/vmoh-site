@@ -1,0 +1,36 @@
+<section>
+    <!-- ngIf else -->
+    <div *ngIf="isLoggedIn; else loggedOut">
+        Welcome back, friend.
+    </div>
+
+    <ng-template #loggedOut>
+        Please friend, login.
+    </ng-template>
+</section>
+
+<section>
+    <!-- ngIf then else -->
+    <ng-container *ngIf="isLoggedIn; then loggedIn; else loggedOut"></ng-container>
+
+    <ng-template #loggedIn>
+        <div>
+            Welcome back, friend.
+        </div>
+    </ng-template>
+    <ng-template #loggedOut>
+        <div>
+            Please friend, login.
+        </div>
+    </ng-template>
+</section>
+
+<section>
+    <!-- Create scoped variable in html -->
+    <div *ngIf="bigObject.deep.data.userInfo; let userInfo">
+        <span>{{ userInfo.name }}</span>
+    </div>
+    <div *ngIf="bigObject.deep.data.userInfo as userInfo">
+        <span>{{ userInfo.name }}</span>
+    </div>
+</section>

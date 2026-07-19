@@ -1,0 +1,8 @@
+{
+  "name": "@vahid-slides/ux-concepts",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p ../../dist/packages/ux-concepts && cp -r index.html markdown.md images/ style.css ../../dist/packages/ux-concepts/"
+  }
+}

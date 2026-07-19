@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Git</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="../slides-style-v2.css" />
+    <link rel="stylesheet" href="termynal.css" />
+  </head>
+
+  <body>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+    <script>
+      var slideshow = remark.create({
+        sourceUrl: 'markdown.md',
+        highlightLanguage: 'bash',
+        highlightLines: true,
+        highlightStyle: 'ir-black',
+      });
+    </script>
+    <script src="highlight.pack.js"></script>
+    <!-- <script src="termynal.js"></script> -->
+    <script>
+      setTimeout(() => {
+        var x = Array.from(document.querySelectorAll('[data-termynal] [data-ty="input"]'));
+        x.forEach(t => {
+          console.log('TCL: t', t);
+          hljs.highlightBlock(t);
+        });
+      });
+      //   slideshow.on('showSlide', function(e) {
+      // setTimeout(() => {
+      //   //   console.log('TCL: Array.from(document.', Array.from(document.querySelectorAll('.remark-slide-container.remark-visible')));
+      //   //   Array.from(document.querySelectorAll('.remark-slide-container.remark-visible [data-termynal]'))
+      //   console.log('TCL: x', x);
+      //   x.filter(item => !item.classList.contains('termynal-finished')).forEach(container => {
+      //     console.log('TCL: container', container);
+      //     new Termynal(container, { lineDelay: 700 });
+      //   });
+      // });
+      //   });
+    </script>
+  </body>
+</html>

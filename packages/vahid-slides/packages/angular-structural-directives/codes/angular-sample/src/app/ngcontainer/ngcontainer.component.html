@@ -1,0 +1,61 @@
+<section>
+    <ng-container *ngFor="let item of arr">
+        <ng-container *ngIf="item.id === 'id1'">
+            {{ item.value }}
+        </ng-container>
+    </ng-container>
+</section>
+
+<section>
+    <table>
+        <tbody>
+            <tr>
+                <td>Static data</td>
+            </tr>
+            <tr *ngFor="let item of arr">
+                <ng-container *ngIf="item.id === 'id1'">
+                    <td>Column type 1</td>
+                </ng-container>
+                <ng-container *ngIf="item.id === 'id2'">
+                    <td>Column type 2</td>
+                </ng-container>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <ng-container *ngFor="let t of tabs">
+        <ng-container *ngTemplateOutlet="tabTpl; context: { $implicit: t.content, tabTitle: t.title }"></ng-container>
+    </ng-container>
+
+    <ng-template #tabTpl let-content let-title="tabTitle">
+        <h3>{{ title }}</h3>
+        <div>
+            {{ content }}
+        </div>
+    </ng-template>
+</section>
+
+<section>
+    <ng-container *ngFor="let t of tabComponents">
+        <ng-container *ngComponentOutlet="t.component"></ng-container>
+    </ng-container>
+</section>
+
+<section>
+    <ng-container *ngTemplateOutlet="reuseTemplate; context: { name: 'Vahid' }"></ng-container>
+    <ng-container *ngTemplateOutlet="reuseTemplate; context: { name: 'Wahid' }"></ng-container>
+    <ng-container *ngTemplateOutlet="false ? reuseTemplate : otherTemplate; context: { name: 'Asb' }"></ng-container>
+
+    <ng-template #reuseTemplate let-name="name">
+        <div class="some-complicated-class">
+            <div class="some-complicated-structure">{{ name }} Par</div>
+        </div>
+    </ng-template>
+    <ng-template #otherTemplate let-name="name">
+        <div class="some-complicated-class">
+            <div class="some-complicated-structure">{{ name }} Napar</div>
+        </div>
+    </ng-template>
+</section>

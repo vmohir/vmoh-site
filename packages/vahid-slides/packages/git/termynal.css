@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css?family=Fira+Code|Fira+Sans|Rancho&display=swap');
+
+body {
+}
+
+:root {
+  --color-bg: #2b2b2b;
+  --color-text: #eee;
+  --color-text-subtle: #bbbbbb;
+}
+
+[data-termynal] {
+  width: 750px;
+  max-width: 100%;
+  border: 1px solid #4b4f57;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 13px;
+  font-family: 'Fira Code', Consolas, Menlo, Monaco, 'Courier New', Courier, monospace;
+  border-radius: 4px;
+  padding: 12px 16px;
+  position: relative;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 10px 0;
+}
+[data-termynal] > *:last-child {
+  margin-bottom: 0;
+}
+[data-termynal] code {
+  color: var(--color-text);
+  font-family: 'Fira Code', Consolas, Menlo, Monaco, 'Courier New', Courier, monospace;
+  font-size: 13px;
+  background: transparent;
+  padding: 0;
+}
+
+pre {
+  color: var(--color-text-subtle);
+  margin-bottom: 10px;
+  font-family: 'Fira Code', Consolas, Menlo, Monaco, 'Courier New', Courier, monospace;
+}
+
+[data-ty] {
+  display: block;
+  line-height: 2;
+}
+
+[data-ty]:before {
+  content: '';
+  display: inline-block;
+  vertical-align: middle;
+}
+
+[data-ty='input']:before,
+[data-ty-prompt]:before {
+  margin-right: 0.3em;
+  color: var(--color-text-subtle);
+}
+
+[data-ty='input']:before {
+  content: '$';
+}
+
+[data-ty][data-ty-prompt]:before {
+  content: attr(data-ty-prompt);
+}
+
+[data-ty-cursor]:after {
+  content: attr(data-ty-cursor);
+  font-family: monospace;
+  margin-left: 0.5em;
+  -webkit-animation: blink 1s infinite;
+  animation: blink 1s infinite;
+}
+
+/* Cursor animation */
+
+@-webkit-keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.hljs-ir-black .hljs {
+  background: var(--color-bg) !important;
+}
+
+.c-red,
+.c-red * {
+  color: #ff8686 !important;
+}
+.c-green,
+.c-green * {
+  color: #86ff9a !important;
+}
+.c-blue,
+.c-blue * {
+  color: #9ed0ff !important;
+}
+.c-yellow,
+.c-yellow * {
+  color: #ffe59e !important;
+}
+.c-purple,
+.c-purple * {
+  color: #c6c5fe !important;
+}
+
+.has-desc {
+  display: inline-flex;
+  width: calc(100% - 25px);
+  justify-content: space-between;
+}
+.has-desc > *:first-child {
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.has-desc > *:last-child {
+  text-align: right;
+}

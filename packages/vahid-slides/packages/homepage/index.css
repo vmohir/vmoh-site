@@ -1,0 +1,170 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+:root {
+  --body: #eee;
+  --body-second: #fff;
+  --text: #333;
+  --text-heading: #111;
+  --text-muted: #888;
+  --text-note: #666;
+  --border: #eee;
+  --link-hover: #f9f9f9;
+  --link-underline: #ddd;
+  --link-underline-hover: #111;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --body: #111;
+    --body-second: #222;
+    --text: #ccc;
+    --text-heading: #eee;
+    --text-muted: #777;
+    --text-note: #999;
+    --border: #222;
+    --link-hover: #1a1a1a;
+    --link-underline: #444;
+    --link-underline-hover: #eee;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: light dark;
+  font-size: 16px;
+}
+
+body {
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  background: var(--body);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+main {
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  background: var(--body-second);
+  min-height: 100vh;
+  box-shadow:
+    0px 1px 0px rgba(17, 17, 26, 0.1),
+    0px 8px 24px rgba(17, 17, 26, 0.1),
+    0px 16px 48px rgba(17, 17, 26, 0.1);
+}
+
+header {
+  margin-bottom: 48px;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+h1 a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 2px solid var(--link-underline);
+  transition: all ease 0.2s;
+  &:hover {
+    border-color: var(--link-underline-hover);
+  }
+}
+
+section {
+  margin-bottom: 40px;
+}
+
+h2 {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+ul {
+  list-style: none;
+}
+
+li {
+  padding: 0;
+  margin: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+.slideshow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0.75rem 0;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+
+  &:not(.unavailable):hover {
+    color: var(--text-heading);
+    background: var(--link-hover);
+  }
+}
+
+.slideshow .title {
+  flex: 1;
+  min-width: 0;
+}
+
+.slideshow .meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.slideshow time {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+.unavailable {
+  color: var(--text-muted);
+}
+
+.tag {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 2px 8px;
+  background: var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
