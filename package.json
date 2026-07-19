@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "description": "Personal site for Vahid Mohammadi",
   "private": true,
+  "packageManager": "pnpm@11.15.0",
   "scripts": {
     "prebuild": "rm -rf dist",
-    "build:homepage": "cd packages/homepage && npm run build",
+    "build:homepage": "pnpm --filter @vmoh-site/homepage build",
     "build:old": "cd packages/old && npm run build",
-    "build": "npm run build:homepage && npm run build:old"
+    "build": "npm run build:homepage && npm run build:old",
+    "build:split-bill": "pnpm --filter splitted build",
+    "build:chooser-online": "pnpm --filter chooser-online build",
+    "build:vahid-slides": "cd packages/vahid-slides && pnpm install --frozen-lockfile && pnpm run build"
   },
   "devDependencies": {
     "netlify-cli": "^23.14.0"
