@@ -6,3 +6,7 @@ dist/
 
 # Dependencies.
 node_modules/
+
+# Self-contained nested projects with their own Prettier setup.
+packages/slides/
+packages/old-homepage/

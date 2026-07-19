@@ -28,7 +28,11 @@ export default function SettlementSettings() {
       </button>
 
       {open && (
-        <Popover align={alignEnd ? "end" : "start"} role="menu" menuRef={menuRef}>
+        <Popover
+          align={alignEnd ? "end" : "start"}
+          role="menu"
+          menuRef={menuRef}
+        >
           <div class={styles.sectionLabel}>Method</div>
           {algorithms.map((alg) => {
             const isSelected = alg.id === settlementAlgorithm.value;

@@ -34,7 +34,12 @@ export function CurrencyMenu() {
       </button>
 
       {open && (
-        <Popover align={alignEnd ? "end" : "start"} role="menu" overflow="auto" menuRef={menuRef}>
+        <Popover
+          align={alignEnd ? "end" : "start"}
+          role="menu"
+          overflow="auto"
+          menuRef={menuRef}
+        >
           <div class={styles.sectionLabel}>Base currency</div>
           {CURRENCY_LIST.map((c) => {
             const code = c.code as Currency;

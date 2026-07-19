@@ -211,7 +211,11 @@ export default function AppHeader() {
             <Settings size={18} aria-hidden="true" />
           </button>
           {menuOpen && (
-            <Popover align={menuAlignEnd ? "end" : "start"} role="menu" menuRef={menuRef}>
+            <Popover
+              align={menuAlignEnd ? "end" : "start"}
+              role="menu"
+              menuRef={menuRef}
+            >
               <div class={styles.menuItem}>
                 <ThemeToggle />
               </div>

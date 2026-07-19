@@ -53,7 +53,11 @@ export default function GroupAdder({ ungrouped }: GroupAdderProps) {
         Group
       </button>
       {open && (
-        <Popover align={alignEnd ? "end" : "start"} role="listbox" menuRef={menuRef}>
+        <Popover
+          align={alignEnd ? "end" : "start"}
+          role="listbox"
+          menuRef={menuRef}
+        >
           {ungrouped.length === 0 ? (
             <div class={styles.empty}>No ungrouped people</div>
           ) : (

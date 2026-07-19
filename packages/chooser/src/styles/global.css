@@ -40,7 +40,10 @@
     height: 100%;
     background: var(--canvas-bg);
     color: var(--text-primary);
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
     overscroll-behavior: none;
@@ -127,7 +130,9 @@
     background: transparent;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: background var(--transition), color var(--transition);
+    transition:
+      background var(--transition),
+      color var(--transition);
   }
 
   .seg-btn[data-active="true"] {
