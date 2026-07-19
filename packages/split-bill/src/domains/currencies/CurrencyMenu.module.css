@@ -1,0 +1,75 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.375rem;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    color var(--transition);
+}
+
+.trigger:hover,
+.trigger[aria-expanded="true"] {
+  border-color: var(--border-primary);
+}
+
+.sectionLabel {
+  padding: 0.375rem 0.625rem 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  border: none;
+  background: transparent;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-primary);
+}
+
+.option:hover {
+  background: var(--interactive-hover-bg);
+}
+
+.optionSelected {
+  background: var(--surface-subtle-bg);
+}
+
+.optionName {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.check {
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.divider {
+  height: 1px;
+  margin: 0.25rem 0.375rem;
+  background: var(--border-subtle);
+}

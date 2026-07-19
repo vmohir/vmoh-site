@@ -1,0 +1,8 @@
+# Managed by pnpm — its own format; don't let Prettier rewrite it.
+pnpm-lock.yaml
+
+# Build output.
+dist/
+
+# Dependencies.
+node_modules/

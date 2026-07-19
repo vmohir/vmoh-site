@@ -1,0 +1,206 @@
+---
+import AppHeader from './AppHeader';
+import PeopleSection from '../people/PeopleSection';
+import ItemsSection from '../receiptItems/ItemsSection';
+import { CurrencyMenu } from '../domains/currencies/CurrencyMenu';
+import AdjustmentsSection from './AdjustmentsSection';
+import ResultsSection from './ResultsSection';
+---
+
+<div class="split-bill-container">
+  <!--
+    All islands render client-only. Everything in the app is signal-driven
+    state read from localStorage / the URL hash, which doesn't exist
+    server-side. An SSR pass produces an empty/default tree that disagrees
+    with the client tree on hydration, leaving stale class names on the
+    nodes Preact reused (see the "GroupCard inherits PersonRow styling on
+    first paint" bug). Skipping SSR for these islands avoids that entirely
+    at the cost of a brief blank flash on first paint.
+
+    The loading-shell below is a static, non-hydrated stand-in for the
+    header so that first paint isn't an empty page. AppHeader removes it
+    when it mounts.
+  -->
+  <div id="app-loading-shell" class="loading-shell" aria-hidden="true">
+    <h1 class="loading-title">
+      <svg
+        viewBox="0 0 600 600"
+        class="loading-logo"
+        fill="currentColor"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M234.62 108.403L298.628 54.7893L328.058 57.3596L325.483 86.7366L325.484 86.7376L354.913 89.3069L352.338 118.684L381.767 121.254L379.193 150.631L408.623 153.201L406.047 182.578L342.039 236.192L234.62 108.403Z" />
+        <path d="M365.389 489.597L300.975 543.211L271.359 540.64L273.951 511.263L273.95 511.262L244.335 508.693L246.926 479.316L217.31 476.746L219.901 447.369L190.285 444.799L192.877 415.422L257.29 361.808L365.389 489.597Z" />
+        <path d="M187.279 278.635C151.779 236.328 157.297 173.252 199.604 137.752L235.107 107.961L412.721 319.633C448.221 361.941 442.703 425.016 400.396 460.516L364.893 490.307L187.279 278.635Z" />
+      </svg>
+      <span class="loading-wordmark">
+        <span class="loading-title-text">Split</span>
+        <span class="loading-title-text-split" aria-hidden="true">Split</span>
+      </span>
+    </h1>
+    <svg
+      class="loading-spinner"
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="44" stroke-dashoffset="22" />
+    </svg>
+  </div>
+
+  <AppHeader client:only="preact" />
+
+  <section class="people-section">
+    <PeopleSection client:only="preact" />
+  </section>
+
+  <section class="items-section">
+    <div class="section-header">
+      <h2>Items</h2>
+      <CurrencyMenu client:only="preact" />
+    </div>
+    <ItemsSection client:only="preact" />
+  </section>
+
+  <section class="adjustments-section">
+    <h2>Adjustments</h2>
+    <AdjustmentsSection client:only="preact" />
+  </section>
+
+  <section class="results-section">
+    <h2>Results</h2>
+    <ResultsSection client:only="preact" />
+  </section>
+</div>
+
+<script>
+  // Mobile WebKit (iOS Safari/Brave) doesn't blur a focused field when you tap
+  // an inert area the way desktop browsers do — only interactive elements
+  // dismiss focus. Restore the expected behaviour: a tap on something
+  // non-interactive commits and blurs the active input/textarea.
+  //
+  // Decide on pointerup (not pointerdown) and only when the pointer barely
+  // moved, so starting a scroll on empty space doesn't blur the field — a
+  // scroll either moves past the threshold or fires pointercancel instead of
+  // pointerup.
+  const INTERACTIVE =
+    "input, textarea, select, button, a, label, summary, [contenteditable], [tabindex], [role]";
+  const TAP_SLOP = 8;
+  let startX = 0;
+  let startY = 0;
+  document.addEventListener("pointerdown", (e) => {
+    startX = e.clientX;
+    startY = e.clientY;
+  });
+  document.addEventListener("pointerup", (e) => {
+    const active = document.activeElement;
+    if (
+      !(active instanceof HTMLInputElement) &&
+      !(active instanceof HTMLTextAreaElement)
+    )
+      return;
+    if (
+      Math.abs(e.clientX - startX) > TAP_SLOP ||
+      Math.abs(e.clientY - startY) > TAP_SLOP
+    )
+      return;
+    const target = e.target;
+    if (target instanceof Element && target.closest(INTERACTIVE)) return;
+    active.blur();
+  });
+</script>
+
+<style>
+  @reference "../styles/global.css";
+  .split-bill-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+    padding: 1.5rem 1rem 6rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  section {
+    @apply flex flex-col gap-3;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.625rem;
+  }
+
+  /* Static, non-hydrated stand-in for AppHeader. AppHeader removes it on
+     mount, so the styles only matter for the first-paint window. */
+  .loading-shell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .loading-title {
+    margin: 0;
+    line-height: 1;
+    font-size: 1.85rem;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    white-space: nowrap;
+    font-weight: 600;
+    font-variation-settings:
+      "slnt" -5,
+      "wdth" 90;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .loading-logo {
+    display: block;
+    flex-shrink: 0;
+    height: 1.05em;
+    width: auto;
+    color: #e0552c;
+  }
+
+  .loading-wordmark {
+    position: relative;
+    display: inline-block;
+  }
+
+  .loading-title-text {
+    clip-path: polygon(0 0, 0 75%, 100% 39%, 100% 0);
+    position: relative;
+    z-index: 1;
+    white-space: pre;
+  }
+
+  .loading-title-text-split {
+    display: inline-block;
+    position: absolute;
+    inset: 0;
+    transform: translateX(1.3px) translateY(1.3px);
+    clip-path: polygon(0 72%, 100% 37%, 100% 100%, 0 100%);
+    color: #a75300;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .loading-spinner {
+    color: var(--text-muted);
+    animation: loading-spin 0.9s linear infinite;
+  }
+
+  @keyframes loading-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

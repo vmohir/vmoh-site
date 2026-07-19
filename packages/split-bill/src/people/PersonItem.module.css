@@ -1,0 +1,15 @@
+.personItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  height: var(--person-item-height);
+  background-color: var(--surface-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius);
+  transition: border-color var(--transition);
+}
+
+.personItem:hover {
+  border-color: var(--border-primary);
+}

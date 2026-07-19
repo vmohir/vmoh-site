@@ -1,0 +1,31 @@
+export const getRandomPersonName = (): string => {
+  const names = [
+    "Alice",
+    "Bob",
+    "Charlie",
+    "Diana",
+    "Ethan",
+    "Fiona",
+    "George",
+    "Hannah",
+    "Ian",
+    "Julia",
+    "Kevin",
+    "Laura",
+    "Michael",
+    "Nina",
+    "Oliver",
+    "Paula",
+    "Quentin",
+    "Rachel",
+    "Sam",
+    "Tina",
+    "Uma",
+    "Victor",
+    "Wendy",
+    "Xander",
+    "Yara",
+    "Zane",
+  ];
+  return names[Math.floor(Math.random() * names.length)] ?? "Guest";
+};

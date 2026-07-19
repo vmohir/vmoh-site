@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Split Bill App</title>
+		<script is:inline>
+			// Set theme before page renders to avoid flash. Stored user choice
+			// wins over system preference.
+			const stored = (() => {
+				try { return localStorage.getItem('split-bill-theme'); } catch { return null; }
+			})();
+			const theme = stored === 'light' || stored === 'dark'
+				? stored
+				: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+			document.documentElement.setAttribute('data-theme', theme);
+		</script>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		padding: 0;
+		width: 100%;
+		min-height: 100vh;
+		font-family: system-ui, -apple-system, sans-serif;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+</style>

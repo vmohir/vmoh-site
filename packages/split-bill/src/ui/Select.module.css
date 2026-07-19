@@ -1,0 +1,27 @@
+.select {
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.375rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.default {
+  background: var(--surface-subtle-bg);
+  border: 1px solid var(--border-subtle);
+}
+
+.default:hover {
+  border-color: var(--border-primary);
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  font-size: 0.875rem;
+}
+
+.ghost:hover {
+  border-color: var(--border-primary);
+}

@@ -1,0 +1,24 @@
+.ghost {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-bg);
+  border: 1px solid var(--text-primary);
+  border-radius: var(--border-radius);
+  box-shadow:
+    0 10px 24px -4px rgba(0, 0, 0, 0.18),
+    0 4px 10px -2px rgba(0, 0, 0, 0.12);
+  font-weight: 500;
+  color: var(--text-primary);
+  user-select: none;
+}
+
+[data-theme="dark"] .ghost {
+  box-shadow:
+    0 14px 30px -4px rgba(0, 0, 0, 0.55),
+    0 4px 12px -2px rgba(0, 0, 0, 0.35);
+}

@@ -1,0 +1,64 @@
+.inputGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: var(--surface-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius);
+  transition: border-color var(--transition);
+}
+
+.inputGroup:focus-within {
+  border-color: var(--border-primary);
+}
+
+.nameInput {
+  flex: 2 1 9rem;
+  min-width: 0;
+}
+
+.priceInput {
+  flex: 1 1 5rem;
+  min-width: 0;
+}
+
+.flow {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.flowArrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.addBtn {
+  margin-left: auto;
+  padding: 0.375rem 0.875rem;
+  background: var(--text-primary);
+  border: none;
+  color: var(--surface-bg);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.addBtn:hover {
+  background: var(--text-secondary);
+}
+
+[data-theme="dark"] .addBtn {
+  background: var(--surface-muted-bg);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .addBtn:hover {
+  background: var(--interactive-active-bg);
+}

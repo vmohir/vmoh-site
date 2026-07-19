@@ -1,0 +1,161 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 28px;
+  padding: 0.125rem 0.5rem 0.125rem 0.5rem;
+  background: var(--surface-subtle-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  transition:
+    border-color var(--transition),
+    background var(--transition);
+}
+
+.leading {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.trigger:hover {
+  border-color: var(--border-primary);
+}
+
+.trigger[aria-expanded="true"] {
+  border-color: var(--text-primary);
+  background: var(--surface-bg);
+}
+
+.placeholder {
+  padding: 0 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+/* Fixed footprint so the pill never resizes as people are selected. Sized to
+   hold the capacity (3 avatars for multi-select, 1 for single payer). */
+.stack {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  /* Match the avatar height so the trigger is the same height whether it shows
+     a placeholder or selected avatars. */
+  height: 28px;
+}
+
+.stack[data-capacity="3"] {
+  min-width: 60px;
+}
+
+.stack[data-capacity="1"] {
+  min-width: 28px;
+}
+
+.avatars {
+  display: inline-flex;
+  align-items: center;
+}
+
+.avatars > * {
+  margin-left: -12px;
+  border: 2px solid var(--surface-bg);
+}
+
+.avatars > *:first-child {
+  margin-left: 0;
+}
+
+/* 1–2 people: don't overlap, give them a little breathing room instead. */
+.avatars.spread {
+  gap: 4px;
+}
+
+.avatars.spread > * {
+  margin-left: 0;
+}
+
+/* "+n" overflow chip, styled like an avatar and sharing the overlap. */
+.overflow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: var(--interactive-hover-bg);
+  color: var(--text-secondary);
+}
+
+.caret {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border: none;
+  background: transparent;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.option:hover {
+  background: var(--interactive-hover-bg);
+}
+
+.option input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.optionName {
+  flex: 1;
+}
+
+.checkIcon {
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+/* Trailing "Advanced" entry, separated from the people list. */
+.advanced {
+  margin-top: 0.125rem;
+  border-top: 1px solid var(--border-subtle);
+  border-radius: 0;
+  padding-top: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.advancedIcon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.selectAll {
+  color: var(--text-secondary);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border-subtle);
+  border-radius: 0;
+  margin-bottom: 0.125rem;
+  padding-bottom: 0.5rem;
+}

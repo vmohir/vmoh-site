@@ -1,0 +1,22 @@
+.personItemAdderButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border: 1px dashed var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  height: var(--person-item-height);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.personItemAdderButton:hover,
+.personItemAdderButton:focus-visible {
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+  background: var(--surface-bg);
+}

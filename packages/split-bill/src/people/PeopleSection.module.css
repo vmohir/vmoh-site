@@ -1,0 +1,43 @@
+.peopleSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  --person-item-height: 48px;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inputGroup input {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.inputGroup button {
+  padding: 0.5rem 1rem;
+}
+
+.peopleList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.emptyMessage {
+  margin: 0;
+  color: #666;
+  font-style: italic;
+}
+
+.adders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.adders > * {
+  flex: 1 1 auto;
+  min-width: max-content;
+}

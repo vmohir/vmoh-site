@@ -1,0 +1,26 @@
+import { Plus } from "lucide-preact";
+import { adjustments, addAdjustment } from "../state/billState";
+import AdjustmentCard from "./AdjustmentCard";
+import styles from "./AdjustmentsSection.module.css";
+
+export default function AdjustmentsSection() {
+  const handleAddAdjustment = () => {
+    // Empty label falls back to the type's default ("Tip").
+    addAdjustment("", 0, true, "tip");
+  };
+
+  return (
+    <div class={styles.adjustmentsSection}>
+      <div class={styles.adjustmentsList}>
+        {adjustments.value.map((adjustment) => (
+          <AdjustmentCard key={adjustment.id} adjustment={adjustment} />
+        ))}
+      </div>
+
+      <button class={styles.addButton} onClick={handleAddAdjustment}>
+        <Plus size={14} aria-hidden="true" />
+        Add Adjustment
+      </button>
+    </div>
+  );
+}

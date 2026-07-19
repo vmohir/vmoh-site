@@ -1,0 +1,27 @@
+.itemsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Mobile: a connected, edge-to-edge list (Gmail/WhatsApp style) — no gaps, no
+   rounding, dividers between rows. Bleeds past the container's 1rem padding. */
+.chatList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0 -1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.emptyMessage {
+  margin: 0;
+  color: var(--text-muted);
+  font-style: italic;
+}

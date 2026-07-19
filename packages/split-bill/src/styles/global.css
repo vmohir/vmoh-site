@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: var(--canvas-bg);
+  --color-surface: var(--surface-bg);
+  --color-surface-subtle: var(--surface-subtle-bg);
+  --color-surface-muted: var(--surface-muted-bg);
+  --color-foreground: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-border: var(--border-primary);
+  --color-border-subtle: var(--border-subtle);
+  --color-success: var(--status-success);
+  --color-success-bg: var(--status-success-bg);
+  --color-error: var(--status-error);
+  --color-error-bg: var(--status-error-bg);
+  --color-warning: var(--status-warning);
+  --color-warning-bg: var(--status-warning-bg);
+  --color-interactive-hover: var(--interactive-hover-bg);
+  --color-interactive-active: var(--interactive-active-bg);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    /* Backgrounds */
+    --canvas-bg: oklch(96.8% 0 0);
+    --surface-bg: theme(colors.white);
+    --surface-subtle-bg: oklch(94.2% 0 0);
+    --surface-muted-bg: theme(colors.neutral.200);
+    /* Expanded item panel — sits just above the page (lighter than canvas). */
+    --item-panel-bg: oklch(98.4% 0 0);
+
+    /* Text */
+    --text-primary: theme(colors.neutral.900);
+    --text-secondary: theme(colors.neutral.700);
+    --text-muted: theme(colors.neutral.500);
+
+    /* Borders */
+    --border-primary: theme(colors.neutral.300);
+    --border-subtle: theme(colors.neutral.200);
+    --border-radius: 0.5rem;
+
+    /* Status */
+    --status-success: theme(colors.emerald.600);
+    --status-success-bg: theme(colors.emerald.50);
+    --status-error: theme(colors.rose.600);
+    --status-error-bg: theme(colors.rose.50);
+    --status-warning: theme(colors.amber.600);
+    --status-warning-bg: theme(colors.amber.50);
+
+    /* Interactive */
+    --interactive-hover-bg: theme(colors.neutral.100);
+    --interactive-active-bg: theme(colors.neutral.200);
+    --transition: 120ms ease;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+
+    /* Linear-inspired: slightly cool, desaturated, mid-dark canvas (not near-black) */
+
+    /* Backgrounds — dark gray, cards a step above */
+    --canvas-bg: #1c1c20;
+    --surface-bg: #28282e;
+    --surface-subtle-bg: #222227;
+    --surface-muted-bg: #33333a;
+    --item-panel-bg: #2f2f37;
+
+    /* Text — primary just shy of pure white for comfort */
+    --text-primary: #f5f5f7;
+    --text-secondary: #c5c6cc;
+    --text-muted: #84858c;
+
+    /* Borders — barely visible, just hint at separation */
+    --border-primary: #3f3f47;
+    --border-subtle: #33333a;
+
+    /* Status — softer, less neon than the default palettes */
+    --status-success: #5ec391;
+    --status-success-bg: #14291e;
+    --status-error: #f17979;
+    --status-error-bg: #2f191d;
+    --status-warning: #e5b048;
+    --status-warning-bg: #2a2010;
+
+    /* Interactive */
+    --interactive-hover-bg: #32323a;
+    --interactive-active-bg: #3d3d45;
+  }
+
+  html,
+  body {
+    background: var(--canvas-bg);
+    color: var(--text-primary);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  h2 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .btn:hover {
+    color: var(--text-primary);
+    background: var(--interactive-hover-bg);
+    border-color: var(--border-primary);
+  }
+
+  .btn-ghost {
+    border: none;
+    background: transparent;
+    &:hover {
+      background: var(--interactive-hover-bg);
+      border: none;
+    }
+  }
+
+  .btn-danger {
+    color: var(--text-muted);
+    border-color: transparent;
+    &:hover {
+      color: var(--status-error);
+      background: var(--status-error-bg);
+      border-color: transparent;
+    }
+  }
+
+  .btn-primary {
+    background: var(--text-primary);
+    color: var(--surface-bg);
+    border-color: var(--text-primary);
+    &:hover {
+      background: var(--text-secondary);
+      color: var(--surface-bg);
+      border-color: var(--text-secondary);
+    }
+  }
+
+  /* Square icon-only button. Pair with .btn (or .btn .btn-sm). */
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    padding: 0.375rem;
+  }
+
+  .btn-icon.btn-sm {
+    padding: 0.25rem;
+  }
+
+  /* Inputs */
+  .input {
+    padding: 0.5rem 0.625rem;
+    background: var(--surface-bg);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    border-radius: 0.375rem;
+    transition: border-color var(--transition);
+    &:focus-visible {
+      outline: none;
+      border-color: var(--text-primary);
+    }
+  }
+
+  /* Select */
+  .select {
+    padding: 0.5rem 0.625rem;
+    background: var(--surface-bg);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    border-radius: 0.375rem;
+  }
+}
