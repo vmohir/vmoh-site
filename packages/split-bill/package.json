@@ -14,17 +14,17 @@
   },
   "dependencies": {
     "@astrojs/preact": "^4.1.3",
-    "@preact/signals": "^2.5.1",
-    "@tailwindcss/vite": "^4.1.18",
-    "astro": "^5.16.6",
+    "@preact/signals": "^2.9.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^5.18.2",
     "html-to-image": "^1.11.13",
-    "lucide-preact": "^1.16.0",
-    "preact": "^10.28.1",
-    "tailwindcss": "^4.1.18"
+    "lucide-preact": "^1.25.0",
+    "preact": "^10.29.7",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.60.0",
-    "astro-compress": "^2.3.8",
-    "netlify-cli": "^23.13.4"
+    "@playwright/test": "^1.61.1",
+    "astro-compress": "^2.4.1",
+    "netlify-cli": "^23.15.1"
   }
 }
