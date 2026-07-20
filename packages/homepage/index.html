@@ -5,31 +5,199 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vahid Mohammadi</title>
     <style>
+        :root {
+            color-scheme: light dark;
+            --bg: #f5f5f7;
+            --fg: #1a1a1a;
+            --muted: #6b6b70;
+            --card-bg: #ffffff;
+            --card-border: #e5e5ea;
+            --accent: #0077b5;
+            --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #17171d;
+                --fg: #f2f2f4;
+                --muted: #9a9aa2;
+                --card-bg: #1f1f26;
+                --card-border: #2a2a30;
+                --accent: #4fa8e0;
+                --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--fg);
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: #f5f5f5;
+            padding: 12vh 1.5rem 3rem;
         }
-        .content {
+
+        .page {
+            width: 100%;
+            max-width: 640px;
+        }
+
+        header {
             text-align: center;
+            margin-bottom: 2.5rem;
         }
+
         h1 {
-            margin-bottom: 1rem;
-            color: #333;
+            margin: 0 0 0.4rem;
+            font-size: 1.75rem;
+            font-weight: 600;
         }
-        a {
-            color: #0077b5;
+
+        header p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        header a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        .apps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .app-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: var(--shadow);
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+
+        .app-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .app-icon {
+            flex: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--accent) 14%, transparent);
+            color: var(--accent);
+            overflow: hidden;
+        }
+
+        .app-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .app-icon--logo {
+            background: none;
+        }
+
+        .app-icon--logo svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .app-text {
+            min-width: 0;
+        }
+
+        .app-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .app-desc {
+            margin: 0.15rem 0 0;
+            font-size: 0.875rem;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 </head>
 <body>
-    <div class="content">
-        <h1>Vahid Mohammadi</h1>
-        <p>Checkout my <a href="https://www.linkedin.com/in/vahidmohammadi/">LinkedIn</a></p>
+    <div class="page">
+        <header>
+            <h1>Vahid Mohammadi</h1>
+            <p>Checkout my <a href="https://www.linkedin.com/in/vahidmohammadi/">LinkedIn</a></p>
+        </header>
+
+        <div class="apps">
+            <a class="app-card" href="https://split.vmoh.ir">
+                <span class="app-icon app-icon--logo">
+                    <svg viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M234.62 108.403L298.628 54.7893L328.058 57.3596L325.483 86.7366L325.484 86.7376L354.913 89.3069L352.338 118.684L381.767 121.254L379.193 150.631L408.623 153.201L406.047 182.578L342.039 236.192L234.62 108.403Z" fill="#e0552c"/>
+                        <path d="M234.62 108.403L298.628 54.7893L328.058 57.3596L325.483 86.7366L325.484 86.7376L354.913 89.3069L352.338 118.684L381.767 121.254L379.193 150.631L408.623 153.201L406.047 182.578L342.039 236.192L234.62 108.403Z" fill="black" fill-opacity="0.35"/>
+                        <path d="M361.717 220.244L236.728 106.92L233.711 109.451L341.219 237.574L361.717 220.244Z" fill="black" fill-opacity="0.05"/>
+                        <path d="M350.201 230.653L234.651 109.483L229.626 113.904L339.126 239.357L350.201 230.653Z" fill="black" fill-opacity="0.05"/>
+                        <path d="M365.389 489.597L300.975 543.211L271.359 540.64L273.951 511.263L273.95 511.262L244.335 508.693L246.926 479.316L217.31 476.746L219.901 447.369L190.285 444.799L192.877 415.422L257.29 361.808L365.389 489.597Z" fill="#e0552c"/>
+                        <path d="M365.389 489.597L300.975 543.211L271.359 540.64L273.951 511.263L273.95 511.262L244.335 508.693L246.926 479.316L217.31 476.746L219.901 447.369L190.285 444.799L192.877 415.422L257.29 361.808L365.389 489.597Z" fill="black" fill-opacity="0.35"/>
+                        <path d="M344.516 507.192L254.618 364.423L257.634 361.892L365.142 490.015L344.516 507.192Z" fill="black" fill-opacity="0.05"/>
+                        <path d="M354.928 498.818L255.663 363.982L260.89 359.801L365.423 489.422L354.928 498.818Z" fill="black" fill-opacity="0.05"/>
+                        <path d="M187.279 278.635C151.779 236.328 157.297 173.252 199.604 137.752L235.107 107.961L412.721 319.633C448.221 361.941 442.703 425.016 400.396 460.516L364.893 490.307L187.279 278.635Z" fill="#e0552c"/>
+                    </svg>
+                </span>
+                <span class="app-text">
+                    <div class="app-title">Split</div>
+                    <p class="app-desc">Split a bill fairly between friends in seconds.</p>
+                </span>
+            </a>
+
+            <a class="app-card" href="https://chooser.vmoh.ir">
+                <span class="app-icon app-icon--logo">
+                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="64" height="64" rx="14" fill="#0b0b0f"/>
+                        <circle cx="22" cy="22" r="9" fill="none" stroke="#ef4444" stroke-width="3"/>
+                        <circle cx="42" cy="22" r="9" fill="none" stroke="#3b82f6" stroke-width="3"/>
+                        <circle cx="22" cy="42" r="9" fill="none" stroke="#22c55e" stroke-width="3"/>
+                        <circle cx="42" cy="42" r="9" fill="#f5f5f7" stroke="#f5f5f7" stroke-width="3"/>
+                    </svg>
+                </span>
+                <span class="app-text">
+                    <div class="app-title">Chooser</div>
+                    <p class="app-desc">Tap with multiple fingers to pick who goes first.</p>
+                </span>
+            </a>
+
+            <a class="app-card" href="https://slides.vmoh.ir">
+                <span class="app-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                </span>
+                <span class="app-text">
+                    <div class="app-title">Slides</div>
+                    <p class="app-desc">Decks and talks I've put together.</p>
+                </span>
+            </a>
+        </div>
     </div>
 </body>
 </html>
