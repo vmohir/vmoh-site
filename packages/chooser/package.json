@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "astro-compress": "^2.4.1",
-    "netlify-cli": "^23.15.1"
+    "netlify-cli": "^26.2.0"
   }
 }
