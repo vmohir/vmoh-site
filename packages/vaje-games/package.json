@@ -1,0 +1,27 @@
+{
+  "name": "vaje-games",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "format:write": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@fontsource-variable/vazirmatn": "^5.2.6",
+    "@preact/preset-vite": "^2.10.6",
+    "@preact/signals": "^2.9.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.1.3",
+    "lucide-preact": "^1.25.0",
+    "preact": "^10.29.7",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "astro-compress": "^2.4.1",
+    "netlify-cli": "^26.2.0"
+  }
+}

@@ -1,0 +1,19 @@
+---
+import Layout from "../layouts/Layout.astro";
+import wordsUrl from "../words.json?url";
+---
+
+<Layout title="پانتومیم | واژه‌بازی" preloadJsonHref={wordsUrl}>
+  <div id="app"></div>
+</Layout>
+
+<script>
+  // Skip Astro's islands runtime — a single root component doesn't need the
+  // inline astro-island element, the islands client.js, or the renderer
+  // chunk, so mount Preact directly.
+  import { h, render } from "preact";
+  import PantomimeApp from "../games/pantomime/PantomimeApp";
+
+  const root = document.getElementById("app");
+  if (root) render(h(PantomimeApp, null), root);
+</script>

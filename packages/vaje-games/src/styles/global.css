@@ -1,0 +1,115 @@
+@import "tailwindcss";
+@import "@fontsource-variable/vazirmatn";
+
+@theme {
+  --color-canvas: var(--canvas-bg);
+  --color-surface: var(--surface-bg);
+  --color-surface-subtle: var(--surface-subtle-bg);
+  --color-surface-muted: var(--surface-muted-bg);
+  --color-foreground: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-border: var(--border-primary);
+  --color-border-subtle: var(--border-subtle);
+  --color-accent: var(--accent);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+}
+
+@layer base {
+  :root {
+    --canvas-bg: #141018;
+    --surface-bg: #201a28;
+    --surface-subtle-bg: #1a1521;
+    --surface-muted-bg: #2a2233;
+
+    --text-primary: #f5f2f7;
+    --text-secondary: #c7bfd0;
+    --text-muted: #8b8293;
+
+    --border-primary: #3d3448;
+    --border-subtle: #2a2333;
+
+    --accent: #f0a63a;
+    --good: #4ade80;
+    --bad: #f87171;
+
+    --transition: 120ms ease;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--canvas-bg);
+    color: var(--text-primary);
+    font-family: "Vazirmatn Variable", Tahoma, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+  }
+}
+
+@layer components {
+  .btn {
+    padding: 0.625rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 0.625rem;
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .btn:hover {
+    background: var(--surface-muted-bg);
+    border-color: var(--border-primary);
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    padding: 0.625rem;
+    flex: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--canvas-bg);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.08);
+  }
+
+  .btn-ghost {
+    border: none;
+    background: transparent;
+  }
+
+  .btn-ghost:hover {
+    background: var(--surface-muted-bg);
+  }
+}

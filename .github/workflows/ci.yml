@@ -33,11 +33,17 @@ jobs:
       - name: Build chooser
         run: pnpm run build:chooser
 
+      - name: Build vaje-games
+        run: pnpm run build:vaje-games
+
       - name: Format check (split-bill)
         run: pnpm --filter splitted format:check
 
       - name: Format check (chooser)
         run: pnpm --filter chooser-online format:check
+
+      - name: Format check (vaje-games)
+        run: pnpm --filter vaje-games format:check
 
       - name: Build slides
         run: pnpm run build:slides

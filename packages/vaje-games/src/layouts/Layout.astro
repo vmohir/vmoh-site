@@ -1,0 +1,42 @@
+---
+import "styles/global.css";
+
+interface Props {
+  title?: string;
+  // URL of a JSON resource to start fetching before the page's JS runs —
+  // e.g. a game's word bank. Requires `crossorigin` even for same-origin
+  // requests, or the browser fetches it twice instead of reusing this one.
+  preloadJsonHref?: string;
+}
+
+const { title = "واژه‌بازی", preloadJsonHref } = Astro.props;
+---
+
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#141018" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {
+      preloadJsonHref && (
+        <link
+          rel="preload"
+          as="fetch"
+          type="application/json"
+          crossorigin="anonymous"
+          href={preloadJsonHref}
+        />
+      )
+    }
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

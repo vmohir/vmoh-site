@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { GAMES } from "../games/registry";
+---
+
+<Layout>
+  <main
+    class="flex min-h-screen flex-col items-center justify-center gap-8 px-6 py-12"
+  >
+    <h1 class="text-3xl font-bold text-foreground">واژه‌بازی</h1>
+    <div class="flex w-full max-w-sm flex-col gap-4">
+      {
+        GAMES.map((game) => (
+          <a
+            href={`/${game.slug}`}
+            class="btn btn-primary flex flex-col items-center gap-1 !py-5 text-center no-underline"
+          >
+            <span class="text-xl">{game.title}</span>
+            <span class="text-sm font-normal opacity-80">
+              {game.description}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </main>
+</Layout>

@@ -7,6 +7,7 @@ Personal site and small apps for Vahid Mohammadi, as a pnpm workspace. Each pack
 | `packages/homepage`             | vmoh.ir            |
 | `packages/split-bill`           | split.vmoh.ir      |
 | `packages/chooser`              | chooser.vmoh.ir    |
+| `packages/vaje-games`           | vaje.vmoh.ir       |
 | `packages/slides`               | slides.vmoh.ir     |
 | `packages/old-homepage`         | legacy homepage    |
 
@@ -23,5 +24,6 @@ pnpm --filter <package-name> dev
 pnpm build:homepage
 pnpm build:split-bill
 pnpm build:chooser
+pnpm build:vaje-games
 pnpm build:slides
 ```
