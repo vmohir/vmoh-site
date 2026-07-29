@@ -14,11 +14,13 @@ import {
   targetScore,
   teamNames,
   toggleDifficulty,
-} from "../../state/pantomimeState";
+} from "../../state/wordGameState";
 import { DIFFICULTIES } from "./words";
 import styles from "./TeamSetupScreen.module.css";
 
 interface Props {
+  title: string;
+  instructions: string;
   wordsReady: boolean;
   onStart: () => void;
 }
@@ -28,7 +30,12 @@ const GAME_MODES = [
   { id: "selection" as const, label: "انتخاب دسته و سختی" },
 ];
 
-export default function TeamSetupScreen({ wordsReady, onStart }: Props) {
+export default function TeamSetupScreen({
+  title,
+  instructions,
+  wordsReady,
+  onStart,
+}: Props) {
   const isTimed = gameMode.value === "timed";
   const validTeamCount = teamNames.value.filter((n) => n.trim()).length;
   const canStart =
@@ -38,7 +45,10 @@ export default function TeamSetupScreen({ wordsReady, onStart }: Props) {
 
   return (
     <div class="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-6 py-8">
-      <h1 class="text-2xl font-bold">پانتومیم</h1>
+      <div>
+        <h1 class="text-2xl font-bold">{title}</h1>
+        <p class="text-sm text-secondary">{instructions}</p>
+      </div>
 
       <section class="flex flex-col gap-2">
         <h2 class="text-sm font-medium text-secondary">تیم‌ها</h2>

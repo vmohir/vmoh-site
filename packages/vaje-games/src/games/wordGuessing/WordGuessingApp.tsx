@@ -5,12 +5,13 @@ import {
   selectedDifficulties,
   targetScore,
   teamNames,
-} from "../../state/pantomimeState";
+} from "../../state/wordGameState";
 import { applyScoreDelta, buildDeck, pickOne, pointsForWord } from "./scoring";
 import { loadWordBank } from "./words";
 import type {
   Category,
   Difficulty,
+  GameConfig,
   Phase,
   RoundStats,
   Team,
@@ -21,9 +22,13 @@ import ReadyScreen from "./ReadyScreen";
 import CategoryPickerScreen from "./CategoryPickerScreen";
 import RoundScreen from "./RoundScreen";
 import ResultsScreen from "./ResultsScreen";
-import styles from "./PantomimeApp.module.css";
+import styles from "./WordGuessingApp.module.css";
 
-export default function PantomimeApp() {
+interface Props {
+  config: GameConfig;
+}
+
+export default function WordGuessingApp({ config }: Props) {
   const [allWords, setAllWords] = useState<Word[] | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [phase, setPhase] = useState<Phase>("setup");
@@ -181,7 +186,12 @@ export default function PantomimeApp() {
   return (
     <div class={styles.app}>
       {phase === "setup" && (
-        <TeamSetupScreen wordsReady={allWords !== null} onStart={startGame} />
+        <TeamSetupScreen
+          title={config.title}
+          instructions={config.instructions}
+          wordsReady={allWords !== null}
+          onStart={startGame}
+        />
       )}
       {phase === "ready" && currentTeam && !isSelectionMode && (
         <ReadyScreen

@@ -1,8 +1,10 @@
 import { effect, signal } from "@preact/signals";
-import { DIFFICULTIES } from "../games/pantomime/words";
-import type { Difficulty, GameMode } from "../games/pantomime/types";
+import { DIFFICULTIES } from "../games/wordGuessing/words";
+import type { Difficulty, GameMode } from "../games/wordGuessing/types";
 
-const STORAGE_KEY = "vaje-games-pantomime-settings";
+// Shared across every word-guessing game (پانتومیم, دور, ...) — switching
+// games in the same session keeps your teams and settings.
+const STORAGE_KEY = "vaje-games-word-guessing-settings";
 
 export const MIN_TEAMS = 2;
 export const MAX_TEAMS = 8;

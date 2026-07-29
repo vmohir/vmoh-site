@@ -10,4 +10,9 @@ export const GAMES: GameEntry[] = [
     title: "پانتومیم",
     description: "یک کلمه رو بدون حرف زدن نشون بده تا تیمت حدس بزنه.",
   },
+  {
+    slug: "dor",
+    title: "دور",
+    description: "یک کلمه رو توضیح بده، بدون اینکه خودش رو بگی.",
+  },
 ];

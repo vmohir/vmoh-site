@@ -33,3 +33,10 @@ export interface RoundStats {
   correct: number;
   skipped: number;
 }
+
+// What actually varies between word-guessing games (پانتومیم, دور, ...) —
+// everything else (teams, scoring, timer, categories) is shared.
+export interface GameConfig {
+  title: string;
+  instructions: string;
+}

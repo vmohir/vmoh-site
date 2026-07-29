@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import wordsUrl from "../words.json?url";
 ---
 
-<Layout title="پانتومیم | واژه‌بازی" preloadJsonHref={wordsUrl}>
+<Layout title="دور | واژه‌بازی" preloadJsonHref={wordsUrl}>
   <div id="app"></div>
 </Layout>
 
@@ -19,9 +19,9 @@ import wordsUrl from "../words.json?url";
     render(
       h(WordGuessingApp, {
         config: {
-          title: "پانتومیم",
+          title: "دور",
           instructions:
-            "بدون حرف زدن، فقط با اشاره و حرکت، کلمه رو نشون بده تا تیمت حدس بزنه.",
+            "کلمه رو با حرف زدن توضیح بده، بدون اینکه خود کلمه یا هم‌خانواده‌هاش رو بگی، تا تیمت حدس بزنه.",
         },
       }),
       root,

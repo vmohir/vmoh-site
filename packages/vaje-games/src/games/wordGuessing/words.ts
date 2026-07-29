@@ -1,6 +1,7 @@
 // `?url` gives us the built, hashed URL for words.json instead of inlining
-// its ~500 words into the JS bundle. pantomime.astro preloads this same URL
-// in <head> so the fetch below resolves from cache almost instantly.
+// its ~500 words into the JS bundle. Each game page (pantomime.astro,
+// dor.astro, ...) preloads this same URL in <head> so the fetch below
+// resolves from cache almost instantly.
 import wordsUrl from "../../words.json?url";
 import type { Category, DifficultyMeta, Word } from "./types";
 
