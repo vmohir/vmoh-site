@@ -1,14 +1,22 @@
 # vaje-games
 
-واژه‌بازی (vaje-games) — a hub of small Farsi word games, built with Astro +
+واژه‌بازی (vaje-games) — a hub of small Farsi party games, built with Astro +
 Preact. The site is Farsi-only (`lang="fa" dir="rtl"`). The home page lists
-available games as buttons. Two games so far — **پانتومیم** (charades: act it
-out silently) and **دور** (describe it verbally without saying the word) — are
-both thin configs over one shared engine, `src/games/wordGuessing/`, since the
-only thing that actually differs between them is the real-world instruction for
-how to convey the word; teams, scoring, timer, and the category/difficulty
-picker are identical. A genuinely different game mechanic would still get its
-own `src/games/<name>/` folder.
+available games as buttons.
+
+- **پانتومیم** (charades: act it out silently) and **دور** (describe it verbally
+  without saying the word) are both thin configs over one shared engine,
+  `src/games/wordGuessing/`, since the only thing that actually differs between
+  them is the real-world instruction for how to convey the word; teams, scoring,
+  timer, and the category/difficulty picker are identical.
+- **عدد مخفی** (`src/games/hiddenNumber/`) is a structurally different game — no
+  words, no teams, no scoring, just a rotating "one player doesn't know a
+  number" mechanic — and gets its own folder rather than forcing it into the
+  word-guessing shape.
+
+When adding a game, match it to whichever of these two shapes it's actually
+closer to (see "Adding a new game" below) rather than always reaching for a new
+folder or always reusing `wordGuessing`.
 
 ## Stack
 
@@ -53,16 +61,20 @@ convey the word): you don't need a new folder at all.
 That's the entire diff — `src/games/wordGuessing/` and `src/words.json` are
 shared as-is.
 
-**If it's a genuinely different game mechanic**:
+**If it's a genuinely different game mechanic** (see `hiddenNumber` for an
+example — no words, no teams, no scoring):
 
 1. Add an entry to `src/games/registry.ts`.
-2. Create `src/games/<slug>/` for the game's own components, types, and any word
-   data or scoring logic.
+2. Create `src/games/<slug>/` for the game's own components, types, and any
+   content or scoring logic. Don't assume you need a full team/difficulty/
+   scoring setup — `hiddenNumber` only persists a player-name list, which is
+   plenty when that's all the game needs.
 3. Add `src/pages/<slug>.astro`, following the direct-render pattern (mount with
    `preact.render()` in an inline `<script>`, skipping Astro islands).
 4. If the game needs persisted settings, add a `src/state/<slug>State.ts` module
-   following `wordGameState.ts`'s shape (signals + exported mutation helpers + a
-   `localStorage` `effect()`).
+   with the same shape (signals + exported mutation helpers + a `localStorage`
+   `effect()`) — `wordGameState.ts` for the fuller team/mode/difficulty/score
+   version, `hiddenNumberState.ts` for the minimal name-list-only version.
 
 ## Word-guessing engine (`src/games/wordGuessing/`) — پانتومیم & دور
 
@@ -199,6 +211,45 @@ is exactly why this is config rather than a second copy of the engine.
 - **`RoundScreen`** shows a small colored badge (green/amber/red for
   easy/medium/hard) with the word's point value, so players know the stakes
   before deciding whether to skip.
+
+## عدد مخفی (`src/games/hiddenNumber/`)
+
+Not a word game — no `words.json`, no teams, no scoring. Each round one player
+(rotating round-robin, `currentIndex` into `players`) is "it" and must guess a
+number 1–100 that everyone else can see, via a spectrum-style prompt that gives
+the group something to react to without stating the number out loud. Purely
+conversational: there's no captured guess and no win condition, just assign →
+reveal → discuss → reveal-the-answer → next player.
+
+- **`src/games/hiddenNumber/questions.json`** — `{ questions: string[] }`, each
+  a template containing the literal token `{n}` (e.g.
+  `"اگه {n} نفر تو خیابون باشن، چقدر نگران می‌شی؟"`). Unlike `words.json` this
+  is small enough (~45 short strings) to statically import rather than fetch —
+  no preload dance needed here, that optimization is only worth it for the
+  ~500-entry word bank.
+- **`src/games/hiddenNumber/logic.ts`** — `fillTemplate(template, n)`
+  substitutes `{n}` with the number, or `"؟"` when `n` is `null` (used for the
+  discuss-phase version of the question that's safe to show the guesser).
+  `randomNumber()` draws 1–100; `freshQuestionDeck()` shuffles all templates so
+  they don't repeat until exhausted, same no-repeat pattern as the word-guessing
+  decks.
+- **`src/state/hiddenNumberState.ts`** — persisted player _names_ only
+  (`playerNames`, `MIN_PLAYERS = 3`), under `vaje-games-hidden-number-settings`.
+  No difficulty/mode/score settings exist for this game.
+- **`src/games/hiddenNumber/HiddenNumberApp.tsx`** — the orchestrator.
+  `Phase = "setup" | "handoff" | "reveal" | "discuss" | "result"`:
+  - `setup` → `PlayerSetupScreen` (name list, no mode/settings)
+  - `handoff` → `HandoffScreen`: "پاس بده به یکی غیر از {guesser}" — the point
+    where the phone physically changes hands
+  - `reveal` → `RevealScreen`: shown to whoever is holding the phone (not the
+    guesser) — question with `{n}` filled in, plus a "don't show this to
+    {guesser}" warning
+  - `discuss` → `DiscussScreen`: now safe to show the guesser too — same
+    question but with `{n}` → `"؟"`, so everyone can follow what's being
+    discussed without seeing the answer
+  - `result` → `ResultScreen`: reveals the real number, "نفر بعد" advances
+    `currentIndex` round-robin and draws a fresh round, looping indefinitely
+    until "پایان بازی" returns to `setup`
 
 ## Conventions
 

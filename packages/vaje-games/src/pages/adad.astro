@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="عدد مخفی | واژه‌بازی">
+  <div id="app"></div>
+</Layout>
+
+<script>
+  // Skip Astro's islands runtime — a single root component doesn't need the
+  // inline astro-island element, the islands client.js, or the renderer
+  // chunk, so mount Preact directly.
+  import { h, render } from "preact";
+  import HiddenNumberApp from "../games/hiddenNumber/HiddenNumberApp";
+
+  const root = document.getElementById("app");
+  if (root) render(h(HiddenNumberApp, null), root);
+</script>

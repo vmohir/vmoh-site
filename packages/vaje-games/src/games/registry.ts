@@ -15,4 +15,10 @@ export const GAMES: GameEntry[] = [
     title: "دور",
     description: "یک کلمه رو توضیح بده، بدون اینکه خودش رو بگی.",
   },
+  {
+    slug: "adad",
+    title: "عدد مخفی",
+    description:
+      "یکی از شما یه عدد رو نمی‌دونه؛ بقیه با بحث کمکش کنن حدس بزنه.",
+  },
 ];
