@@ -1,29 +1,30 @@
-import styles from "./RevealScreen.module.css";
+import styles from "./ShowNumberScreen.module.css";
 
 interface Props {
   guesserName: string;
-  question: string;
   number: number;
   onSeen: () => void;
 }
 
-export default function RevealScreen({
+export default function ShowNumberScreen({
   guesserName,
-  question,
   number,
   onSeen,
 }: Props) {
   return (
     <div class={styles.screen}>
       <p class={styles.warning}>این صفحه رو به {guesserName} نشون نده!</p>
-      <p class={styles.question}>{question}</p>
+      <p class="text-secondary">عدد اینه</p>
       <span class={styles.number}>{number}</span>
+      <p class="text-secondary">
+        این عدد رو حفظ کنید. الان چند تا سوال میاد که خودِ عدد توشون نیست.
+      </p>
       <button
         type="button"
         class="btn btn-primary !px-10 !py-5 text-xl"
         onClick={onSeen}
       >
-        دیدیم، بحث می‌کنیم
+        دیدیم، بریم سراغ سوال‌ها
       </button>
     </div>
   );

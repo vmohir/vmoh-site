@@ -1,15 +1,18 @@
+import { RefreshCw } from "lucide-preact";
 import styles from "./DiscussScreen.module.css";
 
 interface Props {
   guesserName: string;
-  questionWithBlank: string;
+  question: string;
+  onNextQuestion: () => void;
   onReveal: () => void;
   onExit: () => void;
 }
 
 export default function DiscussScreen({
   guesserName,
-  questionWithBlank,
+  question,
+  onNextQuestion,
   onReveal,
   onExit,
 }: Props) {
@@ -25,7 +28,15 @@ export default function DiscussScreen({
       <p class="text-secondary">
         بدون گفتن عدد، دربارهٔ این سوال بحث کنید تا {guesserName} حدس بزنه:
       </p>
-      <p class={styles.question}>{questionWithBlank}</p>
+      <p class={styles.question}>{question}</p>
+      <button
+        type="button"
+        class="btn flex items-center gap-2"
+        onClick={onNextQuestion}
+      >
+        <RefreshCw size={16} />
+        سوال بعدی
+      </button>
       <button
         type="button"
         class="btn btn-primary !px-10 !py-5 text-xl"

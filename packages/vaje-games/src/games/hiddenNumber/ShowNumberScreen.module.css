@@ -18,12 +18,6 @@
   font-size: 0.875rem;
 }
 
-.question {
-  font-size: clamp(1.25rem, 5vw, 1.75rem);
-  font-weight: 700;
-  line-height: 1.6;
-}
-
 .number {
   font-size: clamp(3rem, 15vw, 5rem);
   font-weight: 800;

@@ -9,8 +9,10 @@ export function randomNumber(): number {
   return MIN_NUMBER + Math.floor(Math.random() * (MAX_NUMBER - MIN_NUMBER + 1));
 }
 
-export function fillTemplate(template: string, n: number | null): string {
-  return template.replace("{n}", n === null ? "؟" : String(n));
+// Questions are only ever shown with the number blanked out — the number is
+// shown once, alone, on its own screen (see ShowNumberScreen).
+export function questionText(template: string): string {
+  return template.replace("{n}", "؟");
 }
 
 export function shuffle<T>(items: T[]): T[] {

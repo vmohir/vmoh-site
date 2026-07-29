@@ -1,10 +1,10 @@
 import { useState } from "preact/hooks";
 import { playerNames } from "../../state/hiddenNumberState";
-import { fillTemplate, freshQuestionDeck, randomNumber } from "./logic";
+import { freshQuestionDeck, questionText, randomNumber } from "./logic";
 import type { Phase, Player } from "./types";
 import PlayerSetupScreen from "./PlayerSetupScreen";
 import HandoffScreen from "./HandoffScreen";
-import RevealScreen from "./RevealScreen";
+import ShowNumberScreen from "./ShowNumberScreen";
 import DiscussScreen from "./DiscussScreen";
 import ResultScreen from "./ResultScreen";
 import styles from "./HiddenNumberApp.module.css";
@@ -19,24 +19,35 @@ export default function HiddenNumberApp() {
 
   const guesser = players[currentIndex] ?? null;
 
-  function drawRound(remaining: string[]) {
+  function drawQuestion(remaining: string[]): {
+    template: string;
+    rest: string[];
+  } {
     const pool = remaining.length > 0 ? remaining : freshQuestionDeck();
-    setTemplate(pool[0] as string);
-    setNumber(randomNumber());
-    setDeck(pool.slice(1));
+    return { template: pool[0] as string, rest: pool.slice(1) };
   }
 
   function startGame() {
     const names = playerNames.value.map((name) => name.trim()).filter(Boolean);
     setPlayers(names.map((name) => ({ id: crypto.randomUUID(), name })));
     setCurrentIndex(0);
-    drawRound(freshQuestionDeck());
+    setNumber(randomNumber());
+    const { template: t, rest } = drawQuestion(freshQuestionDeck());
+    setTemplate(t);
+    setDeck(rest);
     setPhase("handoff");
+  }
+
+  function nextQuestion() {
+    const { template: t, rest } = drawQuestion(deck);
+    setTemplate(t);
+    setDeck(rest);
   }
 
   function nextRound() {
     setCurrentIndex((i) => (i + 1) % players.length);
-    drawRound(deck);
+    setNumber(randomNumber());
+    nextQuestion();
     setPhase("handoff");
   }
 
@@ -50,14 +61,13 @@ export default function HiddenNumberApp() {
       {phase === "handoff" && guesser && (
         <HandoffScreen
           guesserName={guesser.name}
-          onReady={() => setPhase("reveal")}
+          onReady={() => setPhase("showNumber")}
           onExit={backToSetup}
         />
       )}
-      {phase === "reveal" && guesser && template && number !== null && (
-        <RevealScreen
+      {phase === "showNumber" && guesser && number !== null && (
+        <ShowNumberScreen
           guesserName={guesser.name}
-          question={fillTemplate(template, number)}
           number={number}
           onSeen={() => setPhase("discuss")}
         />
@@ -65,18 +75,14 @@ export default function HiddenNumberApp() {
       {phase === "discuss" && guesser && template && (
         <DiscussScreen
           guesserName={guesser.name}
-          questionWithBlank={fillTemplate(template, null)}
+          question={questionText(template)}
+          onNextQuestion={nextQuestion}
           onReveal={() => setPhase("result")}
           onExit={backToSetup}
         />
       )}
-      {phase === "result" && template && number !== null && (
-        <ResultScreen
-          question={fillTemplate(template, number)}
-          number={number}
-          onNext={nextRound}
-          onExit={backToSetup}
-        />
+      {phase === "result" && number !== null && (
+        <ResultScreen number={number} onNext={nextRound} onExit={backToSetup} />
       )}
     </div>
   );

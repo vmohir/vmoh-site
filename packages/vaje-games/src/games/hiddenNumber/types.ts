@@ -3,4 +3,4 @@ export interface Player {
   name: string;
 }
 
-export type Phase = "setup" | "handoff" | "reveal" | "discuss" | "result";
+export type Phase = "setup" | "handoff" | "showNumber" | "discuss" | "result";

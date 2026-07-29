@@ -216,10 +216,13 @@ is exactly why this is config rather than a second copy of the engine.
 
 Not a word game — no `words.json`, no teams, no scoring. Each round one player
 (rotating round-robin, `currentIndex` into `players`) is "it" and must guess a
-number 1–100 that everyone else can see, via a spectrum-style prompt that gives
-the group something to react to without stating the number out loud. Purely
-conversational: there's no captured guess and no win condition, just assign →
-reveal → discuss → reveal-the-answer → next player.
+number 1–100 that everyone else can see. The number is shown **alone, once**;
+after that, the group cycles through as many spectrum-style prompts as they want
+(e.g. "اگه {n} نفر تو خیابون باشن، چقدر نگران می‌شی؟") — always with the number
+blanked out — reacting to each so the guesser can pick up clues from the
+discussion without anyone stating the number. Purely conversational: there's no
+captured guess and no win condition, just assign → show the number → cycle
+questions → reveal-the-answer → next player.
 
 - **`src/games/hiddenNumber/questions.json`** — `{ questions: string[] }`, each
   a template containing the literal token `{n}` (e.g.
@@ -227,29 +230,32 @@ reveal → discuss → reveal-the-answer → next player.
   is small enough (~45 short strings) to statically import rather than fetch —
   no preload dance needed here, that optimization is only worth it for the
   ~500-entry word bank.
-- **`src/games/hiddenNumber/logic.ts`** — `fillTemplate(template, n)`
-  substitutes `{n}` with the number, or `"؟"` when `n` is `null` (used for the
-  discuss-phase version of the question that's safe to show the guesser).
-  `randomNumber()` draws 1–100; `freshQuestionDeck()` shuffles all templates so
-  they don't repeat until exhausted, same no-repeat pattern as the word-guessing
-  decks.
+- **`src/games/hiddenNumber/logic.ts`** — `questionText(template)` always
+  substitutes `{n}` → `"؟"`; the raw number-filled form of a template is never
+  rendered anywhere, by design (the number only ever appears alone, on
+  `ShowNumberScreen`). `randomNumber()` draws 1–100; `freshQuestionDeck()`
+  shuffles all templates so they don't repeat until exhausted — same no-repeat
+  pattern as the word-guessing decks, and reused for **both** "start of round"
+  and "سوال بعدی" draws, since both just want "the next not-yet-seen question."
 - **`src/state/hiddenNumberState.ts`** — persisted player _names_ only
   (`playerNames`, `MIN_PLAYERS = 3`), under `vaje-games-hidden-number-settings`.
   No difficulty/mode/score settings exist for this game.
 - **`src/games/hiddenNumber/HiddenNumberApp.tsx`** — the orchestrator.
-  `Phase = "setup" | "handoff" | "reveal" | "discuss" | "result"`:
+  `Phase = "setup" | "handoff" | "showNumber" | "discuss" | "result"`:
   - `setup` → `PlayerSetupScreen` (name list, no mode/settings)
   - `handoff` → `HandoffScreen`: "پاس بده به یکی غیر از {guesser}" — the point
     where the phone physically changes hands
-  - `reveal` → `RevealScreen`: shown to whoever is holding the phone (not the
-    guesser) — question with `{n}` filled in, plus a "don't show this to
-    {guesser}" warning
-  - `discuss` → `DiscussScreen`: now safe to show the guesser too — same
-    question but with `{n}` → `"؟"`, so everyone can follow what's being
-    discussed without seeing the answer
+  - `showNumber` → `ShowNumberScreen`: shown to whoever is holding the phone
+    (not the guesser) — **just** the number, big, plus a "don't show this to
+    {guesser}" warning. No question here.
+  - `discuss` → `DiscussScreen`: now safe to show the guesser too — one question
+    at a time via `questionText()` (number always blanked); "سوال بعدی" calls
+    `nextQuestion()` to swap in another one from the same game-long deck without
+    touching `number`; "حدس زد، عدد رو نشون بده" moves to `result`
   - `result` → `ResultScreen`: reveals the real number, "نفر بعد" advances
-    `currentIndex` round-robin and draws a fresh round, looping indefinitely
-    until "پایان بازی" returns to `setup`
+    `currentIndex` round-robin, draws a new number _and_ the next question, and
+    loops back to `handoff` — indefinitely, until "پایان بازی" returns to
+    `setup`
 
 ## Conventions
 

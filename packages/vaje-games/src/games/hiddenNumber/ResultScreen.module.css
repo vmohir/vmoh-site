@@ -9,13 +9,6 @@
   text-align: center;
 }
 
-.question {
-  font-size: clamp(1.125rem, 4.5vw, 1.5rem);
-  font-weight: 600;
-  line-height: 1.6;
-  color: var(--text-secondary);
-}
-
 .number {
   font-size: clamp(3rem, 15vw, 5rem);
   font-weight: 800;
