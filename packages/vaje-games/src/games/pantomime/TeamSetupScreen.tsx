@@ -3,10 +3,12 @@ import {
   MAX_TEAMS,
   MIN_TEAMS,
   addTeam,
+  gameMode,
   removeTeam,
   renameTeam,
   roundSeconds,
   selectedDifficulties,
+  setGameMode,
   setRoundSeconds,
   setTargetScore,
   targetScore,
@@ -21,12 +23,18 @@ interface Props {
   onStart: () => void;
 }
 
+const GAME_MODES = [
+  { id: "timed" as const, label: "با زمان‌سنج" },
+  { id: "selection" as const, label: "انتخاب دسته و سختی" },
+];
+
 export default function TeamSetupScreen({ wordsReady, onStart }: Props) {
+  const isTimed = gameMode.value === "timed";
   const validTeamCount = teamNames.value.filter((n) => n.trim()).length;
   const canStart =
     wordsReady &&
     validTeamCount >= MIN_TEAMS &&
-    selectedDifficulties.value.length > 0;
+    (!isTimed || selectedDifficulties.value.length > 0);
 
   return (
     <div class="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-6 py-8">
@@ -67,48 +75,75 @@ export default function TeamSetupScreen({ wordsReady, onStart }: Props) {
       </section>
 
       <section class="flex flex-col gap-2">
-        <h2 class="text-sm font-medium text-secondary">سطح دشواری</h2>
+        <h2 class="text-sm font-medium text-secondary">حالت بازی</h2>
         <div class={styles.chipWrap}>
-          {DIFFICULTIES.map((difficulty) => {
-            const active = selectedDifficulties.value.includes(difficulty.id);
-            return (
-              <button
-                key={difficulty.id}
-                type="button"
-                class={active ? `btn ${styles.chipActive}` : "btn"}
-                onClick={() => toggleDifficulty(difficulty.id)}
-              >
-                {difficulty.label} ({difficulty.points} امتیاز)
-              </button>
-            );
-          })}
+          {GAME_MODES.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              class={
+                gameMode.value === m.id ? `btn ${styles.chipActive}` : "btn"
+              }
+              onClick={() => setGameMode(m.id)}
+            >
+              {m.label}
+            </button>
+          ))}
         </div>
+        <p class="text-sm text-muted">
+          {isTimed
+            ? "هر تیم یک دور زمان‌دار با کلمات پشت‌سرهم بازی می‌کند."
+            : "هر تیم قبل از دیدن کلمه، دسته و سختی آن را انتخاب می‌کند."}
+        </p>
       </section>
+
+      {isTimed && (
+        <section class="flex flex-col gap-2">
+          <h2 class="text-sm font-medium text-secondary">سطح دشواری</h2>
+          <div class={styles.chipWrap}>
+            {DIFFICULTIES.map((difficulty) => {
+              const active = selectedDifficulties.value.includes(difficulty.id);
+              return (
+                <button
+                  key={difficulty.id}
+                  type="button"
+                  class={active ? `btn ${styles.chipActive}` : "btn"}
+                  onClick={() => toggleDifficulty(difficulty.id)}
+                >
+                  {difficulty.label} ({difficulty.points} امتیاز)
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section class="flex flex-col gap-3">
         <h2 class="text-sm font-medium text-secondary">تنظیمات</h2>
-        <div class={styles.stepper}>
-          <span>زمان هر دور (ثانیه)</span>
-          <div class="flex items-center gap-2">
-            <button
-              type="button"
-              class="btn btn-icon"
-              aria-label="کم کردن زمان"
-              onClick={() => setRoundSeconds(roundSeconds.value - 10)}
-            >
-              <Minus size={16} />
-            </button>
-            <span class={styles.stepperValue}>{roundSeconds.value}</span>
-            <button
-              type="button"
-              class="btn btn-icon"
-              aria-label="زیاد کردن زمان"
-              onClick={() => setRoundSeconds(roundSeconds.value + 10)}
-            >
-              <Plus size={16} />
-            </button>
+        {isTimed && (
+          <div class={styles.stepper}>
+            <span>زمان هر دور (ثانیه)</span>
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                class="btn btn-icon"
+                aria-label="کم کردن زمان"
+                onClick={() => setRoundSeconds(roundSeconds.value - 10)}
+              >
+                <Minus size={16} />
+              </button>
+              <span class={styles.stepperValue}>{roundSeconds.value}</span>
+              <button
+                type="button"
+                class="btn btn-icon"
+                aria-label="زیاد کردن زمان"
+                onClick={() => setRoundSeconds(roundSeconds.value + 10)}
+              >
+                <Plus size={16} />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
         <div class={styles.stepper}>
           <span>امتیاز برای پیروزی</span>
           <div class="flex items-center gap-2">
@@ -143,7 +178,9 @@ export default function TeamSetupScreen({ wordsReady, onStart }: Props) {
       </button>
       {wordsReady && !canStart && (
         <p class="text-center text-sm text-muted">
-          حداقل ۲ تیم با نام و یک سطح دشواری لازم است.
+          {isTimed
+            ? "حداقل ۲ تیم با نام و یک سطح دشواری لازم است."
+            : "حداقل ۲ تیم با نام لازم است."}
         </p>
       )}
     </div>

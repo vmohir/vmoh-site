@@ -48,30 +48,47 @@ available games as buttons; each game is its own self-contained flow under
 
 ## پانتومیم (charades) architecture
 
-Pass-the-phone, timed-round charades: teams take turns acting out a word for
-their team to guess; a correct guess is worth the word's difficulty in points
-(easy=1, medium=2, hard=3 — see `DIFFICULTIES` in `words.ts`), and skipping
-costs the same amount, so skipping a hard word is riskier than skipping an easy
-one. Play continues round-robin across teams until a team reaches the configured
-target score. Categories are content-only — every category always plays; there
-is no category picker in the UI, only a difficulty filter.
+Teams take turns acting out a word for their team to guess; a correct guess is
+worth the word's difficulty in points (easy=1, medium=2, hard=3 — see
+`DIFFICULTIES` in `words.ts`), and skipping costs the same amount, so skipping a
+hard word is riskier than skipping an easy one. Play continues round-robin
+across teams until a team reaches the configured target score. There are two
+game modes, chosen on the setup screen (`gameMode` in `pantomimeState.ts`):
+
+- **`"timed"`** (default) — the player filters by difficulty once at setup; each
+  turn is a fixed-length round (`roundSeconds`) cycling through many words from
+  a shuffled deck.
+- **`"selection"`** — no timer and no setup-time difficulty filter. Each turn,
+  the current team sees **all categories and all three difficulties on one
+  screen** (`CategoryPickerScreen`), picks one of each, is shown exactly one
+  word for that combination, resolves it (بلد شد / رد کن), and play immediately
+  passes to the next team. Modeled after a category-charades reference app the
+  user showed screenshots of, but collapsed to a single picker screen instead of
+  two sequential ones.
+
+Both modes share teams, scoring, and the target-score win condition;
+`TeamSetupScreen` shows/hides mode-specific fields (round length and difficulty
+filter only appear for `"timed"`) via `isTimed`.
 
 - **`src/words.json`** — the word bank content, and the only file you need to
   touch to add/remove/re-tag words or add a whole new category. Shape:
-  `{ categories: [{id, label}], words: [{text, category, difficulty}] }`.
-  `category` just groups words for your own editing sanity (there's no in-game
-  filter by it); `difficulty` is `"easy" | "medium" | "hard"` and does drive
-  scoring. Lives at the `src/` root (not under `games/pantomime/`) since it's
-  fetched as a standalone asset, not bundled JS — see the loading model below.
-  Currently ~475 words across 11 categories (movies/TV, cartoons, proverbs,
-  professions, actions, animals, objects, celebrities, sports, food, places).
+  `{ categories: [{id, label}], words: [{text, category, difficulty}] }`. In
+  `"timed"` mode `category` is just a grouping for your own editing sanity; in
+  `"selection"` mode it's what the player actually picks from, using
+  `categories[].label` for the button text. `difficulty` is
+  `"easy" | "medium" | "hard"` and drives scoring in both modes. Lives at the
+  `src/` root (not under `games/pantomime/`) since it's fetched as a standalone
+  asset, not bundled JS — see the loading model below. Currently ~475 words
+  across 11 categories (movies/TV, cartoons, proverbs, professions, actions,
+  animals, objects, celebrities, sports, food, places).
 - **Loading model**: `words.json` is _not_ statically imported (that would
   inline ~500 words into the JS bundle). `src/games/pantomime/words.ts` imports
   it as `import wordsUrl from "../../words.json?url"`, which makes Vite emit it
   as its own hashed asset and gives back its URL. `words.ts` then
-  `fetch(wordsUrl)`s it lazily via `loadWords()` (memoized promise), kicked off
-  eagerly the moment the module evaluates. `pantomime.astro` imports the same
-  `?url` value and passes it to `Layout`'s `preloadJsonHref` prop, which renders
+  `fetch(wordsUrl)`s it lazily via `loadWordBank()` (memoized promise, resolving
+  `{ words, categories }` together), kicked off eagerly the moment the module
+  evaluates. `pantomime.astro` imports the same `?url` value and passes it to
+  `Layout`'s `preloadJsonHref` prop, which renders
   `<link rel=preload as=fetch crossorigin=anonymous>` in `<head>` — so the
   browser starts downloading the JSON the instant the HTML is parsed, in
   parallel with the JS bundle, well before the player finishes team setup. The
@@ -82,41 +99,61 @@ is no category picker in the UI, only a difficulty filter.
   also defines the fixed (code-level, not content) `DIFFICULTIES` metadata:
   Farsi label + point value per tier.
 - **`src/state/pantomimeState.ts`** — persisted _settings only_: team names,
-  selected difficulties, round length, target score. Signals + exported mutators
-  (`addTeam`, `removeTeam`, `renameTeam`, `toggleDifficulty`, `setRoundSeconds`,
-  `setTargetScore`); persisted to `localStorage` under
-  `vaje-games-pantomime-settings` via an `effect()`. On load, any stored
-  difficulty ids that no longer exist are dropped (falls back to "all"). Live
-  game progress (scores, deck, current phase) is **not** persisted — a refresh
-  mid-game drops back to setup with the previous settings prefilled,
-  intentionally, to avoid the complexity of serializing in-flight game state.
-- **`src/games/pantomime/scoring.ts`** — `buildDeck(words, difficulties)`
-  (shuffle words matching the difficulty filter — categories aren't filtered,
-  all always included), `pointsForWord()` (difficulty → points),
+  `gameMode`, selected difficulties (timed mode), round length, target score.
+  Signals + exported mutators (`addTeam`, `removeTeam`, `renameTeam`,
+  `setGameMode`, `toggleDifficulty`, `setRoundSeconds`, `setTargetScore`);
+  persisted to `localStorage` under `vaje-games-pantomime-settings` via an
+  `effect()`. On load, any stored difficulty ids or an invalid `gameMode` fall
+  back to defaults. Live game progress (scores, deck, current phase) is **not**
+  persisted — a refresh mid-game drops back to setup with the previous settings
+  prefilled, intentionally, to avoid the complexity of serializing in-flight
+  game state.
+- **`src/games/pantomime/scoring.ts`** — `buildDeck(words, difficulties)` (timed
+  mode: shuffle words matching the difficulty filter, all categories included),
+  `pickOne(words, category, difficulty, seen)` (selection mode: one random word
+  for an exact category+difficulty, avoiding ids in `seen` until that
+  combination is exhausted this game), `pointsForWord()` (difficulty → points),
   `applyScoreDelta()` (score change, clamped at 0), `findWinner()`.
 - **`src/games/pantomime/PantomimeApp.tsx`** — the orchestrator. Holds all
-  ephemeral game state (`allWords`, `phase`, `teams`, `currentTeamIndex`,
-  `deck`, `currentWord`, `timeLeft`, `roundStats`) in `useState`/`useEffect`
-  (not signals — this is single-component, high-churn state, same rationale as
-  `chooser`'s `ChooserApp.tsx`). Calls `loadWords()` on mount into `allWords`;
-  `freshDeck()`/`nextWord()` are defined inside the component so they can close
-  over the current `allWords` state. Renders one of five screens based on
-  `phase`:
-  - `setup` → `TeamSetupScreen` (edits the persisted settings signals directly;
-    receives `wordsReady={allWords !== null}` and disables/relabels the start
-    button until the fetch resolves — in practice near-instant thanks to the
-    preload, but still handled honestly since it's genuinely async)
-  - `ready` → `ReadyScreen` (pass-the-phone prompt before each team's turn)
-  - `playing` → `RoundScreen` (word + timer + بلد شد / رد کن)
-  - `roundEnd` → `ResultsScreen` (`mode="round"`, per-round stats + running
-    scoreboard, advances to the next team or to `gameOver`)
+  ephemeral game state (`allWords`, `categories`, `phase`, `teams`,
+  `currentTeamIndex`, `deck`, `seenWordIds`, `currentWord`, `timeLeft`,
+  `roundStats`) in `useState`/`useEffect` (not signals — this is
+  single-component, high-churn state, same rationale as `chooser`'s
+  `ChooserApp.tsx`). Calls `loadWordBank()` on mount. Renders one of five
+  screens based on `phase`, branching on
+  `isSelectionMode = gameMode.value === "selection"`:
+  - `setup` → `TeamSetupScreen` (receives `wordsReady={allWords !== null}` and
+    disables/relabels the start button until the fetch resolves — in practice
+    near-instant thanks to the preload, but still handled honestly since it's
+    genuinely async)
+  - `ready`, timed → `ReadyScreen` (pass-the-phone prompt, then `startRound()`
+    starts the timer and draws from `deck`)
+  - `ready`, selection → `CategoryPickerScreen` (`onPick(category, difficulty)`
+    calls `pickWordForTurn`, which draws via `pickOne` and jumps straight to
+    `playing` — no separate "ready" tap needed)
+  - `playing` → `RoundScreen` (word + بلد شد / رد کن; `timeLeft` prop is omitted
+    in selection mode, which hides the timer display entirely)
+  - `roundEnd` (timed only) → `ResultsScreen` (`mode="round"`, per-round stats +
+    running scoreboard, advances to the next team or to `gameOver`). Selection
+    mode has no equivalent screen: `gotIt`/`skip` call
+    `advanceAfterSelectionTurn` directly after scoring, which checks the win
+    condition and moves straight to the next team's picker (or `gameOver`) with
+    no interstitial — matches the fast "see word, play, done, next player" loop
+    the mode is for.
   - `gameOver` → `ResultsScreen` (`mode="gameOver"`, winner + final scoreboard,
     replay or back to setup)
-- **Deck mechanics**: `deck` holds words not yet guessed correctly _this game_.
-  "بلد شد" removes the word permanently; "رد کن" moves it to the back of the
-  deck (it can resurface later the same game). If the deck empties mid-game,
-  `nextWord()` reshuffles a fresh deck from `allWords` filtered by the selected
-  difficulties, rather than ending the game.
+- **Timed-mode deck mechanics**: `deck` holds words not yet guessed correctly
+  _this game_. "بلد شد" removes the word permanently; "رد کن" moves it to the
+  back of the deck (it can resurface later the same game). If the deck empties
+  mid-game, `nextWord()` reshuffles a fresh deck from `allWords` filtered by the
+  selected difficulties, rather than ending the game.
+- **Synchronous score check**: `updateCurrentTeamScore()` returns the current
+  team's new score value directly (via a variable assigned inside the `setTeams`
+  updater) rather than making the caller re-read `teams` state afterwards —
+  `teams` wouldn't reflect the update yet within the same event handler.
+  Selection mode's immediate win-check (`advanceAfterSelectionTurn`) depends on
+  this; timed mode's `continueAfterRound` doesn't need it since it runs from a
+  later, separate click after state has settled.
 - **`RoundScreen`** shows a small colored badge (green/amber/red for
   easy/medium/hard) with the word's point value, so players know the stakes
   before deciding whether to skip.

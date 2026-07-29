@@ -6,7 +6,8 @@ import styles from "./RoundScreen.module.css";
 
 interface Props {
   word: Word;
-  timeLeft: number;
+  // Omitted in "selection" mode, which has no round timer.
+  timeLeft?: number;
   teamName: string;
   teamScore: number;
   onGotIt: () => void;
@@ -31,11 +32,13 @@ export default function RoundScreen({
           <p class="text-sm text-secondary">{teamName}</p>
           <p class="font-bold">{teamScore} امتیاز</p>
         </div>
-        <span
-          class={`${styles.timer} ${timeLeft <= 10 ? styles.timerLow : ""}`}
-        >
-          {timeLeft}
-        </span>
+        {timeLeft !== undefined && (
+          <span
+            class={`${styles.timer} ${timeLeft <= 10 ? styles.timerLow : ""}`}
+          >
+            {timeLeft}
+          </span>
+        )}
       </div>
 
       <div class={styles.wordArea}>

@@ -1,6 +1,6 @@
 import { effect, signal } from "@preact/signals";
 import { DIFFICULTIES } from "../games/pantomime/words";
-import type { Difficulty } from "../games/pantomime/types";
+import type { Difficulty, GameMode } from "../games/pantomime/types";
 
 const STORAGE_KEY = "vaje-games-pantomime-settings";
 
@@ -12,12 +12,14 @@ export const MIN_TARGET_SCORE = 10;
 export const MAX_TARGET_SCORE = 100;
 
 export const DEFAULT_TEAM_NAMES = ["تیم ۱", "تیم ۲"];
+export const DEFAULT_GAME_MODE: GameMode = "timed";
 export const DEFAULT_ROUND_SECONDS = 60;
 export const DEFAULT_TARGET_SCORE = 30;
 export const DEFAULT_DIFFICULTIES: Difficulty[] = DIFFICULTIES.map((d) => d.id);
 
 interface StoredSettings {
   teamNames: string[];
+  gameMode: GameMode;
   selectedDifficulties: Difficulty[];
   roundSeconds: number;
   targetScore: number;
@@ -40,6 +42,10 @@ function loadSettings(): StoredSettings {
         parsed.teamNames && parsed.teamNames.length >= MIN_TEAMS
           ? parsed.teamNames
           : DEFAULT_TEAM_NAMES,
+      gameMode:
+        parsed.gameMode === "timed" || parsed.gameMode === "selection"
+          ? parsed.gameMode
+          : DEFAULT_GAME_MODE,
       selectedDifficulties:
         restoredDifficulties.length > 0
           ? restoredDifficulties
@@ -55,6 +61,7 @@ function loadSettings(): StoredSettings {
 function defaults(): StoredSettings {
   return {
     teamNames: DEFAULT_TEAM_NAMES,
+    gameMode: DEFAULT_GAME_MODE,
     selectedDifficulties: DEFAULT_DIFFICULTIES,
     roundSeconds: DEFAULT_ROUND_SECONDS,
     targetScore: DEFAULT_TARGET_SCORE,
@@ -64,6 +71,7 @@ function defaults(): StoredSettings {
 const initial = loadSettings();
 
 export const teamNames = signal<string[]>(initial.teamNames);
+export const gameMode = signal<GameMode>(initial.gameMode);
 export const selectedDifficulties = signal<Difficulty[]>(
   initial.selectedDifficulties,
 );
@@ -94,6 +102,10 @@ export function renameTeam(index: number, name: string): void {
   );
 }
 
+export function setGameMode(next: GameMode): void {
+  gameMode.value = next;
+}
+
 export function toggleDifficulty(id: Difficulty): void {
   const isSelected = selectedDifficulties.value.includes(id);
   if (isSelected && selectedDifficulties.value.length === 1) return;
@@ -114,6 +126,7 @@ if (typeof localStorage !== "undefined") {
   effect(() => {
     const snapshot: StoredSettings = {
       teamNames: teamNames.value,
+      gameMode: gameMode.value,
       selectedDifficulties: selectedDifficulties.value,
       roundSeconds: roundSeconds.value,
       targetScore: targetScore.value,

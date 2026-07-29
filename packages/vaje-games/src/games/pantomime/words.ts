@@ -2,7 +2,7 @@
 // its ~500 words into the JS bundle. pantomime.astro preloads this same URL
 // in <head> so the fetch below resolves from cache almost instantly.
 import wordsUrl from "../../words.json?url";
-import type { DifficultyMeta, Word } from "./types";
+import type { Category, DifficultyMeta, Word } from "./types";
 
 export const DIFFICULTIES: DifficultyMeta[] = [
   { id: "easy", label: "آسان", points: 1 },
@@ -20,26 +20,32 @@ interface RawWord {
   difficulty: string;
 }
 
-let wordsPromise: Promise<Word[]> | null = null;
+export interface WordBank {
+  words: Word[];
+  categories: Category[];
+}
+
+let wordBankPromise: Promise<WordBank> | null = null;
 
 // Kicks off on first call (see the eager call below) and memoizes the
 // result — every caller shares the same in-flight/resolved promise.
-export function loadWords(): Promise<Word[]> {
-  if (!wordsPromise) {
-    wordsPromise = fetch(wordsUrl)
+export function loadWordBank(): Promise<WordBank> {
+  if (!wordBankPromise) {
+    wordBankPromise = fetch(wordsUrl)
       .then((res) => res.json())
-      .then((data: { words: RawWord[] }) =>
-        data.words.map((word, index) => ({
+      .then((data: { categories: Category[]; words: RawWord[] }) => ({
+        categories: data.categories,
+        words: data.words.map((word, index) => ({
           id: `${word.category}-${word.difficulty}-${index}`,
           text: word.text,
           category: word.category,
           difficulty: word.difficulty as Word["difficulty"],
         })),
-      );
+      }));
   }
-  return wordsPromise;
+  return wordBankPromise;
 }
 
 // Start the fetch as soon as this module runs (page load), well before the
 // player finishes setting up teams.
-loadWords();
+loadWordBank();

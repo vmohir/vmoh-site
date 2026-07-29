@@ -1,0 +1,58 @@
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem 2rem;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.scoreboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.turnBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.chipWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chipWrap :global(.btn) {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.chipActive {
+  background: var(--accent);
+  color: var(--canvas-bg);
+  border-color: var(--accent);
+}
+
+.difficultySection {
+  transition: opacity var(--transition);
+}
+
+.difficultySection[data-disabled="true"] {
+  opacity: 0.4;
+  pointer-events: none;
+}

@@ -1,4 +1,5 @@
 export type Difficulty = "easy" | "medium" | "hard";
+export type GameMode = "timed" | "selection";
 
 export interface DifficultyMeta {
   id: Difficulty;
@@ -6,11 +7,16 @@ export interface DifficultyMeta {
   points: number;
 }
 
+export interface Category {
+  id: string;
+  label: string;
+}
+
 export interface Word {
   id: string;
   text: string;
-  // Content-only grouping (see words.json) — not filterable in the UI, all
-  // categories always play.
+  // In "timed" mode this is content-only grouping, not filterable — all
+  // categories play. In "selection" mode the player picks one per turn.
   category: string;
   difficulty: Difficulty;
 }
