@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="طیف | واژه‌بازی">
+  <div id="app"></div>
+</Layout>
+
+<script>
+  // Skip Astro's islands runtime — a single root component doesn't need the
+  // inline astro-island element, the islands client.js, or the renderer
+  // chunk, so mount Preact directly.
+  import { h, render } from "preact";
+  import WavelengthApp from "../games/wavelength/WavelengthApp";
+
+  const root = document.getElementById("app");
+  if (root) render(h(WavelengthApp, null), root);
+</script>

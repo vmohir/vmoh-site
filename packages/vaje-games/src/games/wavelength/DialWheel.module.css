@@ -1,0 +1,72 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  touch-action: none;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.track {
+  fill: none;
+  stroke: var(--surface-muted-bg);
+  stroke-width: 22;
+  stroke-linecap: round;
+}
+
+.band4 {
+  fill: none;
+  stroke: var(--good);
+  stroke-width: 22;
+}
+
+.band3 {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 22;
+}
+
+.band2 {
+  fill: none;
+  stroke: var(--border-primary);
+  stroke-width: 22;
+}
+
+.pivot {
+  fill: var(--text-primary);
+}
+
+.needle {
+  stroke-linecap: round;
+  stroke-width: 5;
+}
+
+.targetNeedle {
+  stroke: var(--bad);
+}
+
+.guessNeedle {
+  stroke: var(--text-primary);
+}
+
+.draggable {
+  cursor: grab;
+}
+
+.labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 0.5rem;
+  font-weight: 700;
+  font-size: 1.0625rem;
+}

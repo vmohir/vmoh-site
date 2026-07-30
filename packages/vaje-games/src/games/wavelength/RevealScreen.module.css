@@ -1,0 +1,22 @@
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.scoreboard {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 1.0625rem;
+}
+
+.points {
+  font-size: clamp(2.5rem, 12vw, 3.5rem);
+  font-weight: 800;
+  color: var(--accent);
+}

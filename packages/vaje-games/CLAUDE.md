@@ -13,10 +13,15 @@ available games as buttons.
   words, no teams, no scoring, just a rotating "one player doesn't know a
   number" mechanic — and gets its own folder rather than forcing it into the
   word-guessing shape.
+- **طیف** (`src/games/wavelength/`) is the actual Wavelength dial game — 2
+  competitive teams, a draggable semicircular dial (`DialWheel`, its own
+  reusable SVG component), spectrum word-pair prompts, and bullseye-style zone
+  scoring. Nothing here overlaps with the other games; it has its own folder,
+  its own word-pair content, and its own state module.
 
-When adding a game, match it to whichever of these two shapes it's actually
-closer to (see "Adding a new game" below) rather than always reaching for a new
-folder or always reusing `wordGuessing`.
+When adding a game, match it to whichever of these shapes it's actually closer
+to (see "Adding a new game" below) rather than always reaching for a new folder
+or always reusing `wordGuessing`.
 
 ## Stack
 
@@ -256,6 +261,81 @@ questions → reveal-the-answer → next player.
     `currentIndex` round-robin, draws a new number _and_ the next question, and
     loops back to `handoff` — indefinitely, until "پایان بازی" returns to
     `setup`
+
+## طیف (`src/games/wavelength/`)
+
+The actual Wavelength: exactly 2 teams alternate roles each round — one gives a
+clue, the other places a guess on a hidden dial position, scored by proximity.
+First to the target score wins. Unlike the other games, this one needed a real
+interactive primitive rather than just screens over shared state.
+
+- **`DialWheel.tsx`** (+ `dialGeometry.ts`) — the reusable semicircular gauge,
+  used in every phase with different props rather than being rebuilt per screen.
+  `dialGeometry.ts` holds the pure angle/arc math (`angleForValue`,
+  `polarPoint`, `describeArc`, `valueFromPointer`) separately from the component
+  so it can be reasoned about (and unit-tested, if that's ever added) without
+  touching SVG/JSX. Value 0–100 maps to a 180°→0° sweep (0 = left, 100 = right,
+  50 = straight up) — this holds regardless of page `dir="rtl"`, since SVG path
+  coordinates aren't mirrored by CSS direction; only the plain-HTML label row
+  underneath needs the RTL-aware DOM-order trick (first child renders rightmost)
+  to keep `rightLabel`/`leftLabel` under the correct ends of the arc.
+  - **Modes via props, not a `mode` enum**: `target`/`showTarget` control the
+    red target needle + colored score bands (hidden unless `showTarget` is true
+    — used for the clue-giver's peek and the final reveal); `guess` draws the
+    white guess needle; passing `onGuessChange` is what makes the dial draggable
+    at all (`GuessingScreen` is the only caller that passes it).
+    `ClueGiverScreen`, `GuessingScreen`, and `RevealScreen` all render the same
+    `DialWheel` with different subsets of these props rather than three
+    different dial implementations.
+  - **Drag**: pointer events on the `<svg>` itself (`setPointerCapture` on
+    pointerdown), converting client coordinates → viewBox-space coordinates →
+    angle → clamped 0–100 value via `valueFromPointer`. No slider fallback;
+    verified by simulating mouse drag in a real browser during development (left
+    end, straight up, right end all landed on the expected values).
+- **`src/games/wavelength/logic.ts`** — `randomValue()` (the hidden target),
+  `scoreForGuess(target, guess)` (4/3/2/0 by distance — `BAND_4`/`BAND_3`/
+  `BAND_2` constants), `bandSegments(target)` (the same distance bands expressed
+  as up to 5 clamped `{from, to, points}` ranges for `DialWheel` to draw as
+  colored arcs — degenerate/empty ranges near 0 or 100 are filtered out),
+  `freshPairDeck()` (no-repeat shuffle, same pattern as the other games' decks).
+- **`src/games/wavelength/pairs.json`** — `{ pairs: [{left, right}] }`, ~40
+  spectrum word pairs (e.g. `{"left": "داغ", "right": "سرد"}`). Small enough to
+  statically import, same reasoning as `hiddenNumber/questions.json`.
+- **`src/state/wavelengthState.ts`** — persisted settings for exactly **two**
+  fixed team names (a tuple, not a list — no add/remove, unlike
+  `wordGameState`'s teams) plus `targetScore`, under
+  `vaje-games-wavelength-settings`.
+- **`src/games/wavelength/WavelengthApp.tsx`** — the orchestrator.
+  `Phase = "setup" | "clueGiver" | "guessing" | "reveal" | "gameOver"`.
+  `clueTeamIndex: 0 | 1` tracks whose turn it is to give the clue; the guessing
+  team is always `1 - clueTeamIndex` (derived, not stored). Each round draws a
+  `SpectrumPair` from `deck` and a fresh `randomValue()` `target` together
+  (`startRoundContent`), independent of which phase is showing:
+  - `setup` → `TeamSetupScreen` (2 fixed name inputs + target-score stepper, no
+    team add/remove)
+  - `clueGiver` → `ClueGiverScreen`: "چرخوندن گردونه" plays a purely cosmetic
+    ~900ms spin animation (a CSS-animated ring overlaid on the dial, `target`
+    was already decided when the round started — the spin never animates to a
+    real angle, since that would flash-reveal it) and then unlocks a
+    press-and-hold "دیدن هدف" button wired to `onPointerDown`/`onPointerUp`
+    toggling local `peeking` state, which is what actually flips `DialWheel`'s
+    `showTarget`
+  - `guessing` → `GuessingScreen`: the other team drags the needle
+    (`onGuessChange` → local `guess` state in the app, not the screen, so it
+    survives into `reveal`); "قفل کردن حدس" calls `lockInGuess()`
+  - `reveal` → `RevealScreen`: shows target bands + both needles together,
+    computes and displays `scoreForGuess`, credits the guessing team; "دور بعدی"
+    toggles `clueTeamIndex` and starts a new round, or ends the game if a team
+    has hit `targetScore`
+  - `gameOver` → `GameOverScreen`: winner + sorted final scoreboard, replay or
+    back to setup
+- **Synchronous score check**: same pattern as `wordGuessing`'s
+  `updateCurrentTeamScore` — `updateGuessingTeamScore()` returns the new score
+  value out of the `setTeams` updater directly, though in practice `taif` only
+  needs this for consistency, since (unlike `wordGuessing`'s selection mode) the
+  win check here happens on a later, separate "دور بعدی" click after state has
+  already settled — there's no synchronous-read hazard to actually avoid, but
+  the pattern was kept for consistency with the sibling game.
 
 ## Conventions
 
