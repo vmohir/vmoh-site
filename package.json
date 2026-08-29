@@ -12,6 +12,7 @@
     "build:split-bill": "pnpm --filter splitted build",
     "build:chooser": "pnpm --filter chooser-online build",
     "build:vaje-games": "pnpm --filter vaje-games build",
+    "build:dice": "pnpm --filter sixes build",
     "build:slides": "cd packages/slides && pnpm install --frozen-lockfile && pnpm run build"
   },
   "devDependencies": {

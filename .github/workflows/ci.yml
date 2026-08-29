@@ -36,6 +36,9 @@ jobs:
       - name: Build vaje-games
         run: pnpm run build:vaje-games
 
+      - name: Build dice
+        run: pnpm run build:dice
+
       - name: Format check (split-bill)
         run: pnpm --filter splitted format:check
 
@@ -44,6 +47,9 @@ jobs:
 
       - name: Format check (vaje-games)
         run: pnpm --filter vaje-games format:check
+
+      - name: Format check (dice)
+        run: pnpm --filter sixes format:check
 
       - name: Build slides
         run: pnpm run build:slides

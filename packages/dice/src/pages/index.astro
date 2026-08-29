@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <div id="app"></div>
+</Layout>
+
+<script>
+  // Skip Astro's islands runtime — a single root component doesn't need the
+  // inline astro-island element, the islands client.js, or the renderer
+  // chunk, so mount Preact directly.
+  import { h, render } from "preact";
+  import SixesApp from "../game/SixesApp";
+
+  const root = document.getElementById("app");
+  if (root) render(h(SixesApp, null), root);
+</script>

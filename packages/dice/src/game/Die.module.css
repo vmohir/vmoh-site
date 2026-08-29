@@ -1,0 +1,52 @@
+.die {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 8%;
+  padding: 14%;
+  border-radius: 18%;
+  background: var(--die-wild);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+  flex: none;
+}
+
+.die[data-color="red"] {
+  background: var(--die-red);
+}
+.die[data-color="blue"] {
+  background: var(--die-blue);
+}
+.die[data-color="green"] {
+  background: var(--die-green);
+}
+.die[data-color="amber"] {
+  background: var(--die-amber);
+}
+.die[data-color="purple"] {
+  background: var(--die-purple);
+}
+
+.sm {
+  width: 2rem;
+  height: 2rem;
+}
+.md {
+  width: 3rem;
+  height: 3rem;
+}
+.lg {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+.faded {
+  opacity: 0.35;
+}
+
+.cell {
+  border-radius: 50%;
+}
+
+.cell[data-pip="true"] {
+  background: var(--die-wild-ink);
+}

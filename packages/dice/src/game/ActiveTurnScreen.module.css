@@ -1,0 +1,15 @@
+.wildSection {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.625rem;
+  background: var(--surface-bg);
+  border: 1px solid var(--border-subtle);
+}
+
+.wildButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
