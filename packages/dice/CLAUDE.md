@@ -46,24 +46,36 @@ secondary sources, not verified against the original scoresheet.
 - **Active player's turn** (`ActiveTurnScreen.tsx`): up to **3 roll-and-pick
   cycles**.
   1. Roll every die still "in play" (all 6 at the start of the turn).
-  2. Pick exactly one to place: a colored die goes into its own matching color;
-     the white die can stand in for **any one** of the five colors, using its
-     own face value (there's no white+blue addition combo — see simplifications
-     below).
-  3. Every other in-play die showing **less** than the value just placed drops
-     out onto the **Silver Platter** (`platter` state, an array of
-     `{ die, value }`); dice showing the same or higher stay in play for the
-     next reroll.
-  4. Repeat, or stop early. After the 3rd pick — or whenever no dice remain in
+  2. Pick one die to place. Dice show sorted by value, low to high, so it's easy
+     to scan. A colored die goes into its own matching color, at its own face
+     value; the white die can stand in for **any one of yellow, green, orange,
+     or purple** at its own face value — or be **added to the blue die** for one
+     bigger blue entry (a dedicated "Blue (white + blue = N)" option, only
+     offered when blue is still in play; this consumes both dice as a single
+     pick). White can **not** stand alone as blue — blue is reached either by
+     its own die's value, or by the white+blue sum, never by white alone.
+  3. Placing a die never auto-picks a box: the sheet highlights every
+     currently-legal box for that die's value in that one column (there can be
+     more than one — e.g. yellow has two boxes for each value 1-6), and the
+     player taps the specific box they want (`ScoreSheet`'s `pickable`/ `onPick`
+     props). There's a "Cancel" affordance to back out of a selection before
+     confirming, without spending the pick.
+  4. Once confirmed, every other in-play die showing **less** than the value
+     just placed drops out onto the **Silver Platter** (`platter` state, an
+     array of `{ die, value }`); dice showing the same or higher stay in play
+     for the next reroll.
+  5. Repeat, or stop early. After the 3rd pick — or whenever no dice remain in
      play — everything still in play also lands on the platter regardless of
      value.
 - **Everyone else** (`PlatterTurnScreen.tsx`): once per round, take **one**
-  value off the Silver Platter and mark it on your own sheet (subject to that
-  color's fill rule below), or skip. The platter isn't consumed — two different
-  players can use the same entry.
+  value off the Silver Platter (also shown sorted by value) and mark it on your
+  own sheet — same "pick a die, then tap the specific box" flow, minus the
+  white+blue combo (that's an active-turn-only move, since it needs control of
+  two dice from the same roll) — or skip. The platter isn't consumed — two
+  different players can use the same entry.
 - **Five columns, five different fill rules** (`board.ts` + `logic.ts`'s
-  `findLegalBox`) — this is what actually makes the game recognizable, not the
-  exact numbers:
+  `legalBoxIndices`) — this is what actually makes the game recognizable, not
+  the exact numbers:
   - **Yellow** (`kind: "match"`, grid layout): place a die in any open box that
     shows its value, in any order.
   - **Blue** (`kind: "match"`, row layout): same any-order matching rule, but
@@ -91,9 +103,11 @@ secondary sources, not verified against the original scoresheet.
 
 Faithful to the real game (confirmed across multiple independent descriptions of
 the rules): the 6-dice/white-wild setup, the 3-roll pick-and-shrink turn
-structure with the Silver Platter, each color's distinct fill-order rule
-(yellow/blue any-order, green threshold, orange free-with-multipliers, purple
-strictly-increasing), and the fox-scores-your-lowest-color mechanic.
+structure with the Silver Platter, the player choosing which specific open box a
+die goes into rather than it being auto-assigned, each color's distinct
+fill-order rule (yellow/blue any-order, green threshold, orange
+free-with-multipliers, purple strictly-increasing), the white+blue addition
+combo for blue, and the fox-scores-your-lowest-color mechanic.
 
 **Approximated/simplified**, and worth knowing if you've played the original and
 something feels off:
@@ -103,9 +117,6 @@ something feels off:
   in `board.ts` (yellow's two-of-each-value grid, blue's 1-12 range and
   count-table, green/orange/purple's specific point curves) is an original,
   reasonable-feeling approximation, not a transcription of the official sheet.
-- The white die is a pure wildcard for any one color at its own face value. The
-  real game also lets you add white + blue together for one bigger blue entry;
-  that combo isn't implemented.
 - Two bonus-box effects from the original are not implemented: reusing a die
   later via a banked token, and crossing off a box in a different color as a
   bonus. Only the fox bonus and the extra-reroll bonus are wired up.
@@ -121,7 +132,7 @@ src/
     ├── SixesApp.tsx            # orchestrator: phase machine + players/round/platter state
     ├── board.ts                 # the printed sheet: BOARD defs, scoring mode, round count
     ├── types.ts                  # ColorId, DieId, BoxDef variants, PlayerState, Phase
-    ├── logic.ts                   # rollDie, findLegalBox/placeDie, scoreColumn, totalScore, countFoxes
+    ├── logic.ts                   # rollDie, legalBoxIndices/placeDieAt, scoreColumn, totalScore, countFoxes
     ├── Die.tsx                    # pip-grid die face; renders as a <button> when onClick is passed
     ├── ScoreSheet.tsx              # the full sheet: yellow grid + 4 rows + fox tally (+ totals when showScores)
     ├── SetupScreen.tsx             # player name list (min 1, max 6)
@@ -143,18 +154,29 @@ platter screen calls `onDone(updatedPlayer)` after a single pick (or skip).
 `SixesApp` only needs to merge that one player back into `players` and call
 `advanceStep()` — it never sees the roll-by-roll detail.
 
-`ActiveTurnScreen`'s internal loop (`applyPlacement`) is the one place that
-implements the "everything lower drops to the platter" rule: on every pick it
-walks `DIE_ORDER`, and for each die still in play whose rolled value is strictly
-less than the just-placed value, moves it out of play and appends it to a local
-`platter` array — which is threaded explicitly through to `finishTurn` rather
-than read back out of React state, since the state update from the same call
-hasn't committed yet when `finishTurn` needs it.
+Both turn screens use the same two-step selection flow: clicking a die (or, for
+white, a color/combo button) computes `legalBoxIndices()` for that color+value
+and stores it as a `Selection { color, value, consumedDice, indices }` — this
+gets passed straight through to `ScoreSheet` as `pickable={{ color, indices }}`,
+which is what actually highlights the specific boxes. Nothing is written to the
+player's sheet until `onPick` fires from a tap on one of those highlighted
+boxes; `ActiveTurnScreen` additionally tracks `consumedDice` (one die normally,
+`["white", "blue"]` for the combo) since that's what has to leave play once the
+pick is confirmed, rather than just the die that was originally clicked.
+
+`ActiveTurnScreen`'s confirm handler (`confirmPick`) is the one place that
+implements the "everything lower drops to the platter" rule: it walks
+`DIE_ORDER`, and for each die still in play that isn't one of `consumedDice` and
+whose rolled value is strictly less than the just-placed value, moves it out of
+play and appends it to a local `platter` array — which is threaded explicitly
+through to `finishTurn` rather than read back out of React state, since the
+state update from the same call hasn't committed yet when `finishTurn` needs it.
 
 `Die.tsx` renders as a `<button>` when given an `onClick` (both turn screens
 pass one only for dice that are currently legal to pick) and a plain `<div>`
-otherwise — the game-over screen and the "not your turn" dice never need to be
-interactive.
+otherwise; `ScoreSheet`'s boxes follow the same pattern (`<button>` only for the
+currently-pickable ones, `<span>` otherwise) — the game-over screen and anything
+not your turn never need to be interactive.
 
 **CSS gotcha worth remembering**: `Die.module.css`'s `.sm/.md/.lg` set fixed
 `padding` per size rather than a percentage. Percentage `padding` on a flex item

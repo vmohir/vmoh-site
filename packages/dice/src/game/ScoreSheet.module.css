@@ -30,6 +30,11 @@
   background: var(--color-purple-soft);
 }
 
+.column[data-active="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
 .columnHead {
   display: flex;
   align-items: baseline;
@@ -86,6 +91,33 @@
   border-radius: 0.3125rem;
   border: 1px solid var(--border-subtle);
   background: var(--surface-subtle-bg);
+  padding: 0;
+  margin: 0;
+}
+
+.pickable {
+  cursor: pointer;
+  border: 2px solid var(--accent);
+  background: var(--surface-muted-bg);
+  animation: pulse 1.1s ease-in-out infinite;
+}
+
+.pickable:hover {
+  background: var(--accent);
+}
+
+.pickable:hover .boxValue {
+  color: var(--die-ink);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 4px transparent;
+  }
 }
 
 .boxValue {

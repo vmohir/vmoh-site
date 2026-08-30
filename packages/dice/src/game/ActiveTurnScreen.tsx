@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { findLegalBox, hasAnyLegalMove, placeDie, rollDie } from "./logic";
+import { legalBoxIndices, placeDieAt, rollDie } from "./logic";
 import {
   COLUMN_LABEL,
   COLUMN_ORDER,
@@ -19,7 +19,12 @@ interface Props {
   onTurnEnd: (player: PlayerState, platter: PlatterDie[]) => void;
 }
 
-type LocalPhase = "beforeRoll" | "picking" | "choosingWhiteColor";
+interface Selection {
+  color: ColorId;
+  value: number;
+  consumedDice: DieId[];
+  indices: number[];
+}
 
 export default function ActiveTurnScreen({
   roundLabel,
@@ -27,7 +32,7 @@ export default function ActiveTurnScreen({
   onTurnEnd,
 }: Props) {
   const [player, setPlayer] = useState(initialPlayer);
-  const [phase, setPhase] = useState<LocalPhase>("beforeRoll");
+  const [phase, setPhase] = useState<"beforeRoll" | "picking">("beforeRoll");
   const [values, setValues] = useState<Record<DieId, number>>(
     () =>
       Object.fromEntries(DIE_ORDER.map((d) => [d, 1])) as Record<DieId, number>,
@@ -43,9 +48,12 @@ export default function ActiveTurnScreen({
   const [picksMade, setPicksMade] = useState(0);
   const [bonusRerolls, setBonusRerolls] = useState(0);
   const [rolled, setRolled] = useState(false);
+  const [whiteChoice, setWhiteChoice] = useState(false);
+  const [selection, setSelection] = useState<Selection | null>(null);
 
   const maxPicks = 3 + bonusRerolls;
   const inPlayDice = DIE_ORDER.filter((d) => inPlay[d]);
+  const sortedDice = [...DIE_ORDER].sort((a, b) => values[a] - values[b]);
 
   function rollDice() {
     setValues((prev) => {
@@ -57,6 +65,8 @@ export default function ActiveTurnScreen({
     });
     setRolled(true);
     setPhase("picking");
+    setSelection(null);
+    setWhiteChoice(false);
   }
 
   function finishTurn(
@@ -70,14 +80,32 @@ export default function ActiveTurnScreen({
     onTurnEnd(finalPlayer, [...platterSoFar, ...leftover]);
   }
 
-  function applyPlacement(color: ColorId, value: number, die: DieId) {
-    const result = placeDie(player, color, value);
+  function selectDie(color: ColorId, value: number, consumedDice: DieId[]) {
+    const indices = legalBoxIndices(color, player.columns[color], value);
+    if (indices.length === 0) return;
+    setSelection({ color, value, consumedDice, indices });
+    setWhiteChoice(false);
+  }
+
+  function pickDie(die: DieId) {
+    if (die === "white") {
+      setWhiteChoice(true);
+      setSelection(null);
+      return;
+    }
+    selectDie(die, values[die], [die]);
+  }
+
+  function confirmPick(color: ColorId, boxIndex: number) {
+    if (!selection || selection.color !== color) return;
+    const { value, consumedDice } = selection;
+    const result = placeDieAt(player, color, boxIndex, value);
     if (!result) return;
 
     const nextInPlay = { ...inPlay };
     const newPlatter: PlatterDie[] = [];
     DIE_ORDER.forEach((d) => {
-      if (d === die) {
+      if (consumedDice.includes(d)) {
         nextInPlay[d] = false;
       } else if (inPlay[d]) {
         if (values[d] < value) {
@@ -100,18 +128,12 @@ export default function ActiveTurnScreen({
     setBonusRerolls(nextBonus);
     setPhase("beforeRoll");
     setRolled(false);
+    setSelection(null);
+    setWhiteChoice(false);
 
     if (done) {
       finishTurn(result.player, nextInPlay, updatedPlatter);
     }
-  }
-
-  function pickDie(die: DieId) {
-    if (die === "white") {
-      setPhase("choosingWhiteColor");
-      return;
-    }
-    applyPlacement(die, values[die], die);
   }
 
   function stopTurn() {
@@ -119,11 +141,20 @@ export default function ActiveTurnScreen({
   }
 
   const legalWhiteColors = COLUMN_ORDER.filter(
-    (c) => findLegalBox(c, player.columns[c], values.white) !== null,
+    (c) =>
+      c !== "blue" &&
+      legalBoxIndices(c, player.columns[c], values.white).length > 0,
   );
+  const blueComboValue = values.white + values.blue;
+  const blueComboLegal =
+    inPlay.blue &&
+    legalBoxIndices("blue", player.columns.blue, blueComboValue).length > 0;
 
   const anyLegal =
-    rolled && inPlayDice.some((d) => canPlace(d, values[d], player));
+    rolled &&
+    inPlayDice.some((d) =>
+      canPlace(d, values[d], player, inPlay, blueComboValue),
+    );
 
   return (
     <div class={styles.screen}>
@@ -137,7 +168,7 @@ export default function ActiveTurnScreen({
       </div>
 
       <div class={styles.diceRow}>
-        {DIE_ORDER.map((d) => (
+        {sortedDice.map((d) => (
           <Die
             key={d}
             value={values[d]}
@@ -147,7 +178,7 @@ export default function ActiveTurnScreen({
             disabled={
               phase !== "picking" ||
               !inPlay[d] ||
-              !canPlace(d, values[d], player)
+              !canPlace(d, values[d], player, inPlay, blueComboValue)
             }
             onClick={
               phase === "picking" && inPlay[d] ? () => pickDie(d) : undefined
@@ -156,30 +187,59 @@ export default function ActiveTurnScreen({
         ))}
       </div>
 
-      {phase === "choosingWhiteColor" && (
+      {whiteChoice && (
         <div class={styles.whiteChoice}>
           <p class="text-sm text-secondary">
             White die shows {values.white} — use it as:
           </p>
           <div class={styles.whiteButtons}>
-            {COLUMN_ORDER.map((color) => (
+            {COLUMN_ORDER.filter((c) => c !== "blue").map((color) => (
               <button
                 key={color}
                 type="button"
                 class="btn"
                 disabled={!legalWhiteColors.includes(color)}
-                onClick={() => applyPlacement(color, values.white, "white")}
+                onClick={() => selectDie(color, values.white, ["white"])}
               >
                 {COLUMN_LABEL[color]}
               </button>
             ))}
+            {inPlay.blue && (
+              <button
+                type="button"
+                class="btn"
+                disabled={!blueComboLegal}
+                onClick={() =>
+                  selectDie("blue", blueComboValue, ["white", "blue"])
+                }
+              >
+                Blue (white + blue = {blueComboValue})
+              </button>
+            )}
           </div>
           <button
             type="button"
             class="btn btn-ghost"
-            onClick={() => setPhase("picking")}
+            onClick={() => setWhiteChoice(false)}
           >
             Back
+          </button>
+        </div>
+      )}
+
+      {selection && (
+        <div class={styles.selectionHint}>
+          <p class="text-sm text-secondary">
+            Tap the glowing box in{" "}
+            <strong>{COLUMN_LABEL[selection.color]}</strong> to place{" "}
+            {selection.value}.
+          </p>
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onClick={() => setSelection(null)}
+          >
+            Cancel
           </button>
         </div>
       )}
@@ -201,18 +261,40 @@ export default function ActiveTurnScreen({
         </div>
       )}
 
-      {phase === "picking" && !anyLegal && (
+      {phase === "picking" && !anyLegal && !selection && (
         <button type="button" class="btn btn-primary" onClick={stopTurn}>
           No legal moves — end turn
         </button>
       )}
 
-      <ScoreSheet player={player} />
+      <ScoreSheet
+        player={player}
+        pickable={
+          selection
+            ? { color: selection.color, indices: selection.indices }
+            : undefined
+        }
+        onPick={confirmPick}
+      />
     </div>
   );
 }
 
-function canPlace(die: DieId, value: number, player: PlayerState): boolean {
-  if (die === "white") return hasAnyLegalMove(player, value);
-  return findLegalBox(die, player.columns[die], value) !== null;
+function canPlace(
+  die: DieId,
+  value: number,
+  player: PlayerState,
+  inPlay: Record<DieId, boolean>,
+  whiteBlueSum: number,
+): boolean {
+  if (die === "white") {
+    const wildcard = COLUMN_ORDER.filter((c) => c !== "blue").some(
+      (c) => legalBoxIndices(c, player.columns[c], value).length > 0,
+    );
+    const combo =
+      inPlay.blue &&
+      legalBoxIndices("blue", player.columns.blue, whiteBlueSum).length > 0;
+    return wildcard || combo;
+  }
+  return legalBoxIndices(die, player.columns[die], value).length > 0;
 }

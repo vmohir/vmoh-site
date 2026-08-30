@@ -3,7 +3,6 @@ import {
   COLUMN_ORDER,
   type ColorId,
   type ColumnState,
-  type DieId,
   type PlayerState,
 } from "./types";
 
@@ -23,45 +22,41 @@ export function emptyColumns(): Record<ColorId, ColumnState> {
   ) as Record<ColorId, ColumnState>;
 }
 
-// The next box a die can legally go into for this column, or null if none.
-export function findLegalBox(
+// Every box index a die showing `value` could legally go into for this
+// column. "match" columns (yellow, blue) can have more than one open box
+// sharing a value — the player picks which; other columns only ever have
+// one legal box (the next open one, left to right), or none.
+export function legalBoxIndices(
   color: ColorId,
   state: ColumnState,
   value: number,
-): number | null {
+): number[] {
   const defs = BOARD[color];
   const first = defs[0];
-  if (!first) return null;
+  if (!first) return [];
 
   if (first.kind === "match") {
-    const idx = defs.findIndex(
-      (def, i) =>
-        def.kind === "match" && def.value === value && !state.checked[i],
-    );
-    return idx === -1 ? null : idx;
+    const indices: number[] = [];
+    defs.forEach((def, i) => {
+      if (def.kind === "match" && def.value === value && !state.checked[i]) {
+        indices.push(i);
+      }
+    });
+    return indices;
   }
 
   const idx = state.checked.findIndex((c) => !c);
-  if (idx === -1) return null;
+  if (idx === -1) return [];
   const def = defs[idx];
-  if (!def) return null;
+  if (!def) return [];
 
-  if (def.kind === "threshold") return value >= def.threshold ? idx : null;
-  if (def.kind === "free") return idx;
+  if (def.kind === "threshold") return value >= def.threshold ? [idx] : [];
+  if (def.kind === "free") return [idx];
   if (def.kind === "increasing") {
     const prev = idx > 0 ? (state.entered[idx - 1] ?? null) : null;
-    return prev === null || value > prev ? idx : null;
+    return prev === null || value > prev ? [idx] : [];
   }
-  return null;
-}
-
-export function hasAnyLegalMove(
-  player: PlayerState,
-  dieValue: number,
-): boolean {
-  return COLUMN_ORDER.some(
-    (color) => findLegalBox(color, player.columns[color], dieValue) !== null,
-  );
+  return [];
 }
 
 export interface PlaceResult {
@@ -71,26 +66,28 @@ export interface PlaceResult {
   bonusReroll: boolean;
 }
 
-export function placeDie(
+// Places `value` in a specific, player-chosen box (must be one of
+// legalBoxIndices' results — re-validated here rather than trusted).
+export function placeDieAt(
   player: PlayerState,
   color: ColorId,
+  boxIndex: number,
   value: number,
 ): PlaceResult | null {
   const state = player.columns[color];
-  const idx = findLegalBox(color, state, value);
-  if (idx === null) return null;
-  const def = BOARD[color][idx];
+  if (!legalBoxIndices(color, state, value).includes(boxIndex)) return null;
+  const def = BOARD[color][boxIndex];
   if (!def) return null;
 
-  const checked = state.checked.map((c, i) => (i === idx ? true : c));
-  const entered = state.entered.map((e, i) => (i === idx ? value : e));
+  const checked = state.checked.map((c, i) => (i === boxIndex ? true : c));
+  const entered = state.entered.map((e, i) => (i === boxIndex ? value : e));
 
   return {
     player: {
       ...player,
       columns: { ...player.columns, [color]: { checked, entered } },
     },
-    boxIndex: idx,
+    boxIndex,
     fox: def.fox === true,
     bonusReroll: def.bonusReroll === true,
   };
@@ -140,8 +137,4 @@ export function totalScore(player: PlayerState): number {
   const lowest = Math.min(...values);
   const foxScore = countFoxes(player) * lowest;
   return values.reduce((a, b) => a + b, 0) + foxScore;
-}
-
-export function dieColor(die: DieId): ColorId | null {
-  return die === "white" ? null : die;
 }

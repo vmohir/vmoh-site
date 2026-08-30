@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { findLegalBox, hasAnyLegalMove, placeDie } from "./logic";
+import { legalBoxIndices, placeDieAt } from "./logic";
 import {
   COLUMN_LABEL,
   COLUMN_ORDER,
@@ -18,25 +18,51 @@ interface Props {
   onDone: (player: PlayerState) => void;
 }
 
+interface Selection {
+  color: ColorId;
+  value: number;
+  indices: number[];
+}
+
 export default function PlatterTurnScreen({
   roundLabel,
   player,
   platter,
   onDone,
 }: Props) {
-  const [choosingWhite, setChoosingWhite] = useState<number | null>(null);
+  const [whiteChoiceValue, setWhiteChoiceValue] = useState<number | null>(null);
+  const [selection, setSelection] = useState<Selection | null>(null);
 
-  function take(color: ColorId, value: number) {
-    const result = placeDie(player, color, value);
+  const sortedPlatter = [...platter].sort((a, b) => a.value - b.value);
+
+  function selectColor(color: ColorId, value: number) {
+    const indices = legalBoxIndices(color, player.columns[color], value);
+    if (indices.length === 0) return;
+    setSelection({ color, value, indices });
+    setWhiteChoiceValue(null);
+  }
+
+  function pickEntry(entry: PlatterDie) {
+    if (entry.die === "white") {
+      setWhiteChoiceValue(entry.value);
+      setSelection(null);
+      return;
+    }
+    selectColor(entry.die, entry.value);
+  }
+
+  function confirmPick(color: ColorId, boxIndex: number) {
+    if (!selection || selection.color !== color) return;
+    const result = placeDieAt(player, color, boxIndex, selection.value);
     onDone(result ? result.player : player);
   }
 
-  const pendingWhiteValue =
-    choosingWhite !== null ? (platter[choosingWhite]?.value ?? null) : null;
   const legalWhiteColors =
-    pendingWhiteValue !== null
+    whiteChoiceValue !== null
       ? COLUMN_ORDER.filter(
-          (c) => findLegalBox(c, player.columns[c], pendingWhiteValue) !== null,
+          (c) =>
+            c !== "blue" &&
+            legalBoxIndices(c, player.columns[c], whiteChoiceValue).length > 0,
         )
       : [];
 
@@ -51,18 +77,23 @@ export default function PlatterTurnScreen({
       </div>
 
       <div class={styles.diceRow}>
-        {platter.length === 0 && (
+        {sortedPlatter.length === 0 && (
           <p class="text-sm text-muted">Nothing was left on the platter.</p>
         )}
-        {platter.map((entry, i) => {
+        {sortedPlatter.map((entry, i) => {
           const legal =
             entry.die === "white"
-              ? hasAnyLegalMove(player, entry.value)
-              : findLegalBox(
+              ? COLUMN_ORDER.some(
+                  (c) =>
+                    c !== "blue" &&
+                    legalBoxIndices(c, player.columns[c], entry.value).length >
+                      0,
+                )
+              : legalBoxIndices(
                   entry.die,
                   player.columns[entry.die],
                   entry.value,
-                ) !== null;
+                ).length > 0;
           return (
             <Die
               key={i}
@@ -70,32 +101,25 @@ export default function PlatterTurnScreen({
               color={entry.die}
               size="lg"
               disabled={!legal}
-              onClick={
-                legal
-                  ? () =>
-                      entry.die === "white"
-                        ? setChoosingWhite(i)
-                        : take(entry.die, entry.value)
-                  : undefined
-              }
+              onClick={legal ? () => pickEntry(entry) : undefined}
             />
           );
         })}
       </div>
 
-      {choosingWhite !== null && pendingWhiteValue !== null && (
+      {whiteChoiceValue !== null && (
         <div class={styles.whiteChoice}>
           <p class="text-sm text-secondary">
-            White die shows {pendingWhiteValue} — use it as:
+            White die shows {whiteChoiceValue} — use it as:
           </p>
           <div class={styles.whiteButtons}>
-            {COLUMN_ORDER.map((color) => (
+            {COLUMN_ORDER.filter((c) => c !== "blue").map((color) => (
               <button
                 key={color}
                 type="button"
                 class="btn"
                 disabled={!legalWhiteColors.includes(color)}
-                onClick={() => take(color, pendingWhiteValue)}
+                onClick={() => selectColor(color, whiteChoiceValue)}
               >
                 {COLUMN_LABEL[color]}
               </button>
@@ -104,9 +128,26 @@ export default function PlatterTurnScreen({
           <button
             type="button"
             class="btn btn-ghost"
-            onClick={() => setChoosingWhite(null)}
+            onClick={() => setWhiteChoiceValue(null)}
           >
             Back
+          </button>
+        </div>
+      )}
+
+      {selection && (
+        <div class={styles.selectionHint}>
+          <p class="text-sm text-secondary">
+            Tap the glowing box in{" "}
+            <strong>{COLUMN_LABEL[selection.color]}</strong> to place{" "}
+            {selection.value}.
+          </p>
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onClick={() => setSelection(null)}
+          >
+            Cancel
           </button>
         </div>
       )}
@@ -115,7 +156,15 @@ export default function PlatterTurnScreen({
         Skip
       </button>
 
-      <ScoreSheet player={player} />
+      <ScoreSheet
+        player={player}
+        pickable={
+          selection
+            ? { color: selection.color, indices: selection.indices }
+            : undefined
+        }
+        onPick={confirmPick}
+      />
     </div>
   );
 }

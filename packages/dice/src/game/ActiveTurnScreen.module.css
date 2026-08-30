@@ -43,3 +43,14 @@
   flex-direction: column;
   gap: 0.5rem;
 }
+
+.selectionHint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.625rem;
+  background: var(--surface-bg);
+  border: 1px solid var(--accent);
+}
