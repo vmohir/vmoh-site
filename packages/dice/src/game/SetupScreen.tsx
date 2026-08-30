@@ -6,7 +6,7 @@ import {
   removePlayer,
   renamePlayer,
 } from "../state/setupState";
-import { TOTAL_ROUNDS } from "./logic";
+import { roundsForPlayerCount } from "./board";
 import styles from "./SetupScreen.module.css";
 
 interface Props {
@@ -16,16 +16,19 @@ interface Props {
 export default function SetupScreen({ onStart }: Props) {
   const validPlayerCount = playerNames.value.filter((n) => n.trim()).length;
   const canStart = validPlayerCount >= MIN_PLAYERS;
+  const rounds = roundsForPlayerCount(Math.max(validPlayerCount, 1));
 
   return (
     <div class="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-6 py-8">
       <div>
         <h1 class="text-2xl font-bold">Sixes</h1>
         <p class="text-sm text-secondary">
-          A pass-and-play roll-and-write. Each round someone rolls six dice —
-          everyone checks a box with the white die, and the roller also gets to
-          use their five colored dice. Fill columns low to high; the player with
-          the highest score after {TOTAL_ROUNDS} rounds wins.
+          A pass-and-play roll-and-write for the "That's Pretty Clever" crowd.
+          Each round the active player rolls six dice and picks one at a time —
+          each die they don't take that's lower than their pick lands on the
+          Silver Platter, and everyone else gets to take one of those too.
+          Yellow and Blue fill in any order, Green/Orange/Purple fill left to
+          right. {rounds} rounds, highest score wins.
         </p>
       </div>
 

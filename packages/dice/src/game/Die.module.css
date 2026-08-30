@@ -3,15 +3,16 @@
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: 8%;
-  padding: 14%;
   border-radius: 18%;
-  background: var(--die-wild);
+  background: var(--die-white);
   box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15);
   flex: none;
+  border: none;
+  transition: transform var(--transition);
 }
 
-.die[data-color="red"] {
-  background: var(--die-red);
+.die[data-color="yellow"] {
+  background: var(--die-yellow);
 }
 .die[data-color="blue"] {
   background: var(--die-blue);
@@ -19,8 +20,8 @@
 .die[data-color="green"] {
   background: var(--die-green);
 }
-.die[data-color="amber"] {
-  background: var(--die-amber);
+.die[data-color="orange"] {
+  background: var(--die-orange);
 }
 .die[data-color="purple"] {
   background: var(--die-purple);
@@ -29,18 +30,34 @@
 .sm {
   width: 2rem;
   height: 2rem;
+  padding: 0.28rem;
 }
 .md {
   width: 3rem;
   height: 3rem;
+  padding: 0.42rem;
 }
 .lg {
   width: 4.5rem;
   height: 4.5rem;
+  padding: 0.63rem;
 }
 
 .faded {
+  opacity: 0.3;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.clickable:disabled {
   opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .cell {
@@ -48,5 +65,5 @@
 }
 
 .cell[data-pip="true"] {
-  background: var(--die-wild-ink);
+  background: var(--die-ink);
 }

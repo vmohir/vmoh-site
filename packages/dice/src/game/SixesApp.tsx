@@ -1,12 +1,12 @@
 import { useState } from "preact/hooks";
 import { playerNames } from "../state/setupState";
-import { TOTAL_ROUNDS, checkBox, emptyBoxes, rollDice } from "./logic";
-import type { ColorId, DiceRoll, Phase, PlayerState } from "./types";
+import { roundsForPlayerCount } from "./board";
+import { emptyColumns } from "./logic";
+import type { Phase, PlatterDie, PlayerState } from "./types";
 import SetupScreen from "./SetupScreen";
-import RollScreen from "./RollScreen";
 import HandoffScreen from "./HandoffScreen";
-import WildTurnScreen from "./WildTurnScreen";
 import ActiveTurnScreen from "./ActiveTurnScreen";
+import PlatterTurnScreen from "./PlatterTurnScreen";
 import GameOverScreen from "./GameOverScreen";
 import styles from "./SixesApp.module.css";
 
@@ -14,120 +14,113 @@ export default function SixesApp() {
   const [phase, setPhase] = useState<Phase>("setup");
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const [round, setRound] = useState(0);
-  const [roll, setRoll] = useState<DiceRoll | null>(null);
   const [stepIndex, setStepIndex] = useState(0);
+  const [platter, setPlatter] = useState<PlatterDie[]>([]);
 
+  const totalRounds = roundsForPlayerCount(players.length || 1);
   const activeIndex = players.length > 0 ? round % players.length : 0;
-  const currentPlayer = players[stepIndex] ?? null;
+  const order =
+    players.length > 0
+      ? [
+          activeIndex,
+          ...players.map((_, i) => i).filter((i) => i !== activeIndex),
+        ]
+      : [];
+  const currentPlayer = players[order[stepIndex] ?? -1] ?? null;
+  const isActiveStep = stepIndex === 0;
+  const roundLabel = `Round ${round + 1} of ${totalRounds}`;
 
   function freshPlayers(): PlayerState[] {
     const names = playerNames.value.map((n) => n.trim()).filter(Boolean);
     return names.map((name) => ({
       id: crypto.randomUUID(),
       name,
-      boxes: emptyBoxes(),
+      columns: emptyColumns(),
     }));
   }
 
+  function firstPhase(playerCount: number): Phase {
+    return playerCount > 1 ? "handoff" : "activeTurn";
+  }
+
   function startGame() {
-    setPlayers(freshPlayers());
+    const fresh = freshPlayers();
+    setPlayers(fresh);
     setRound(0);
-    setRoll(null);
     setStepIndex(0);
-    setPhase("roll");
+    setPlatter([]);
+    setPhase(firstPhase(fresh.length));
   }
 
   function playAgain() {
-    setPlayers((prev) => prev.map((p) => ({ ...p, boxes: emptyBoxes() })));
+    setPlayers((prev) => prev.map((p) => ({ ...p, columns: emptyColumns() })));
     setRound(0);
-    setRoll(null);
     setStepIndex(0);
-    setPhase("roll");
+    setPlatter([]);
+    setPhase(firstPhase(players.length));
   }
 
   function newSetup() {
     setPhase("setup");
   }
 
-  function doRoll() {
-    setRoll(rollDice());
-    enterStep(0);
-  }
-
-  function enterStep(index: number) {
-    setStepIndex(index);
-    if (players.length > 1) {
-      setPhase("handoff");
-    } else {
-      setPhase(index === activeIndex ? "activeTurn" : "wildTurn");
-    }
+  function updatePlayer(updated: PlayerState) {
+    setPlayers((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
   }
 
   function advanceStep() {
     const next = stepIndex + 1;
-    if (next >= players.length) {
+    if (next >= order.length) {
       const nextRound = round + 1;
-      if (nextRound >= TOTAL_ROUNDS) {
+      if (nextRound >= totalRounds) {
         setPhase("gameOver");
         return;
       }
       setRound(nextRound);
-      setRoll(null);
       setStepIndex(0);
-      setPhase("roll");
+      setPlatter([]);
+      setPhase(firstPhase(players.length));
       return;
     }
-    enterStep(next);
-  }
-
-  function applyBox(playerId: string, color: ColorId, value: number) {
-    setPlayers((prev) =>
-      prev.map((p) => (p.id === playerId ? checkBox(p, color, value) : p)),
-    );
+    setStepIndex(next);
+    setPhase(players.length > 1 ? "handoff" : "platterTurn");
   }
 
   return (
     <div class={styles.app}>
       {phase === "setup" && <SetupScreen onStart={startGame} />}
 
-      {phase === "roll" && players[activeIndex] && (
-        <RollScreen
-          round={round}
-          activePlayerName={players[activeIndex]!.name}
-          onRoll={doRoll}
-        />
-      )}
-
       {phase === "handoff" && currentPlayer && (
         <HandoffScreen
           playerName={currentPlayer.name}
-          active={stepIndex === activeIndex}
-          onReady={() =>
-            setPhase(stepIndex === activeIndex ? "activeTurn" : "wildTurn")
-          }
+          active={isActiveStep}
+          onReady={() => setPhase(isActiveStep ? "activeTurn" : "platterTurn")}
         />
       )}
 
-      {phase === "wildTurn" && currentPlayer && roll && (
-        <WildTurnScreen
-          key={`wild-${round}-${stepIndex}`}
+      {phase === "activeTurn" && currentPlayer && (
+        <ActiveTurnScreen
+          key={`active-${round}-${currentPlayer.id}`}
+          roundLabel={roundLabel}
           player={currentPlayer}
-          wildValue={roll.wild}
-          onApply={(color) => {
-            applyBox(currentPlayer.id, color, roll.wild);
+          onTurnEnd={(updated, newPlatter) => {
+            updatePlayer(updated);
+            setPlatter(newPlatter);
             advanceStep();
           }}
-          onSkip={advanceStep}
         />
       )}
 
-      {phase === "activeTurn" && currentPlayer && roll && (
-        <ActiveTurnScreen
-          key={`active-${round}-${stepIndex}`}
+      {phase === "platterTurn" && currentPlayer && (
+        <PlatterTurnScreen
+          key={`platter-${round}-${currentPlayer.id}`}
+          roundLabel={roundLabel}
           player={currentPlayer}
-          roll={roll}
-          onApply={(color, value) => applyBox(currentPlayer.id, color, value)}
-          onDone={advanceStep}
+          platter={platter}
+          onDone={(updated) => {
+            updatePlayer(updated);
+            advanceStep();
+          }}
         />
       )}
 

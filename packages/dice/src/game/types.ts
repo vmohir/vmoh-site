@@ -1,31 +1,84 @@
-export type ColorId = "red" | "blue" | "green" | "amber" | "purple";
+export type ColorId = "yellow" | "blue" | "green" | "orange" | "purple";
 
 export const COLUMN_ORDER: ColorId[] = [
-  "red",
+  "yellow",
   "blue",
   "green",
-  "amber",
+  "orange",
   "purple",
 ];
 
 export const COLUMN_LABEL: Record<ColorId, string> = {
-  red: "Red",
+  yellow: "Yellow",
   blue: "Blue",
   green: "Green",
-  amber: "Amber",
+  orange: "Orange",
   purple: "Purple",
 };
+
+export type DieId = "white" | ColorId;
+
+export const DIE_ORDER: DieId[] = [
+  "white",
+  "yellow",
+  "blue",
+  "green",
+  "orange",
+  "purple",
+];
+
+// A box that accepts any die showing its printed value, in any order.
+export interface MatchBoxDef {
+  kind: "match";
+  value: number;
+  fox?: boolean;
+  bonusReroll?: boolean;
+}
+
+// A box filled strictly left-to-right; needs a die at least this high.
+export interface ThresholdBoxDef {
+  kind: "threshold";
+  threshold: number;
+  points: number;
+  fox?: boolean;
+  bonusReroll?: boolean;
+}
+
+// A box filled strictly left-to-right; any die works, value is written down
+// (optionally multiplied).
+export interface FreeBoxDef {
+  kind: "free";
+  multiplier: number;
+  fox?: boolean;
+  bonusReroll?: boolean;
+}
+
+// A box filled strictly left-to-right; the die must beat the previous entry.
+export interface IncreasingBoxDef {
+  kind: "increasing";
+  points: number;
+  fox?: boolean;
+  bonusReroll?: boolean;
+}
+
+export type BoxDef =
+  MatchBoxDef | ThresholdBoxDef | FreeBoxDef | IncreasingBoxDef;
+
+export interface ColumnState {
+  checked: boolean[];
+  entered: (number | null)[];
+}
 
 export interface PlayerState {
   id: string;
   name: string;
-  boxes: Record<ColorId, boolean[]>;
+  columns: Record<ColorId, ColumnState>;
 }
 
-export interface DiceRoll {
-  wild: number;
-  colors: Record<ColorId, number>;
+export interface PlatterDie {
+  die: DieId;
+  value: number;
 }
 
 export type Phase =
-  "setup" | "roll" | "handoff" | "wildTurn" | "activeTurn" | "gameOver";
+  "setup" | "handoff" | "activeTurn" | "platterTurn" | "gameOver";

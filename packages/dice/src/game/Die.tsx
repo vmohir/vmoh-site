@@ -1,4 +1,4 @@
-import type { ColorId } from "./types";
+import type { DieId } from "./types";
 import styles from "./Die.module.css";
 
 const PIPS: Record<number, number[]> = {
@@ -12,22 +12,30 @@ const PIPS: Record<number, number[]> = {
 
 interface Props {
   value: number;
-  color?: ColorId | "wild";
+  color?: DieId;
   size?: "sm" | "md" | "lg";
   faded?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
 }
 
 export default function Die({
   value,
-  color = "wild",
+  color = "white",
   size = "md",
   faded,
+  disabled,
+  onClick,
 }: Props) {
   const active = new Set(PIPS[value] ?? []);
+  const Tag = onClick ? "button" : "div";
   return (
-    <div
-      class={`${styles.die} ${styles[size]} ${faded ? styles.faded : ""}`}
+    <Tag
+      type={onClick ? "button" : undefined}
+      class={`${styles.die} ${styles[size]} ${faded ? styles.faded : ""} ${onClick ? styles.clickable : ""}`}
       data-color={color}
+      disabled={onClick ? disabled : undefined}
+      onClick={onClick}
     >
       {Array.from({ length: 9 }, (_, i) => (
         <span
@@ -36,6 +44,6 @@ export default function Die({
           data-pip={active.has(i + 1) ? "true" : "false"}
         />
       ))}
-    </div>
+    </Tag>
   );
 }

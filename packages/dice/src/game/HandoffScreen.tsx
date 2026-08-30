@@ -14,7 +14,7 @@ export default function HandoffScreen({ playerName, active, onReady }: Props) {
       <p class="text-sm text-secondary">
         {active
           ? "It's your roll this round."
-          : "Use the white die on your sheet."}
+          : "Take one die off the Silver Platter."}
       </p>
       <button
         type="button"
