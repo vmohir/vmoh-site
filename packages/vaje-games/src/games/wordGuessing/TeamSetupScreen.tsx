@@ -26,8 +26,16 @@ interface Props {
 }
 
 const GAME_MODES = [
-  { id: "timed" as const, label: "با زمان‌سنج" },
-  { id: "selection" as const, label: "انتخاب دسته و سختی" },
+  {
+    id: "timed" as const,
+    label: "سرعتی",
+    description: "هر تیم یک دور زمان‌دار با کلمات پشت‌سرهم بازی می‌کند.",
+  },
+  {
+    id: "selection" as const,
+    label: "نوبتی",
+    description: "هر تیم قبل از دیدن کلمه، دسته و سختی آن را انتخاب می‌کند.",
+  },
 ];
 
 export default function TeamSetupScreen({
@@ -101,9 +109,7 @@ export default function TeamSetupScreen({
           ))}
         </div>
         <p class="text-sm text-muted">
-          {isTimed
-            ? "هر تیم یک دور زمان‌دار با کلمات پشت‌سرهم بازی می‌کند."
-            : "هر تیم قبل از دیدن کلمه، دسته و سختی آن را انتخاب می‌کند."}
+          {GAME_MODES.find((m) => m.id === gameMode.value)?.description}
         </p>
       </section>
 
