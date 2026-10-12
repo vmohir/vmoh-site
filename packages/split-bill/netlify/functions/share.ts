@@ -4,6 +4,10 @@
 // Netlify site's environment (free tier at upstash.com). If they're missing
 // or the request fails, callers get a non-2xx response and the frontend
 // falls back to an inline (offline) share link.
+//
+// POST with no `id` mints a new id (first share). POST with `?id=<id>`
+// upserts that existing id instead, which is how the client's throttled
+// auto-sync keeps a shared link's data fresh after the initial share.
 
 const TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 const MAX_PAYLOAD_BYTES = 200_000;
@@ -55,7 +59,11 @@ async function handlePost(req: Request): Promise<Response> {
     return new Response("Invalid JSON", { status: 400 });
   }
 
-  const id = randomId();
+  const requestedId = new URL(req.url).searchParams.get("id");
+  if (requestedId && !ID_PATTERN.test(requestedId)) {
+    return new Response("Invalid id", { status: 400 });
+  }
+  const id = requestedId || randomId();
   const result = await redisCommand([
     "SET",
     `share:${id}`,

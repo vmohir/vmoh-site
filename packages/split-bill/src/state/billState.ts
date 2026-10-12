@@ -22,16 +22,21 @@ import {
   collapseTotalsByGroup,
 } from "../utils/settlementAlgorithms";
 import {
+  buildSharePayload,
   clearHashShare,
   decodeSharePayload,
   fetchRemoteSharePayload,
   itemsFromSerialized,
   readHashShare,
   ShareNotFoundError,
+  uploadSharePayload,
   type SharePayload,
 } from "../utils/share.ts";
 
 const STORAGE_KEY = "split-bill-state";
+const SHARE_ID_STORAGE_KEY = "split-bill-share-id";
+// How long to wait after an edit before auto-syncing to the share backend.
+const SYNC_THROTTLE_MS = 8000;
 
 // Serializable versions for localStorage
 interface SerializedItem {
@@ -153,6 +158,30 @@ export const exchangeRates = signal<Record<Currency, number>>({
 });
 export const groups = signal<Group[]>(savedState?.groups ?? []);
 
+// The remote share id for this bill, once it's been shared at least once.
+// Null means the bill has never been shared and nothing is auto-synced.
+function loadShareId(): string | null {
+  try {
+    return localStorage.getItem(SHARE_ID_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export const shareId = signal<string | null>(
+  typeof window === "undefined" ? null : loadShareId(),
+);
+
+export function setShareId(id: string): void {
+  shareId.value = id;
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(SHARE_ID_STORAGE_KEY, id);
+  } catch (e) {
+    console.error("Failed to persist share id:", e);
+  }
+}
+
 // Heal bills saved before single-currency switches cleared per-payer currency
 // overrides: in single-currency mode no override should survive on load.
 if (!hasMultipleCurrencies.value) {
@@ -180,6 +209,58 @@ effect(() => {
     console.error("Failed to save state to localStorage:", e);
   }
 });
+
+// Once a bill has been shared (shareId is set), push subsequent edits to the
+// remote store on a throttle so anyone holding the link sees fresh data
+// without the user having to re-share. No-ops entirely until the first share.
+let syncTimer: ReturnType<typeof setTimeout> | undefined;
+let pendingSyncPayload: SharePayload | null = null;
+
+async function flushSync(): Promise<void> {
+  syncTimer = undefined;
+  const id = shareId.value;
+  const payload = pendingSyncPayload;
+  pendingSyncPayload = null;
+  if (!id || !payload) return;
+  try {
+    await uploadSharePayload(payload, { id });
+  } catch (e) {
+    console.error("Auto-sync to share link failed:", e);
+  }
+}
+
+effect(() => {
+  const payload = buildSharePayload({
+    people: people.value,
+    items: items.value,
+    adjustments: adjustments.value,
+    baseCurrency: baseCurrency.value,
+    settlementAlgorithm: settlementAlgorithm.value,
+    hasMultipleCurrencies: hasMultipleCurrencies.value,
+    hasMultiplePayers: hasMultiplePayers.value,
+    useExchangeRates: useExchangeRates.value,
+    exchangeRates: exchangeRates.value,
+    groups: groups.value,
+  });
+  if (typeof window === "undefined" || !shareId.value) return;
+  pendingSyncPayload = payload;
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(flushSync, SYNC_THROTTLE_MS);
+});
+
+if (typeof window !== "undefined") {
+  // Best-effort flush of a pending throttled sync when the tab is closing,
+  // so the last few seconds of edits aren't dropped.
+  window.addEventListener("pagehide", () => {
+    if (!syncTimer || !pendingSyncPayload || !shareId.value) return;
+    clearTimeout(syncTimer);
+    syncTimer = undefined;
+    const id = shareId.value;
+    const payload = pendingSyncPayload;
+    pendingSyncPayload = null;
+    void uploadSharePayload(payload, { id, keepalive: true });
+  });
+}
 
 // Per-currency ledgers: one (base currency) for single-currency or
 // exchange-enabled bills, or one per currency when multiple currencies are in
@@ -837,6 +918,7 @@ async function importHashShareIfPresent(): Promise<void> {
       return;
     }
     applySharedPayload(payload);
+    if (share.kind === "remote") setShareId(share.id);
     clearHashShare();
   } catch (e) {
     clearHashShare();

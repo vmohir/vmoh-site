@@ -76,6 +76,19 @@ recognised by `readHashShare()`/`clearHashShare()`. A link that fails to resolve
 (expired or unknown id) surfaces as a `ShareNotFoundError` which `billState.ts`
 shows to the user via `window.alert`.
 
+Once a bill has been shared remotely at least once, its share id is persisted
+to `localStorage` (`split-bill-share-id`, exposed as the `shareId` signal) and
+every further edit is auto-synced back to that same id — an `effect()` in
+`billState.ts` debounces changes by `SYNC_THROTTLE_MS` (8s) and `POST`s to
+`/api/share?id=<id>`, which the function upserts in place instead of minting a
+new id. A `pagehide` listener does a best-effort immediate flush (`keepalive`
+fetch) so the last few seconds of edits aren't lost on tab close. Opening a
+remote share link also adopts its id as the local `shareId`, so the opener's
+own subsequent edits sync back to the same link too — this makes a share link
+a live, two-way-editable bill rather than a one-time snapshot. There's no pull
+side yet (no polling/websocket to see others' changes without reloading); that
+remains a future improvement.
+
 ### Domain model (`src/splitApp/split.types.ts`)
 
 - `Person { id, name }`

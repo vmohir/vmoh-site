@@ -168,16 +168,24 @@ export async function buildShareUrl(payload: SharePayload): Promise<string> {
   return `${origin}${pathname}${HASH_PREFIX}${encoded}`;
 }
 
-// Uploads the payload to the share backend and returns its short id.
-// Throws if the backend is unreachable or not configured — callers should
-// fall back to buildShareUrl in that case.
+// Uploads the payload to the share backend and returns its short id. With no
+// `id` option the backend mints a new one (first share); passing the id of
+// an existing share upserts it instead, which is how auto-sync keeps a
+// shared link's data fresh after the initial share. Throws if the backend is
+// unreachable or not configured — callers should fall back to buildShareUrl
+// in that case.
 export async function uploadSharePayload(
   payload: SharePayload,
+  options: { id?: string; keepalive?: boolean } = {},
 ): Promise<string> {
-  const res = await fetch(SHARE_API_PATH, {
+  const path = options.id
+    ? `${SHARE_API_PATH}?id=${encodeURIComponent(options.id)}`
+    : SHARE_API_PATH;
+  const res = await fetch(path, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(payload),
+    keepalive: options.keepalive,
   });
   if (!res.ok) {
     throw new Error(`Failed to create share link: ${res.status}`);
@@ -186,13 +194,11 @@ export async function uploadSharePayload(
   return data.id;
 }
 
-// Short share link backed by the remote store — carries only an id, so the
-// link stays short regardless of bill size. The id expires after the
-// backend's TTL (currently 30 days).
-export async function buildRemoteShareUrl(
-  payload: SharePayload,
-): Promise<string> {
-  const id = await uploadSharePayload(payload);
+// Builds the short share link for an id already known to the remote store —
+// carries only an id, so the link stays short regardless of bill size. The
+// id expires after the backend's TTL (currently 30 days) unless refreshed by
+// a later upload.
+export function buildRemoteShareUrlForId(id: string): string {
   const { origin, pathname } = window.location;
   return `${origin}${pathname}${REMOTE_HASH_PREFIX}${id}`;
 }

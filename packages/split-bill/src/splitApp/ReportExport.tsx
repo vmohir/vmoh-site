@@ -16,13 +16,16 @@ import {
   hasMultiplePayers,
   items,
   people,
+  setShareId,
   settlementAlgorithm,
+  shareId,
   useExchangeRates,
 } from "../state/billState";
 import {
-  buildRemoteShareUrl,
+  buildRemoteShareUrlForId,
   buildSharePayload,
   buildShareUrl,
+  uploadSharePayload,
 } from "../utils/share.ts";
 import { BillReport, type ReportVariant } from "./BillReport.tsx";
 import { ShareModal } from "./ShareModal.tsx";
@@ -68,7 +71,17 @@ export function ReportExport() {
     let url: string;
     let expires = true;
     try {
-      url = await buildRemoteShareUrl(payload);
+      const existingId = shareId.value;
+      if (existingId) {
+        // Already shared once — upsert the same id so the existing link
+        // keeps working instead of minting a new one.
+        await uploadSharePayload(payload, { id: existingId });
+        url = buildRemoteShareUrlForId(existingId);
+      } else {
+        const id = await uploadSharePayload(payload);
+        setShareId(id);
+        url = buildRemoteShareUrlForId(id);
+      }
     } catch (e) {
       console.error("Share backend unavailable, using an offline link:", e);
       expires = false;
