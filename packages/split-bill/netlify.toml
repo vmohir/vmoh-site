@@ -8,7 +8,12 @@
   command = "pnpm run build"
   functions = "netlify/functions"
   publish = "dist"
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- packages/split-bill pnpm-lock.yaml pnpm-workspace.yaml package.json"
+  # Base = packages/split-bill, so this runs with that as cwd — pathspecs must
+  # be relative to it ("." for the package itself) or root-anchored with :/
+  # (the shared workspace files). Plain "packages/split-bill" here silently
+  # resolved to a nonexistent nested path and made every automatic deploy
+  # look like "no content change".
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . :/pnpm-lock.yaml :/pnpm-workspace.yaml :/package.json"
 
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
   ## Not needed for static site generators.

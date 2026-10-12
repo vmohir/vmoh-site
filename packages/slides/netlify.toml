@@ -1,7 +1,11 @@
 [build]
 publish = "dist"
 command = "pnpm build"
-ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- packages/slides"
+# Base = packages/slides, so this runs with that as cwd — "packages/slides"
+# as a pathspec silently resolved to a nonexistent nested path, so this
+# command found "no diff" unconditionally and every automatic deploy was
+# skipped regardless of what changed. "." means the package's own directory.
+ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- ."
 
 [build.environment]
 NODE_VERSION = "22"

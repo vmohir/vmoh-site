@@ -1,4 +1,9 @@
 [build]
   command = "pnpm run build"
   publish = "dist"
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- packages/vaje-games pnpm-lock.yaml pnpm-workspace.yaml package.json"
+  # Base = packages/vaje-games, so this runs with that as cwd — pathspecs must
+  # be relative to it ("." for the package itself) or root-anchored with :/
+  # (the shared workspace files). Plain "packages/vaje-games" here silently
+  # resolved to a nonexistent nested path and made every automatic deploy
+  # look like "no content change".
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . :/pnpm-lock.yaml :/pnpm-workspace.yaml :/package.json"

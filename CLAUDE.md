@@ -29,9 +29,21 @@ directory.
 
 Each package is deployed as its **own, separate Netlify site**, not as one
 combined build. Every deployable package has its own `netlify.toml` with an
-`ignore` command (`git diff --quiet ... -- packages/<name> ...`) so Netlify
+`ignore` command (`git diff --quiet ... -- . :/pnpm-lock.yaml ...`) so Netlify
 skips rebuilding a site when a commit doesn't touch its files. When adding or
 moving files for one app, don't assume it affects another site's deploy.
+
+Each of these per-package sites has its Netlify **Base directory** set to
+`packages/<name>` (configured in the Netlify UI, not in the repo), so the
+`ignore` command runs with that directory as its cwd — pathspecs must be
+written relative to it (`.` for the package itself) or root-anchored with
+git's `:/` magic pathspec for shared workspace files
+(`:/pnpm-lock.yaml`, `:/pnpm-workspace.yaml`, `:/package.json`). A bare
+`packages/<name>` pathspec here silently resolves to a nonexistent nested
+path and makes the `ignore` check always report "no change", which Netlify
+surfaces as an auto-canceled deploy on every push — this bit all five
+per-package sites at once before being fixed; keep new `ignore` commands
+anchored the same way.
 
 The root `netlify.toml` builds only `homepage` + `old-homepage` into `dist/`;
 `split-bill`, `chooser`, `vaje-games`, and `slides` are entirely separate
