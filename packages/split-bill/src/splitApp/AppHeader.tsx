@@ -1,4 +1,4 @@
-import { Check, Moon, RotateCcw, Settings, Share2, Sun } from "lucide-preact";
+import { Loader2, Moon, RotateCcw, Settings, Share2, Sun } from "lucide-preact";
 import { useEffect, useState } from "preact/hooks";
 import {
   adjustments,
@@ -22,6 +22,7 @@ import {
   buildSharePayload,
   buildShareUrl,
 } from "../utils/share.ts";
+import { ShareModal } from "./ShareModal.tsx";
 import styles from "./AppHeader.module.css";
 
 // Stacked twin of the "Split" wordmark — the orange .titleTextSplit layer
@@ -135,9 +136,14 @@ export default function AppHeader() {
     }
   };
 
-  const [shareState, setShareState] = useState<"idle" | "copied">("idle");
-  const [lastShareExpires, setLastShareExpires] = useState(true);
+  const [buildingShare, setBuildingShare] = useState(false);
+  const [shareModal, setShareModal] = useState<{
+    url: string;
+    expires: boolean;
+  } | null>(null);
   const handleShare = async () => {
+    if (buildingShare) return;
+    setBuildingShare(true);
     const payload = buildSharePayload({
       people: people.value,
       items: items.value,
@@ -161,87 +167,78 @@ export default function AppHeader() {
         url = await buildShareUrl(payload);
       } catch (e2) {
         console.error("Failed to build share URL:", e2);
+        setBuildingShare(false);
         return;
       }
     }
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: "Split Bill", url });
-        return;
-      } catch {
-        // user dismissed or share failed — fall through to clipboard
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      setShareState("copied");
-      setLastShareExpires(expires);
-      window.setTimeout(() => setShareState("idle"), 1800);
-    } catch (e) {
-      console.error("Failed to copy share URL:", e);
-      window.prompt("Copy this link:", url);
-    }
+    setBuildingShare(false);
+    setShareModal({ url, expires });
   };
-  const shareLabel =
-    shareState === "copied"
-      ? lastShareExpires
-        ? "Link copied — expires in 30 days"
-        : "Link copied"
-      : "Share bill (link expires in 30 days)";
 
   return (
-    <header class={styles.header}>
-      <Title />
+    <>
+      <header class={styles.header}>
+        <Title />
 
-      <div class={styles.rightCluster}>
-        <button
-          type="button"
-          class={styles.iconButton}
-          aria-label={shareLabel}
-          title={shareLabel}
-          onClick={handleShare}
-        >
-          {shareState === "copied" ? (
-            <Check size={16} aria-hidden="true" />
-          ) : (
-            <Share2 size={16} aria-hidden="true" />
-          )}
-        </button>
-        <button
-          type="button"
-          class={styles.iconButton}
-          aria-label="Reset all"
-          title="Reset all"
-          onClick={handleReset}
-        >
-          <RotateCcw size={16} aria-hidden="true" />
-        </button>
-
-        <div class={styles.menuWrap} ref={wrapRef}>
+        <div class={styles.rightCluster}>
           <button
-            ref={menuTriggerRef}
             type="button"
             class={styles.iconButton}
-            aria-label="Settings"
-            aria-expanded={menuOpen}
-            aria-haspopup="menu"
-            onClick={toggleMenu}
+            aria-label="Share bill"
+            title="Share bill"
+            disabled={buildingShare}
+            onClick={handleShare}
           >
-            <Settings size={18} aria-hidden="true" />
+            {buildingShare ? (
+              <Loader2 size={16} aria-hidden="true" class={styles.spin} />
+            ) : (
+              <Share2 size={16} aria-hidden="true" />
+            )}
           </button>
-          {menuOpen && (
-            <Popover
-              align={menuAlignEnd ? "end" : "start"}
-              role="menu"
-              menuRef={menuRef}
+          <button
+            type="button"
+            class={styles.iconButton}
+            aria-label="Reset all"
+            title="Reset all"
+            onClick={handleReset}
+          >
+            <RotateCcw size={16} aria-hidden="true" />
+          </button>
+
+          <div class={styles.menuWrap} ref={wrapRef}>
+            <button
+              ref={menuTriggerRef}
+              type="button"
+              class={styles.iconButton}
+              aria-label="Settings"
+              aria-expanded={menuOpen}
+              aria-haspopup="menu"
+              onClick={toggleMenu}
             >
-              <div class={styles.menuItem}>
-                <ThemeToggle />
-              </div>
-            </Popover>
-          )}
+              <Settings size={18} aria-hidden="true" />
+            </button>
+            {menuOpen && (
+              <Popover
+                align={menuAlignEnd ? "end" : "start"}
+                role="menu"
+                menuRef={menuRef}
+              >
+                <div class={styles.menuItem}>
+                  <ThemeToggle />
+                </div>
+              </Popover>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {shareModal && (
+        <ShareModal
+          url={shareModal.url}
+          expires={shareModal.expires}
+          onClose={() => setShareModal(null)}
+        />
+      )}
+    </>
   );
 }

@@ -6,16 +6,12 @@ test.beforeEach(async ({ page }) => {
   await page.reload({ waitUntil: "networkidle" });
 });
 
-test("share button writes a hydrating URL to the clipboard", async ({
+test("share button opens a modal with a hydrating link, copyable to the clipboard", async ({
   page,
 }) => {
-  // Stub navigator.share + clipboard so the click path resolves
-  // deterministically and we can capture the produced URL.
+  // Stub the clipboard so the Copy button's write resolves deterministically
+  // and we can capture what it wrote.
   await page.addInitScript(() => {
-    Object.defineProperty(navigator, "share", {
-      value: undefined,
-      configurable: true,
-    });
     (window as unknown as { __clip?: string }).__clip = undefined;
     Object.defineProperty(navigator, "clipboard", {
       value: {
@@ -41,18 +37,27 @@ test("share button writes a hydrating URL to the clipboard", async ({
   await page.getByPlaceholder("Price").fill("20");
   await page.getByRole("button", { name: "Add", exact: true }).click();
 
-  // Trigger the share button — clipboard fallback runs because we stubbed
-  // navigator.share out.
+  // Trigger the share button — opens the share modal with the link. No
+  // Netlify Function in dev, so the remote attempt fails and this is the
+  // offline, fully-encoded-in-the-URL link.
   await page.getByRole("button", { name: "Share bill" }).click();
+  const dialog = page.getByRole("dialog", { name: "Share bill" });
+  const linkInput = dialog.getByRole("textbox");
+  await expect(linkInput).toHaveValue(/#data=/);
+  const url = await linkInput.inputValue();
 
-  // The handler is async: build URL → write to clipboard. Poll until the
-  // stub captures it.
-  const url = await page
-    .waitForFunction(
-      () => (window as unknown as { __clip?: string }).__clip ?? null,
+  // The Copy button writes the same link to the clipboard.
+  await dialog.getByRole("button", { name: "Copy link" }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as unknown as { __clip?: string }).__clip ?? null,
+      ),
     )
-    .then((handle) => handle.jsonValue() as Promise<string>);
-  expect(url).toContain("#data=");
+    .toBe(url);
+
+  await dialog.getByRole("button", { name: "Close" }).click();
+  await expect(dialog).toBeHidden();
 
   // Open the URL fresh (clear storage, full reload) and confirm it hydrates.
   await page.evaluate(() => localStorage.removeItem("split-bill-state"));
