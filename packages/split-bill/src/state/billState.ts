@@ -28,6 +28,7 @@ import {
   fetchRemoteSharePayload,
   itemsFromSerialized,
   readHashShare,
+  setHashShare,
   ShareNotFoundError,
   uploadSharePayload,
   type SharePayload,
@@ -172,6 +173,9 @@ export const shareId = signal<string | null>(
   typeof window === "undefined" ? null : loadShareId(),
 );
 
+// Also stamps the URL bar with #s=<id> so the user can see they're on a
+// synced session — this is the single place shareId changes, whether from
+// clicking Share or from opening someone else's share link.
 export function setShareId(id: string): void {
   shareId.value = id;
   if (typeof window === "undefined") return;
@@ -180,6 +184,7 @@ export function setShareId(id: string): void {
   } catch (e) {
     console.error("Failed to persist share id:", e);
   }
+  setHashShare(id);
 }
 
 // Heal bills saved before single-currency switches cleared per-payer currency
@@ -903,12 +908,20 @@ function hasMeaningfulLocalState(): boolean {
 async function importHashShareIfPresent(): Promise<void> {
   const share = readHashShare();
   if (!share) return;
+  // The #s=<id> hash is kept in the URL bar for the whole lifetime of a
+  // synced session (see setShareId), so a plain reload of your own synced
+  // tab also looks like "a share link is present". Treat that case as a
+  // silent refresh (no overwrite confirmation, no hash/alert churn on
+  // failure) rather than as importing someone else's bill.
+  const isOwnSyncedSession =
+    share.kind === "remote" && shareId.value === share.id;
   try {
     const payload =
       share.kind === "inline"
         ? await decodeSharePayload(share.encoded)
         : await fetchRemoteSharePayload(share.id);
     if (
+      !isOwnSyncedSession &&
       hasMeaningfulLocalState() &&
       !window.confirm(
         "Open this shared bill? It will replace your current people, items, and adjustments.",
@@ -918,9 +931,18 @@ async function importHashShareIfPresent(): Promise<void> {
       return;
     }
     applySharedPayload(payload);
-    if (share.kind === "remote") setShareId(share.id);
-    clearHashShare();
+    if (share.kind === "remote") {
+      setShareId(share.id);
+    } else {
+      clearHashShare();
+    }
   } catch (e) {
+    if (isOwnSyncedSession) {
+      // Transient refresh failure — keep the local bill and the synced hash
+      // as-is rather than treating it like an expired/foreign link.
+      console.error("Failed to refresh synced bill from remote:", e);
+      return;
+    }
     clearHashShare();
     if (e instanceof ShareNotFoundError) {
       window.alert(e.message);
@@ -931,6 +953,14 @@ async function importHashShareIfPresent(): Promise<void> {
 }
 
 if (typeof window !== "undefined") {
+  // If this browser already has a synced session (shareId survived from
+  // localStorage) but the current URL doesn't carry its hash — e.g. opened
+  // from a bookmark or history entry — restore #s=<id> so the address bar
+  // keeps showing that this tab is synced.
+  if (shareId.value && !readHashShare()) {
+    setHashShare(shareId.value);
+  }
+
   // Wait until after Preact has hydrated the SSR'd DOM before mutating
   // signals — otherwise the signal updates race with hydration and cause
   // DOM-node mismatch errors.

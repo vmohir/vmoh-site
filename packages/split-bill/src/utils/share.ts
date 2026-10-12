@@ -242,6 +242,21 @@ export function readHashShare(): HashShare | null {
   return null;
 }
 
+// Puts (or updates) the #s=<id> fragment in the URL bar without triggering
+// navigation or a hashchange event, so the address bar visibly reflects that
+// this tab is a synced session for that id.
+export function setHashShare(id: string): void {
+  if (typeof window === "undefined") return;
+  const desired = `${REMOTE_HASH_PREFIX}${id}`;
+  if (window.location.hash === desired) return;
+  const { origin, pathname, search } = window.location;
+  window.history.replaceState(
+    null,
+    "",
+    `${origin}${pathname}${search}${desired}`,
+  );
+}
+
 // Strip the share fragment from the URL bar without triggering navigation.
 export function clearHashShare(): void {
   if (typeof window === "undefined") return;
