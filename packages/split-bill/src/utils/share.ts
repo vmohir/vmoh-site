@@ -11,6 +11,13 @@ import type {
 
 const SHARE_VERSION = 1;
 const HASH_PREFIX = "#data=";
+const REMOTE_HASH_PREFIX = "#s=";
+const SHARE_API_PATH = "/api/share";
+
+// Thrown by fetchRemoteSharePayload when the id is unknown or its TTL has
+// lapsed, so callers can show a specific "link expired" message instead of a
+// generic failure.
+export class ShareNotFoundError extends Error {}
 
 interface SerializedItem {
   id: string;
@@ -152,27 +159,90 @@ export function buildSharePayload(input: {
   };
 }
 
+// Fully offline share link: the whole payload lives in the URL fragment.
+// Works with no backend but produces a long link. Used as a fallback when
+// the remote share backend is unreachable or not configured.
 export async function buildShareUrl(payload: SharePayload): Promise<string> {
   const encoded = await encodeSharePayload(payload);
   const { origin, pathname } = window.location;
   return `${origin}${pathname}${HASH_PREFIX}${encoded}`;
 }
 
-// Reads the current location.hash and returns the encoded portion if it
-// matches our share format, otherwise null. Synchronous so callers can
-// decide whether to defer signal hydration before doing the async decode.
-export function readHashShare(): string | null {
+// Uploads the payload to the share backend and returns its short id.
+// Throws if the backend is unreachable or not configured — callers should
+// fall back to buildShareUrl in that case.
+export async function uploadSharePayload(
+  payload: SharePayload,
+): Promise<string> {
+  const res = await fetch(SHARE_API_PATH, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to create share link: ${res.status}`);
+  }
+  const data = (await res.json()) as { id: string };
+  return data.id;
+}
+
+// Short share link backed by the remote store — carries only an id, so the
+// link stays short regardless of bill size. The id expires after the
+// backend's TTL (currently 30 days).
+export async function buildRemoteShareUrl(
+  payload: SharePayload,
+): Promise<string> {
+  const id = await uploadSharePayload(payload);
+  const { origin, pathname } = window.location;
+  return `${origin}${pathname}${REMOTE_HASH_PREFIX}${id}`;
+}
+
+export async function fetchRemoteSharePayload(
+  id: string,
+): Promise<SharePayload> {
+  const res = await fetch(`${SHARE_API_PATH}?id=${encodeURIComponent(id)}`);
+  if (res.status === 404) {
+    throw new ShareNotFoundError(
+      "This share link has expired or no longer exists.",
+    );
+  }
+  if (!res.ok) {
+    throw new Error(`Failed to fetch shared bill: ${res.status}`);
+  }
+  const parsed = (await res.json()) as SharePayload;
+  if (!parsed || typeof parsed !== "object" || parsed.v !== SHARE_VERSION) {
+    throw new Error("Unsupported share payload");
+  }
+  return parsed;
+}
+
+export type HashShare =
+  { kind: "inline"; encoded: string } | { kind: "remote"; id: string };
+
+// Reads the current location.hash and returns the share reference it
+// carries, otherwise null. Synchronous so callers can decide whether to
+// defer signal hydration before doing the async decode/fetch.
+export function readHashShare(): HashShare | null {
   if (typeof window === "undefined") return null;
   const hash = window.location.hash;
-  if (!hash.startsWith(HASH_PREFIX)) return null;
-  const encoded = hash.slice(HASH_PREFIX.length);
-  return encoded || null;
+  if (hash.startsWith(HASH_PREFIX)) {
+    const encoded = hash.slice(HASH_PREFIX.length);
+    return encoded ? { kind: "inline", encoded } : null;
+  }
+  if (hash.startsWith(REMOTE_HASH_PREFIX)) {
+    const id = hash.slice(REMOTE_HASH_PREFIX.length);
+    return id ? { kind: "remote", id } : null;
+  }
+  return null;
 }
 
 // Strip the share fragment from the URL bar without triggering navigation.
 export function clearHashShare(): void {
   if (typeof window === "undefined") return;
-  if (!window.location.hash.startsWith(HASH_PREFIX)) return;
+  const hash = window.location.hash;
+  if (!hash.startsWith(HASH_PREFIX) && !hash.startsWith(REMOTE_HASH_PREFIX)) {
+    return;
+  }
   const { origin, pathname, search } = window.location;
   window.history.replaceState(null, "", `${origin}${pathname}${search}`);
 }

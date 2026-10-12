@@ -1,4 +1,9 @@
 # example netlify.toml
+#
+# netlify/functions/share.ts requires UPSTASH_REDIS_REST_URL and
+# UPSTASH_REDIS_REST_TOKEN (free tier at upstash.com) to be set as site
+# environment variables in the Netlify dashboard. Without them, share links
+# fall back to the offline, fully-encoded-in-the-URL format.
 [build]
   command = "pnpm run build"
   functions = "netlify/functions"

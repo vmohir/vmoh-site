@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",
+    "@types/node": "^22.10.2",
     "astro-compress": "^2.4.1",
     "netlify-cli": "^26.2.0"
   }

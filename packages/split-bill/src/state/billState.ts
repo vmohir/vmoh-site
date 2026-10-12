@@ -24,8 +24,10 @@ import {
 import {
   clearHashShare,
   decodeSharePayload,
+  fetchRemoteSharePayload,
   itemsFromSerialized,
   readHashShare,
+  ShareNotFoundError,
   type SharePayload,
 } from "../utils/share.ts";
 
@@ -818,10 +820,13 @@ function hasMeaningfulLocalState(): boolean {
 }
 
 async function importHashShareIfPresent(): Promise<void> {
-  const encoded = readHashShare();
-  if (!encoded) return;
+  const share = readHashShare();
+  if (!share) return;
   try {
-    const payload = await decodeSharePayload(encoded);
+    const payload =
+      share.kind === "inline"
+        ? await decodeSharePayload(share.encoded)
+        : await fetchRemoteSharePayload(share.id);
     if (
       hasMeaningfulLocalState() &&
       !window.confirm(
@@ -834,7 +839,12 @@ async function importHashShareIfPresent(): Promise<void> {
     applySharedPayload(payload);
     clearHashShare();
   } catch (e) {
-    console.error("Failed to import shared bill:", e);
+    clearHashShare();
+    if (e instanceof ShareNotFoundError) {
+      window.alert(e.message);
+    } else {
+      console.error("Failed to import shared bill:", e);
+    }
   }
 }
 

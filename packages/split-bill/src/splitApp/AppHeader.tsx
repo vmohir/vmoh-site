@@ -17,7 +17,11 @@ import { theme, toggleTheme } from "../state/theme";
 import { LogoOptions } from "../ui/LogoOptions.tsx";
 import { Popover } from "../ui/Popover.tsx";
 import { useDropdown } from "../ui/useDropdown.ts";
-import { buildSharePayload, buildShareUrl } from "../utils/share.ts";
+import {
+  buildRemoteShareUrl,
+  buildSharePayload,
+  buildShareUrl,
+} from "../utils/share.ts";
 import styles from "./AppHeader.module.css";
 
 // Stacked twin of the "Split" wordmark — the orange .titleTextSplit layer
@@ -132,6 +136,7 @@ export default function AppHeader() {
   };
 
   const [shareState, setShareState] = useState<"idle" | "copied">("idle");
+  const [lastShareExpires, setLastShareExpires] = useState(true);
   const handleShare = async () => {
     const payload = buildSharePayload({
       people: people.value,
@@ -146,11 +151,18 @@ export default function AppHeader() {
       groups: groups.value,
     });
     let url: string;
+    let expires = true;
     try {
-      url = await buildShareUrl(payload);
+      url = await buildRemoteShareUrl(payload);
     } catch (e) {
-      console.error("Failed to build share URL:", e);
-      return;
+      console.error("Share backend unavailable, using an offline link:", e);
+      expires = false;
+      try {
+        url = await buildShareUrl(payload);
+      } catch (e2) {
+        console.error("Failed to build share URL:", e2);
+        return;
+      }
     }
     if (navigator.share) {
       try {
@@ -163,12 +175,19 @@ export default function AppHeader() {
     try {
       await navigator.clipboard.writeText(url);
       setShareState("copied");
+      setLastShareExpires(expires);
       window.setTimeout(() => setShareState("idle"), 1800);
     } catch (e) {
       console.error("Failed to copy share URL:", e);
       window.prompt("Copy this link:", url);
     }
   };
+  const shareLabel =
+    shareState === "copied"
+      ? lastShareExpires
+        ? "Link copied — expires in 30 days"
+        : "Link copied"
+      : "Share bill (link expires in 30 days)";
 
   return (
     <header class={styles.header}>
@@ -178,8 +197,8 @@ export default function AppHeader() {
         <button
           type="button"
           class={styles.iconButton}
-          aria-label={shareState === "copied" ? "Link copied" : "Share bill"}
-          title={shareState === "copied" ? "Link copied" : "Share bill"}
+          aria-label={shareLabel}
+          title={shareLabel}
           onClick={handleShare}
         >
           {shareState === "copied" ? (

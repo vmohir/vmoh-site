@@ -17,7 +17,8 @@ settlement transfers.
 - **TypeScript strict** with `noUncheckedIndexedAccess`, JSX → `preact`,
   `baseUrl: src` (so imports like `styles/global.css` resolve from `src/`).
 - **pnpm** workspace, formatted with Prettier (`proseWrap: always`).
-- Deployed to **Netlify** as a static build (`dist/`).
+- Deployed to **Netlify** as a static build (`dist/`), plus one Netlify Function
+  (`netlify/functions/share.ts`) for share-link storage.
 
 ## Commands
 
@@ -60,6 +61,21 @@ Discounts are capped to `billSubtotal`; adjustments are distributed pro rata by
 each person's consumption ratio, and each payer is credited with the adjustment
 share riding on what they paid so balances net to zero.
 
+### Sharing (`src/utils/share.ts`, `netlify/functions/share.ts`)
+
+The share button (`AppHeader.tsx`) first tries a **remote** share: POSTs the
+serialized bill to `/api/share`, a Netlify Function that stores it in Upstash
+Redis (`share:<id>`, 30-day TTL) and returns a short id, producing a link like
+`.../#s=<id>`. On load, `billState.ts` fetches that id back from the function.
+If the function is unreachable or `UPSTASH_REDIS_REST_URL` /
+`UPSTASH_REDIS_REST_TOKEN` aren't configured (e.g. plain `astro dev`, which
+doesn't run Netlify Functions), it falls back to the original **inline** link —
+the whole payload gzipped + base64url-encoded directly into the hash
+(`.../#data=<encoded>`), which never expires but is long. Both link formats are
+recognised by `readHashShare()`/`clearHashShare()`. A link that fails to resolve
+(expired or unknown id) surfaces as a `ShareNotFoundError` which `billState.ts`
+shows to the user via `window.alert`.
+
 ### Domain model (`src/splitApp/split.types.ts`)
 
 - `Person { id, name }`
@@ -77,6 +93,7 @@ share riding on what they paid so balances net to zero.
 ### Folder layout
 
 ```
+netlify/functions/share.ts       # share-link store/fetch backend (Upstash Redis)
 src/
 ├── pages/index.astro            # entry, renders Layout > SplitBillApp
 ├── layouts/Layout.astro
@@ -116,8 +133,9 @@ one, decide whether the other still has a reason to exist.
 
 `TODO.md` tracks open ideas: quick-entry natural-language parsing, adjustment
 limits, localised currency, people-grouping (couples sharing expenses),
-restricting who can owe whom, offline PWA, live currency exchange, and URL- or
-peer-to-peer share/sync.
+restricting who can owe whom, offline PWA, live currency exchange, and
+peer-to-peer share/sync (URL- and backend-based share links are both done — see
+Sharing above).
 
 ## Open observations
 

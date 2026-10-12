@@ -38,14 +38,11 @@ synced when online.
 
 ### Share and Sync
 
-Two interesting options:
+Done: short share links backed by Upstash Redis via `netlify/functions/share.ts`
+(`#s=<id>`, 30-day TTL), falling back to the old fully URL-encoded link
+(`#data=...`) when the backend is unreachable or not configured. See
+`src/utils/share.ts`.
 
-2. URL-based State Encode all the expense data directly in the URL (compressed).
-   When someone adds an expense, they generate a new URL and share it in your
-   group chat. The URL is the database. This works surprisingly well for
-   moderate amounts of data - you can fit quite a bit into a URL with
-   compression.
-3. Peer-to-Peer Storage (IPFS, Gun.js) Use decentralized storage where the data
-   lives on users' devices and syncs when they're online. No central server
-   needed. Gun.js is particularly interesting for this - it's designed for
-   exactly this use case.
+Still open: Peer-to-Peer Storage (IPFS, Gun.js) — decentralized storage where
+the data lives on users' devices and syncs when they're online, no central
+server needed. Gun.js is particularly interesting for this.
