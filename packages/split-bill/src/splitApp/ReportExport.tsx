@@ -1,32 +1,88 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import {
   Download,
+  Loader2,
   NotebookText,
   ReceiptText,
   Share2,
-  Wallet,
   X,
 } from "lucide-preact";
+import {
+  adjustments,
+  baseCurrency,
+  exchangeRates,
+  groups,
+  hasMultipleCurrencies,
+  hasMultiplePayers,
+  items,
+  people,
+  settlementAlgorithm,
+  useExchangeRates,
+} from "../state/billState";
+import {
+  buildRemoteShareUrl,
+  buildSharePayload,
+  buildShareUrl,
+} from "../utils/share.ts";
 import { BillReport, type ReportVariant } from "./BillReport.tsx";
+import { ShareModal } from "./ShareModal.tsx";
 import styles from "./ReportExport.module.css";
 
 const BUTTONS: {
   variant: ReportVariant;
   label: string;
-  Icon: typeof Wallet;
+  Icon: typeof ReceiptText;
 }[] = [
-  { variant: "summary", label: "Summary", Icon: Wallet },
   { variant: "receipt", label: "Receipt", Icon: ReceiptText },
   { variant: "full", label: "Full report", Icon: NotebookText },
 ];
 
-// Three report flavours, each rasterised from an off-screen BillReport to a PNG
-// and previewed with Share / Save.
+// Two report flavours, each rasterised from an off-screen BillReport to a PNG
+// and previewed with Share / Save, plus a share-link button alongside them.
 export function ReportExport() {
   const reportRef = useRef<HTMLDivElement>(null);
-  const [variant, setVariant] = useState<ReportVariant>("summary");
+  const [variant, setVariant] = useState<ReportVariant>("receipt");
   const [capturing, setCapturing] = useState(false);
   const [dataUrl, setDataUrl] = useState<string | null>(null);
+
+  const [buildingShare, setBuildingShare] = useState(false);
+  const [shareModal, setShareModal] = useState<{
+    url: string;
+    expires: boolean;
+  } | null>(null);
+  const handleShare = async () => {
+    if (buildingShare) return;
+    setBuildingShare(true);
+    const payload = buildSharePayload({
+      people: people.value,
+      items: items.value,
+      adjustments: adjustments.value,
+      baseCurrency: baseCurrency.value,
+      settlementAlgorithm: settlementAlgorithm.value,
+      hasMultipleCurrencies: hasMultipleCurrencies.value,
+      hasMultiplePayers: hasMultiplePayers.value,
+      useExchangeRates: useExchangeRates.value,
+      exchangeRates: exchangeRates.value,
+      groups: groups.value,
+    });
+    let url: string;
+    let expires = true;
+    try {
+      url = await buildRemoteShareUrl(payload);
+    } catch (e) {
+      console.error("Share backend unavailable, using an offline link:", e);
+      expires = false;
+      try {
+        url = await buildShareUrl(payload);
+      } catch (e2) {
+        console.error("Failed to build share URL:", e2);
+        setBuildingShare(false);
+        return;
+      }
+    }
+    setBuildingShare(false);
+    setShareModal({ url, expires });
+  };
 
   // Rasterise after the off-screen report has rendered the requested variant.
   useEffect(() => {
@@ -85,8 +141,21 @@ export function ReportExport() {
 
   return (
     <div class={styles.wrap}>
-      <span class={styles.heading}>Export report</span>
+      <span class={styles.heading}>Share &amp; export</span>
       <div class={styles.group}>
+        <button
+          type="button"
+          class={styles.reportBtn}
+          disabled={buildingShare}
+          onClick={handleShare}
+        >
+          {buildingShare ? (
+            <Loader2 size={18} aria-hidden="true" class={styles.spin} />
+          ) : (
+            <Share2 size={18} aria-hidden="true" />
+          )}
+          <span>Share</span>
+        </button>
         {BUTTONS.map(({ variant: v, label, Icon }) => (
           <button
             key={v}
@@ -132,6 +201,14 @@ export function ReportExport() {
             </div>
           </div>
         </div>
+      )}
+
+      {shareModal && (
+        <ShareModal
+          url={shareModal.url}
+          expires={shareModal.expires}
+          onClose={() => setShareModal(null)}
+        />
       )}
     </div>
   );

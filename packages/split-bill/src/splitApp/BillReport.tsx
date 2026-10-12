@@ -9,7 +9,7 @@ import { resolveItemShares } from "../utils/calculations.ts";
 import { getCurrencySymbol } from "../utils/currency.utils.ts";
 import styles from "./BillReport.module.css";
 
-export type ReportVariant = "summary" | "receipt" | "full";
+export type ReportVariant = "receipt" | "full";
 
 // Per-item adjustments have no editable label, so name them by their type.
 const ADJUSTMENT_LABEL: Record<AdjustmentType, string> = {
@@ -19,49 +19,9 @@ const ADJUSTMENT_LABEL: Record<AdjustmentType, string> = {
 };
 
 const TITLES: Record<ReportVariant, string> = {
-  summary: "Settlement summary",
   receipt: "Receipt",
   full: "Full report",
 };
-
-// Per-person balances: who owes / who's owed.
-function Balances({ multi }: { multi: boolean }) {
-  return (
-    <>
-      {calculatedLedgers.value.map((ledger) => {
-        const symbol = getCurrencySymbol(ledger.currency);
-        return (
-          <div class={styles.section} key={ledger.currency}>
-            {multi && <div class={styles.currency}>{ledger.currency}</div>}
-            <div class={styles.balances}>
-              {ledger.totals.map((t) => {
-                const owes = t.balance > 0.01;
-                const gets = t.balance < -0.01;
-                const cls = owes
-                  ? styles.owe
-                  : gets
-                    ? styles.get
-                    : styles.settled;
-                return (
-                  <div class={styles.row} key={t.personId}>
-                    <span class={styles.name}>{t.personName}</span>
-                    <span class={cls}>
-                      {owes
-                        ? `owes ${symbol}${t.balance.toFixed(2)}`
-                        : gets
-                          ? `gets ${symbol}${Math.abs(t.balance).toFixed(2)}`
-                          : "settled"}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
-    </>
-  );
-}
 
 // Who pays whom.
 function Settlement({ multi }: { multi: boolean }) {
@@ -199,13 +159,6 @@ export function BillReport({ variant }: { variant: ReportVariant }) {
         <span class={styles.title}>{TITLES[variant]}</span>
         <span class={styles.date}>{date}</span>
       </div>
-
-      {variant === "summary" && (
-        <>
-          <Balances multi={multi} />
-          <Settlement multi={multi} />
-        </>
-      )}
 
       {variant === "receipt" && (
         <>

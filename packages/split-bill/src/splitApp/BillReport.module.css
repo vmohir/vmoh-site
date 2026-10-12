@@ -36,22 +36,6 @@
   margin-bottom: 16px;
 }
 
-.currency {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #6b7280;
-  margin-bottom: 8px;
-}
-
-.balances {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-bottom: 12px;
-}
-
 .balanceRow {
   display: flex;
   justify-content: space-between;
@@ -60,20 +44,6 @@
 
 .name {
   color: #111827;
-}
-
-.owe {
-  color: #dc2626;
-  font-weight: 600;
-}
-
-.get {
-  color: #059669;
-  font-weight: 600;
-}
-
-.settled {
-  color: #9ca3af;
 }
 
 .subhead {

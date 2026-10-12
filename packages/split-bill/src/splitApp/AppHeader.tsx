@@ -1,28 +1,7 @@
-import { Loader2, Moon, RotateCcw, Settings, Share2, Sun } from "lucide-preact";
-import { useEffect, useState } from "preact/hooks";
-import {
-  adjustments,
-  baseCurrency,
-  exchangeRates,
-  groups,
-  hasMultipleCurrencies,
-  hasMultiplePayers,
-  items,
-  people,
-  resetAll,
-  settlementAlgorithm,
-  useExchangeRates,
-} from "../state/billState";
+import { Moon, RotateCcw, Sun } from "lucide-preact";
+import { useEffect } from "preact/hooks";
+import { resetAll } from "../state/billState";
 import { theme, toggleTheme } from "../state/theme";
-import { LogoOptions } from "../ui/LogoOptions.tsx";
-import { Popover } from "../ui/Popover.tsx";
-import { useDropdown } from "../ui/useDropdown.ts";
-import {
-  buildRemoteShareUrl,
-  buildSharePayload,
-  buildShareUrl,
-} from "../utils/share.ts";
-import { ShareModal } from "./ShareModal.tsx";
 import styles from "./AppHeader.module.css";
 
 // Stacked twin of the "Split" wordmark — the orange .titleTextSplit layer
@@ -96,8 +75,9 @@ function ThemeToggle() {
   return (
     <button
       type="button"
-      class={styles.themeToggle}
+      class={styles.actionButton}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      title={`Switch to ${isDark ? "light" : "dark"} mode`}
       onClick={toggleTheme}
     >
       {isDark ? (
@@ -111,15 +91,6 @@ function ThemeToggle() {
 }
 
 export default function AppHeader() {
-  const {
-    open: menuOpen,
-    toggle: toggleMenu,
-    wrapRef,
-    triggerRef: menuTriggerRef,
-    menuRef,
-    alignEnd: menuAlignEnd,
-  } = useDropdown<HTMLButtonElement>({ alignByViewport: true });
-
   // Drop the static loading-shell rendered by SplitBillApp.astro once the
   // real, interactive header is mounted.
   useEffect(() => {
@@ -136,109 +107,24 @@ export default function AppHeader() {
     }
   };
 
-  const [buildingShare, setBuildingShare] = useState(false);
-  const [shareModal, setShareModal] = useState<{
-    url: string;
-    expires: boolean;
-  } | null>(null);
-  const handleShare = async () => {
-    if (buildingShare) return;
-    setBuildingShare(true);
-    const payload = buildSharePayload({
-      people: people.value,
-      items: items.value,
-      adjustments: adjustments.value,
-      baseCurrency: baseCurrency.value,
-      settlementAlgorithm: settlementAlgorithm.value,
-      hasMultipleCurrencies: hasMultipleCurrencies.value,
-      hasMultiplePayers: hasMultiplePayers.value,
-      useExchangeRates: useExchangeRates.value,
-      exchangeRates: exchangeRates.value,
-      groups: groups.value,
-    });
-    let url: string;
-    let expires = true;
-    try {
-      url = await buildRemoteShareUrl(payload);
-    } catch (e) {
-      console.error("Share backend unavailable, using an offline link:", e);
-      expires = false;
-      try {
-        url = await buildShareUrl(payload);
-      } catch (e2) {
-        console.error("Failed to build share URL:", e2);
-        setBuildingShare(false);
-        return;
-      }
-    }
-    setBuildingShare(false);
-    setShareModal({ url, expires });
-  };
-
   return (
-    <>
-      <header class={styles.header}>
-        <Title />
+    <header class={styles.header}>
+      <Title />
 
-        <div class={styles.rightCluster}>
-          <button
-            type="button"
-            class={styles.iconButton}
-            aria-label="Share bill"
-            title="Share bill"
-            disabled={buildingShare}
-            onClick={handleShare}
-          >
-            {buildingShare ? (
-              <Loader2 size={16} aria-hidden="true" class={styles.spin} />
-            ) : (
-              <Share2 size={16} aria-hidden="true" />
-            )}
-          </button>
-          <button
-            type="button"
-            class={styles.iconButton}
-            aria-label="Reset all"
-            title="Reset all"
-            onClick={handleReset}
-          >
-            <RotateCcw size={16} aria-hidden="true" />
-          </button>
+      <div class={styles.rightCluster}>
+        <button
+          type="button"
+          class={styles.actionButton}
+          aria-label="Reset all"
+          title="Reset all"
+          onClick={handleReset}
+        >
+          <RotateCcw size={16} aria-hidden="true" />
+          <span>Reset</span>
+        </button>
 
-          <div class={styles.menuWrap} ref={wrapRef}>
-            <button
-              ref={menuTriggerRef}
-              type="button"
-              class={styles.iconButton}
-              aria-label="Settings"
-              aria-expanded={menuOpen}
-              aria-haspopup="menu"
-              onClick={toggleMenu}
-            >
-              <Settings size={18} aria-hidden="true" />
-            </button>
-            {menuOpen && (
-              <Popover
-                align={menuAlignEnd ? "end" : "start"}
-                role="menu"
-                menuRef={menuRef}
-              >
-                <div class={styles.menuItem}>
-                  <ThemeToggle />
-                </div>
-              </Popover>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {shareModal && (
-        <ShareModal
-          url={shareModal.url}
-          expires={shareModal.expires}
-          onClose={() => setShareModal(null)}
-        />
-      )}
-    </>
+        <ThemeToggle />
+      </div>
+    </header>
   );
 }
