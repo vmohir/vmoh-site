@@ -16,7 +16,7 @@
     "build:slides": "cd packages/slides && pnpm install --frozen-lockfile && pnpm run build"
   },
   "devDependencies": {
-    "netlify-cli": "^26.2.0",
-    "prettier": "^3.9.5"
+    "netlify-cli": "^27.16.3",
+    "prettier": "^3.9.10"
   }
 }

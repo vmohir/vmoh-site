@@ -7,3 +7,7 @@
   # resolved to a nonexistent nested path and made every automatic deploy
   # look like "no content change".
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . :/pnpm-lock.yaml :/pnpm-workspace.yaml :/package.json"
+
+[build.environment]
+  # Astro 7.4+ needs Node >=22.23.4; "22" makes Netlify use the latest 22.x.
+  NODE_VERSION = "22"

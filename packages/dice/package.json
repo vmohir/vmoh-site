@@ -12,14 +12,14 @@
   },
   "dependencies": {
     "@preact/preset-vite": "^2.10.6",
-    "@preact/signals": "^2.9.4",
-    "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.1.3",
-    "preact": "^10.29.7",
-    "tailwindcss": "^4.3.3"
+    "@preact/signals": "^2.11.4",
+    "@tailwindcss/vite": "^4.3.5",
+    "astro": "^7.4.8",
+    "preact": "^10.29.8",
+    "tailwindcss": "^4.3.5"
   },
   "devDependencies": {
-    "astro-compress": "^2.4.1",
-    "netlify-cli": "^26.2.0"
+    "astro-compress": "^2.4.3",
+    "netlify-cli": "^27.16.3"
   }
 }
